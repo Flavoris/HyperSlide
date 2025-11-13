@@ -1,0 +1,14 @@
+Add difficulty scaling:
+
+In GameState:
+- var difficulty in 0...1 computed from elapsed seconds. Example: d = min(1.0, elapsed/90.0).
+
+In GameScene:
+- Derive parameters from difficulty:
+  - spawnInterval = lerp(1.0 ... 0.3, by d)
+  - obstacleSpeedY = lerp(240 ... 700 px/sec, by d)
+  - add occasional “narrow fast” vs “wide slow” variants by probability weighted on d
+- Update “Level” derived from difficulty (1...10). Expose to HUDView.
+
+Ensure dt-based motion:
+- Use `update(_ currentTime:)` with stored `lastTime`. Move obstacles by `speedY * dt`.
