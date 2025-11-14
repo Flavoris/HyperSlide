@@ -67,6 +67,7 @@ struct HUDView: View {
                 .foregroundStyle(.white)
                 .tracking(3)
                 .multilineTextAlignment(.center)
+                .neonGlow(color: Color("NeonBlue"), radius: 22, intensity: 0.85)
             
             // Instructions
             Text("Tap anywhere to move left or right")
@@ -201,6 +202,42 @@ struct HUDView: View {
         Color.black.ignoresSafeArea()
         
         HUDView(gameState: GameState(), onRestart: {})
+    }
+}
+
+// MARK: - Neon Glow Effect
+
+private struct NeonGlowModifier: ViewModifier {
+    let color: Color
+    let radius: CGFloat
+    let intensity: Double
+    
+    func body(content: Content) -> some View {
+        content
+            // Primary glow bloom
+            .shadow(color: color.opacity(intensity), radius: radius)
+            // Secondary halo for a diffused aura
+            .shadow(color: color.opacity(intensity * 0.6), radius: radius * 1.6)
+            // Subtle inner glow to keep text readable while illuminated
+            .overlay {
+                content
+                    .foregroundStyle(color.opacity(intensity * 0.55))
+                    .blur(radius: radius / 2.8)
+                    .blendMode(.screen)
+            }
+    }
+}
+
+private extension View {
+    /// Applies a neon-style glow using additive shadows and a blurred overlay.
+    /// - Parameters:
+    ///   - color: Glow color, typically a vivid neon hue.
+    ///   - radius: Base blur radius for the glow bloom.
+    ///   - intensity: Opacity multiplier controlling glow brightness.
+    func neonGlow(color: Color,
+                  radius: CGFloat = 18,
+                  intensity: Double = 0.8) -> some View {
+        modifier(NeonGlowModifier(color: color, radius: radius, intensity: intensity))
     }
 }
 
