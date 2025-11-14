@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		591680A12EC58DB600078791 /* Ethnocentric-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 591680A02EC58DB600078791 /* Ethnocentric-Regular.otf */; };
+		B1000001 /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000001 /* Haptics.swift */; };
+		C1000001 /* SoundManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2000001 /* SoundManager.swift */; };
+		C1000003 /* whoosh.wav in Resources */ = {isa = PBXBuildFile; fileRef = C2000003 /* whoosh.wav */; };
+		C1000004 /* thud.wav in Resources */ = {isa = PBXBuildFile; fileRef = C2000004 /* thud.wav */; };
 		A1000001 /* HyperSlideApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000001 /* HyperSlideApp.swift */; };
 		A1000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000002 /* ContentView.swift */; };
 		A1000003 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000003 /* GameScene.swift */; };
@@ -20,6 +24,10 @@
 
 /* Begin PBXFileReference section */
 		591680A02EC58DB600078791 /* Ethnocentric-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Ethnocentric-Regular.otf"; sourceTree = "<group>"; };
+		B2000001 /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
+		C2000001 /* SoundManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundManager.swift; sourceTree = "<group>"; };
+		C2000003 /* whoosh.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = whoosh.wav; sourceTree = "<group>"; };
+		C2000004 /* thud.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = thud.wav; sourceTree = "<group>"; };
 		59BFBE242EC587A800EA9135 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		A0000001 /* HyperSlide.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HyperSlide.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A2000001 /* HyperSlideApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HyperSlideApp.swift; sourceTree = "<group>"; };
@@ -60,10 +68,14 @@
 				A2000003 /* GameScene.swift */,
 				A2000004 /* GameState.swift */,
 				A2000005 /* HUDView.swift */,
+				C2000001 /* SoundManager.swift */,
+				B2000001 /* Haptics.swift */,
 				A2000007 /* Obstacle.swift */,
 				A2000008 /* GlowEffectFactory.swift */,
 				A2000006 /* Assets.xcassets */,
 				591680A02EC58DB600078791 /* Ethnocentric-Regular.otf */,
+				C2000003 /* whoosh.wav */,
+				C2000004 /* thud.wav */,
 			);
 			path = HyperSlide;
 			sourceTree = "<group>";
@@ -136,6 +148,8 @@
 			files = (
 				591680A12EC58DB600078791 /* Ethnocentric-Regular.otf in Resources */,
 				A1000006 /* Assets.xcassets in Resources */,
+				C1000003 /* whoosh.wav in Resources */,
+				C1000004 /* thud.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -151,8 +165,10 @@
 				A1000003 /* GameScene.swift in Sources */,
 				A1000004 /* GameState.swift in Sources */,
 				A1000005 /* HUDView.swift in Sources */,
+				C1000001 /* SoundManager.swift in Sources */,
 				A1000007 /* Obstacle.swift in Sources */,
 				A1000008 /* GlowEffectFactory.swift in Sources */,
+				B1000001 /* Haptics.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

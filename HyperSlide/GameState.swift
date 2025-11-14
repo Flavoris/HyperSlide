@@ -81,6 +81,12 @@ class GameState {
         score += points
     }
     
+    /// Award a small bonus for narrowly avoiding an obstacle.
+    func addNearMissBonus(points: Double = 2) {
+        guard !isGameOver else { return }
+        score += points
+    }
+    
     /// Record the current score as best if it's higher
     func recordBest() {
         if score > bestScore {

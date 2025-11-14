@@ -12,6 +12,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // Reference to game state (injected via delegate pattern)
     weak var gameState: GameState?
     
+    // Shared sound manager supplied by SwiftUI host.
+    var soundManager: SoundManager?
+    
     // Track time for delta calculations
     private var lastUpdateTime: TimeInterval = 0
     
@@ -32,6 +35,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private var maxSpeed: CGFloat = 800.0  // Maximum velocity cap
     private var targetX: CGFloat = 0       // Target X position from touch input
     private var velocityX: CGFloat = 0     // Current X velocity
+    private let playerRadius: CGFloat = 25.0
+    private let playerVerticalPositionRatio: CGFloat = 0.22
+    
+    // Game feel tuning
+    private var lastVelocitySign: CGFloat = 0
+    private var isCameraShaking = false
+    private let nearMissHorizontalPadding: CGFloat = 10
+    private let nearMissVerticalPadding: CGFloat = 24
+    private let directionFlipVelocityThreshold: CGFloat = 60
+    private var nearMissParticleTexture: SKTexture?
     // MARK: - Obstacle Properties
     
     // Array of active obstacles
@@ -64,8 +77,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     private func setupPlayer() {
         // Create the player shape (glowing circle)
-        let radius: CGFloat = 25.0
-        player = SKShapeNode(circleOfRadius: radius)
+        player = SKShapeNode(circleOfRadius: playerRadius)
         
         // Vibrant cyan core
         let coreColor = SKColor(red: 0.0, green: 0.82, blue: 1.0, alpha: 1.0)
@@ -75,7 +87,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // Additive blurred glow that mimics the neon reference style
         let glowColor = SKColor(red: 0.0, green: 0.95, blue: 1.0, alpha: 1.0)
-        let glowNode = GlowEffectFactory.makeCircularGlow(radius: radius,
+        let glowNode = GlowEffectFactory.makeCircularGlow(radius: playerRadius,
                                                           color: glowColor,
                                                           blurRadius: 18,
                                                           alpha: 0.9,
@@ -84,7 +96,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         player.addChild(glowNode)
         
         // Soft inner bloom keeps the center bright even when the outer glow blurs
-        let innerBloom = GlowEffectFactory.makeCircularGlow(radius: radius * 0.55,
+        let innerBloom = GlowEffectFactory.makeCircularGlow(radius: playerRadius * 0.55,
                                                             color: coreColor,
                                                             blurRadius: 8,
                                                             alpha: 0.75,
@@ -92,13 +104,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         innerBloom.zPosition = -0.5
         player.addChild(innerBloom)
         
-        // Position player near bottom (10% up from bottom)
-        let playerY = size.height * 0.15
+        // Position player slightly above bottom to keep UI visible
+        let playerY = size.height * playerVerticalPositionRatio
         player.position = CGPoint(x: size.width / 2, y: playerY)
         targetX = player.position.x
         
         // Setup physics body for player
-        setupPlayerPhysics(radius: radius)
+        setupPlayerPhysics(radius: playerRadius)
         
         addChild(player)
     }
@@ -145,6 +157,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private func updateGameLogic(deltaTime: TimeInterval) {
         updatePlayerMovement(deltaTime: deltaTime)
         updateObstacles(deltaTime: deltaTime)
+        detectNearMisses()
         spawnObstacles(deltaTime: deltaTime)
         updateScore(deltaTime: deltaTime)
     }
@@ -155,7 +168,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     private func updatePlayerMovement(deltaTime: TimeInterval) {
-        guard player != nil else { return }
+        guard let player = player else { return }
         
         // Smooth LERP toward targetX with easing
         let currentX = player.position.x
@@ -167,6 +180,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // Clamp velocity to max speed
         velocityX = max(-maxSpeed, min(maxSpeed, velocityX))
+        
+        handleDirectionChangeIfNeeded()
         
         // Update position
         var newX = currentX + velocityX * CGFloat(deltaTime)
@@ -276,17 +291,151 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // Trigger game over
         state.isGameOver = true
-        
-        // Visual and audio feedback
-        flashScreen()
-        playCrashSound()
+        performCollisionFeedback()
     }
     
-    private func playCrashSound() {
-        // Placeholder for crash sound effect
-        // TODO: Add actual sound file and play it here
-        // Example: run(SKAction.playSoundFileNamed("crash.wav", waitForCompletion: false))
-        print("🔊 Crash sound placeholder - Add sound file to play crash SFX")
+    private func performCollisionFeedback() {
+        flashScreen()
+        startCameraShake()
+        soundManager?.playCollision()
+        Haptics.playCollisionImpact()
+    }
+    
+    private func startCameraShake(duration: TimeInterval = 0.18,
+                                  amplitudeX: CGFloat = 18,
+                                  amplitudeY: CGFloat = 12) {
+        guard !isCameraShaking else { return }
+        
+        isCameraShaking = true
+        position = .zero
+        
+        let shakeAction = SKAction.customAction(withDuration: duration) { node, elapsedTime in
+            let normalizedProgress = elapsedTime / CGFloat(duration)
+            let damping = max(0.0, 1.0 - normalizedProgress)
+            let offsetX = CGFloat.random(in: -amplitudeX...amplitudeX) * damping
+            let offsetY = CGFloat.random(in: -amplitudeY...amplitudeY) * damping
+            node.position = CGPoint(x: offsetX, y: offsetY)
+        }
+        
+        let reset = SKAction.run { [weak self] in
+            guard let self = self else { return }
+            self.position = .zero
+            self.isCameraShaking = false
+        }
+        
+        run(SKAction.sequence([shakeAction, reset]), withKey: "cameraShake")
+    }
+    
+    private func handleDirectionChangeIfNeeded() {
+        let speedMagnitude = abs(velocityX)
+        
+        if speedMagnitude >= directionFlipVelocityThreshold {
+            let newSign: CGFloat = velocityX > 0 ? 1 : -1
+            if lastVelocitySign != 0 && newSign != lastVelocitySign {
+                triggerDirectionChangeSquash()
+            }
+            lastVelocitySign = newSign
+        } else if speedMagnitude < directionFlipVelocityThreshold * 0.33 {
+            // Reset to zero so that the next significant push counts as a flip.
+            lastVelocitySign = 0
+        }
+    }
+    
+    private func triggerDirectionChangeSquash() {
+        guard let player = player else { return }
+        
+        let squashKey = "directionSquash"
+        guard player.action(forKey: squashKey) == nil else { return }
+        
+        let squash = SKAction.group([
+            SKAction.scaleX(to: 0.78, duration: 0.08),
+            SKAction.scaleY(to: 1.16, duration: 0.08)
+        ])
+        squash.timingMode = .easeOut
+        
+        let rebound = SKAction.group([
+            SKAction.scaleX(to: 1.0, duration: 0.18),
+            SKAction.scaleY(to: 1.0, duration: 0.18)
+        ])
+        rebound.timingMode = .easeOut
+        
+        player.run(SKAction.sequence([squash, rebound]), withKey: squashKey)
+    }
+    
+    private func detectNearMisses() {
+        guard let player = player,
+              let state = gameState,
+              state.hasStarted,
+              !state.isGameOver else { return }
+        
+        let playerFrame = player.calculateAccumulatedFrame()
+        let playerPosition = player.position
+        
+        for obstacle in obstacles where !obstacle.hasTriggeredNearMiss {
+            let obstacleFrame = obstacle.calculateAccumulatedFrame()
+            
+            // Skip if we're actually colliding (handled elsewhere).
+            if playerFrame.intersects(obstacleFrame) {
+                continue
+            }
+            
+            let dx = abs(obstacle.position.x - playerPosition.x)
+            let dy = abs(obstacle.position.y - playerPosition.y)
+            let horizontalThreshold = playerRadius + obstacle.halfWidth + nearMissHorizontalPadding
+            let verticalThreshold = playerRadius + obstacle.halfHeight + nearMissVerticalPadding
+            
+            if dx <= horizontalThreshold && dy <= verticalThreshold {
+                obstacle.markNearMissTriggered()
+                state.addNearMissBonus()
+                emitNearMissParticles(at: playerPosition)
+                soundManager?.playNearMiss()
+                Haptics.playNearMissImpact()
+            }
+        }
+    }
+    
+    private func emitNearMissParticles(at position: CGPoint) {
+        guard let sceneView = view else { return }
+        
+        if nearMissParticleTexture == nil {
+            let particleShape = SKShapeNode(circleOfRadius: 4)
+            particleShape.fillColor = SKColor(red: 0.0, green: 0.95, blue: 1.0, alpha: 1.0)
+            particleShape.strokeColor = SKColor.white.withAlphaComponent(0.75)
+            particleShape.lineWidth = 1.1
+            particleShape.glowWidth = 2.4
+            nearMissParticleTexture = sceneView.texture(from: particleShape)
+        }
+        
+        guard let texture = nearMissParticleTexture else { return }
+        
+        let emitter = SKEmitterNode()
+        emitter.particleTexture = texture
+        emitter.particleColor = SKColor(red: 0.0, green: 0.95, blue: 1.0, alpha: 1.0)
+        emitter.particleColorBlendFactor = 1.0
+        emitter.particleBlendMode = .add
+        emitter.particleBirthRate = 340
+        emitter.numParticlesToEmit = 26
+        emitter.particleLifetime = 0.48
+        emitter.particleLifetimeRange = 0.14
+        emitter.emissionAngleRange = .pi * 2
+        emitter.particleSpeed = 320
+        emitter.particleSpeedRange = 110
+        emitter.particleAlpha = 0.92
+        emitter.particleAlphaRange = 0.12
+        emitter.particleAlphaSpeed = -2.6
+        emitter.particleScale = 0.42
+        emitter.particleScaleRange = 0.18
+        emitter.particleScaleSpeed = -1.25
+        emitter.particlePositionRange = CGVector(dx: 10, dy: 10)
+        emitter.zPosition = 200
+        emitter.position = position
+        
+        addChild(emitter)
+        
+        emitter.run(SKAction.sequence([
+            SKAction.wait(forDuration: 0.65),
+            SKAction.removeFromParent()
+        ]))
     }
     
     private func flashScreen() {
@@ -352,11 +501,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     /// Reset the game scene and reposition player
     func resetGame(state: GameState) {
         // Reset player position to center bottom
-        if player != nil {
-            let playerY = size.height * 0.15
+        if let player = player {
+            let playerY = size.height * playerVerticalPositionRatio
             player.position = CGPoint(x: size.width / 2, y: playerY)
             targetX = player.position.x
             velocityX = 0
+            player.yScale = 1.0
+            player.xScale = 1.0
+            player.removeAction(forKey: "directionSquash")
         }
         
         // Clear all obstacles
@@ -372,6 +524,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Reset game state
         state.resetGame()
         lastUpdateTime = 0
+        lastVelocitySign = 0
+        isCameraShaking = false
+        removeAction(forKey: "cameraShake")
+        position = .zero
     }
 }
 

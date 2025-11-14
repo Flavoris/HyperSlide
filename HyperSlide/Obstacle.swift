@@ -57,12 +57,25 @@ class ObstacleNode: SKShapeNode {
     /// Vertical speed (negative value for downward movement)
     var speedY: CGFloat = 0
     
+    /// Flag ensuring we only trigger the near-miss bonus once per obstacle
+    private(set) var hasTriggeredNearMiss: Bool = false
+    
+    /// Cached size of the hitbox used for near-miss calculations.
+    private(set) var hitboxSize: CGSize = .zero
+    
+    /// Half-width helper for distance calculations.
+    var halfWidth: CGFloat { hitboxSize.width / 2 }
+    
+    /// Half-height helper for distance calculations.
+    var halfHeight: CGFloat { hitboxSize.height / 2 }
+    
     /// Initialize an obstacle with specified width, height, and speed
     convenience init(width: CGFloat, height: CGFloat, speedY: CGFloat) {
         self.init()
         
         // Store speed
         self.speedY = speedY
+        self.hitboxSize = CGSize(width: width, height: height)
         
         // Create rounded rectangle path
         let rect = CGRect(x: -width / 2, y: -height / 2, width: width, height: height)
@@ -87,6 +100,11 @@ class ObstacleNode: SKShapeNode {
         
         // Setup physics body
         setupPhysics(size: CGSize(width: width, height: height))
+    }
+    
+    /// Marks the near-miss as consumed so we do not award multiple bonuses.
+    func markNearMissTriggered() {
+        hasTriggeredNearMiss = true
     }
     
     /// Configure physics body for collision detection

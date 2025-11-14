@@ -9,6 +9,7 @@ import SwiftUI
 
 struct HUDView: View {
     @Bindable var gameState: GameState
+    @ObservedObject var soundManager: SoundManager
     var onRestart: () -> Void
     
     var body: some View {
@@ -70,7 +71,7 @@ struct HUDView: View {
                 .neonGlow(color: Color("NeonBlue"), radius: 22, intensity: 0.85)
             
             // Instructions
-            Text("Tap anywhere to move left or right")
+            Text("Dodge the falling objects")
                 .font(.system(size: 18, weight: .regular))
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -191,7 +192,33 @@ struct HUDView: View {
             }
             
             Spacer()
+            
+            if gameState.isPaused {
+                muteButton
+            }
         }
+    }
+    
+    private var muteButton: some View {
+        Button {
+            soundManager.toggleMute()
+        } label: {
+            Image(systemName: soundManager.isMuted ? "speaker.slash.fill" : "speaker.wave.2.fill")
+                .font(.system(size: 20, weight: .semibold))
+                .foregroundStyle(.white)
+                .frame(width: 48, height: 48)
+                .background(
+                    Circle()
+                        .fill(Color.white.opacity(0.12))
+                        .overlay(
+                            Circle()
+                                .stroke(Color.white.opacity(0.24), lineWidth: 1)
+                        )
+                )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(soundManager.isMuted ? "Unmute sound effects" : "Mute sound effects")
+        .accessibilityHint("Toggles HyperSlide's sound effects.")
     }
 }
 
@@ -201,7 +228,9 @@ struct HUDView: View {
     ZStack {
         Color.black.ignoresSafeArea()
         
-        HUDView(gameState: GameState(), onRestart: {})
+        HUDView(gameState: GameState(),
+                soundManager: SoundManager(),
+                onRestart: {})
     }
 }
 

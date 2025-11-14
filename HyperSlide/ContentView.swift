@@ -10,6 +10,7 @@ import SpriteKit
 
 struct ContentView: View {
     @State private var gameState = GameState()
+    @StateObject private var soundManager = SoundManager()
     @State private var gameScene: GameScene = {
         let scene = GameScene()
         scene.size = UIScreen.main.bounds.size
@@ -24,12 +25,15 @@ struct ContentView: View {
                 .ignoresSafeArea()
             
             // SwiftUI HUD Overlay
-            HUDView(gameState: gameState, onRestart: handleRestart)
+            HUDView(gameState: gameState,
+                    soundManager: soundManager,
+                    onRestart: handleRestart)
         }
         .preferredColorScheme(.dark)
         .onAppear {
             // Inject game state when view appears
             gameScene.gameState = gameState
+            gameScene.soundManager = soundManager
         }
     }
     
