@@ -9,6 +9,13 @@ import SpriteKit
 import SwiftUI
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
+    private static let offscreenRenderer: SKView = {
+        let renderer = SKView(frame: CGRect(origin: .zero,
+                                            size: CGSize(width: 64, height: 64)))
+        renderer.isHidden = true
+        return renderer
+    }()
+    
     // Reference to game state (injected via delegate pattern)
     weak var gameState: GameState?
     
@@ -44,7 +51,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private let nearMissHorizontalPadding: CGFloat = 10
     private let nearMissVerticalPadding: CGFloat = 24
     private let directionFlipVelocityThreshold: CGFloat = 60
-    private var nearMissParticleTexture: SKTexture?
+    private let particleLayer = SKNode()
+    private var nearMissEmitterFactory: NearMissEmitterFactory?
+    private var shouldPrimeEmitterOnPresentation = true
     // MARK: - Obstacle Properties
     
     // Array of active obstacles
@@ -57,7 +66,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // MARK: - Scene Lifecycle
     
+    override func sceneDidLoad() {
+        super.sceneDidLoad()
+        
+        if nearMissEmitterFactory == nil {
+            let renderer = view ?? GameScene.offscreenRenderer
+            nearMissEmitterFactory = NearMissEmitterFactory(renderer: renderer)
+        }
+        
+        Haptics.prewarm()
+    }
+    
     override func didMove(to view: SKView) {
+        super.didMove(to: view)
+        
         // Set pure black background color
         backgroundColor = SKColor.black
         
@@ -67,12 +89,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         scaleMode = .resizeFill
         
         setupScene()
+        nearMissEmitterFactory?.attachPool(to: particleLayer)
+        
+        if shouldPrimeEmitterOnPresentation {
+            nearMissEmitterFactory?.prime(in: self)
+            shouldPrimeEmitterOnPresentation = false
+        }
+        
+        fullyWarmEmitterPipeline()
     }
     
     // MARK: - Setup
     
     private func setupScene() {
         setupPlayer()
+        
+        if particleLayer.parent == nil {
+            particleLayer.zPosition = 180
+            addChild(particleLayer)
+        }
     }
     
     private func setupPlayer() {
@@ -368,19 +403,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
               state.hasStarted,
               !state.isGameOver else { return }
         
-        let playerFrame = player.calculateAccumulatedFrame()
         let playerPosition = player.position
         
         for obstacle in obstacles where !obstacle.hasTriggeredNearMiss {
-            let obstacleFrame = obstacle.calculateAccumulatedFrame()
+            let dx = abs(obstacle.position.x - playerPosition.x)
+            let dy = abs(obstacle.position.y - playerPosition.y)
+            let collisionHorizontalThreshold = playerRadius + obstacle.halfWidth
+            let collisionVerticalThreshold = playerRadius + obstacle.halfHeight
             
             // Skip if we're actually colliding (handled elsewhere).
-            if playerFrame.intersects(obstacleFrame) {
+            if dx <= collisionHorizontalThreshold && dy <= collisionVerticalThreshold {
                 continue
             }
             
-            let dx = abs(obstacle.position.x - playerPosition.x)
-            let dy = abs(obstacle.position.y - playerPosition.y)
             let horizontalThreshold = playerRadius + obstacle.halfWidth + nearMissHorizontalPadding
             let verticalThreshold = playerRadius + obstacle.halfHeight + nearMissVerticalPadding
             
@@ -395,49 +430,47 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     private func emitNearMissParticles(at position: CGPoint) {
-        guard let sceneView = view else { return }
+        guard let factory = nearMissEmitterFactory,
+              let emitter = factory.makeEmitter(at: position) else { return }
         
-        if nearMissParticleTexture == nil {
-            let particleShape = SKShapeNode(circleOfRadius: 4)
-            particleShape.fillColor = SKColor(red: 0.0, green: 0.95, blue: 1.0, alpha: 1.0)
-            particleShape.strokeColor = SKColor.white.withAlphaComponent(0.75)
-            particleShape.lineWidth = 1.1
-            particleShape.glowWidth = 2.4
-            nearMissParticleTexture = sceneView.texture(from: particleShape)
-        }
-        
-        guard let texture = nearMissParticleTexture else { return }
-        
-        let emitter = SKEmitterNode()
-        emitter.particleTexture = texture
-        emitter.particleColor = SKColor(red: 0.0, green: 0.95, blue: 1.0, alpha: 1.0)
-        emitter.particleColorBlendFactor = 1.0
-        emitter.particleBlendMode = .add
-        emitter.particleBirthRate = 340
-        emitter.numParticlesToEmit = 26
-        emitter.particleLifetime = 0.48
-        emitter.particleLifetimeRange = 0.14
-        emitter.emissionAngleRange = .pi * 2
-        emitter.particleSpeed = 320
-        emitter.particleSpeedRange = 110
-        emitter.particleAlpha = 0.92
-        emitter.particleAlphaRange = 0.12
-        emitter.particleAlphaSpeed = -2.6
-        emitter.particleScale = 0.42
-        emitter.particleScaleRange = 0.18
-        emitter.particleScaleSpeed = -1.25
-        emitter.particlePositionRange = CGVector(dx: 10, dy: 10)
-        emitter.zPosition = 200
-        emitter.position = position
-        
-        addChild(emitter)
-        
-        emitter.run(SKAction.sequence([
-            SKAction.wait(forDuration: 0.65),
-            SKAction.removeFromParent()
-        ]))
+        let cleanupSequence = SKAction.sequence([
+            SKAction.wait(forDuration: factory.cleanupDelay),
+            SKAction.run { [weak self, weak emitter] in
+                guard let emitter = emitter else { return }
+                self?.nearMissEmitterFactory?.recycle(emitter)
+            }
+        ])
+        emitter.run(cleanupSequence)
     }
     
+    private func fullyWarmEmitterPipeline() {
+        guard let factory = nearMissEmitterFactory,
+              let emitter = factory.makeEmitter(at: CGPoint(x: -2000, y: -2000)) else {
+            return
+        }
+        
+        let originalBirthRate = emitter.particleBirthRate
+        let originalNumParticles = emitter.numParticlesToEmit
+        let originalLifetime = emitter.particleLifetime
+        
+        emitter.numParticlesToEmit = 1
+        emitter.particleBirthRate = 1
+        emitter.particleLifetime = 0.1
+        emitter.alpha = 0.001
+        
+        let restoreAndRecycle = SKAction.run { [weak self, weak emitter] in
+            guard let self, let emitter else { return }
+            emitter.particleBirthRate = originalBirthRate
+            emitter.numParticlesToEmit = originalNumParticles
+            emitter.particleLifetime = originalLifetime
+            self.nearMissEmitterFactory?.recycle(emitter)
+        }
+        
+        emitter.run(SKAction.sequence([
+            SKAction.wait(forDuration: 0.2),
+            restoreAndRecycle
+        ]))
+    }
     private func flashScreen() {
         // Create a brief red flash overlay for collision feedback
         let flash = SKShapeNode(rect: frame)
@@ -451,6 +484,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let remove = SKAction.removeFromParent()
         flash.run(SKAction.sequence([fadeOut, remove]))
     }
+    
     
     // MARK: - Touch Handling
     

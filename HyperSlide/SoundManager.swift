@@ -19,6 +19,7 @@ protocol SoundPlayer: AnyObject {
     
     @discardableResult func prepareToPlay() -> Bool
     @discardableResult func play() -> Bool
+    func stop()
 }
 
 extension AVAudioPlayer: SoundPlayer {}
@@ -68,8 +69,11 @@ final class SoundManager: ObservableObject {
     
     private let bundle: Bundle
     private let defaults: UserDefaults
+    private let warmupQueue = DispatchQueue(label: "HyperSlide.SoundManager.AudioWarmup",
+                                            qos: .userInitiated)
     
     private var players: [SoundEffect: SoundPlayer] = [:]
+    private var hasPrimedAudio = false
     
     // MARK: Initialization
     
@@ -95,6 +99,38 @@ final class SoundManager: ObservableObject {
     /// Convenience wrapper for UI bindings.
     func toggleMute() {
         setMuted(!isMuted)
+    }
+    
+    /// Warms the audio pipeline to prevent the first playback from blocking the main thread.
+    /// This should be invoked during scene/view setup, well before near-miss sounds are needed.
+    func primeAudioIfNeeded(completion: (() -> Void)? = nil) {
+        warmupQueue.async { [weak self] in
+            guard let self else { return }
+            guard !self.hasPrimedAudio else {
+                completion?()
+                return
+            }
+            self.hasPrimedAudio = true
+            
+            let playersSnapshot = Array(self.players.values)
+            guard !playersSnapshot.isEmpty else {
+                completion?()
+                return
+            }
+            
+            playersSnapshot.forEach { player in
+                let originalVolume = player.volume
+                player.volume = 0.0005 // practically silent yet keeps the decoder hot
+                player.currentTime = 0
+                _ = player.play()
+                Thread.sleep(forTimeInterval: 0.05)
+                player.stop()
+                player.currentTime = 0
+                player.volume = originalVolume
+            }
+            
+            completion?()
+        }
     }
     
     /// Plays the near miss whoosh.

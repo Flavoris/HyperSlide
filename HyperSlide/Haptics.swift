@@ -49,6 +49,15 @@ enum Haptics {
         }
     }
     
+    /// Prepare feedback generators early to reduce first-use latency.
+    static func prewarm() {
+        performOnMainThread {
+            notificationGenerator.prepare()
+            lightImpactGenerator.prepare()
+            mediumImpactGenerator.prepare()
+        }
+    }
+    
     /// Ensures all haptic triggers are executed on the main thread.
     private static func performOnMainThread(_ action: @escaping () -> Void) {
         if Thread.isMainThread {
@@ -63,6 +72,7 @@ enum Haptics {
     static func playNearMissImpact(intensity: CGFloat = 0.7) {}
     static func playCollisionImpact(intensity: CGFloat = 1.0) {}
     static func playNotification(_ type: HapticNotificationType) {}
+    static func prewarm() {}
 #endif
 }
 

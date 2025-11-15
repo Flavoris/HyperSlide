@@ -20,6 +20,7 @@
 		A1000006 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A2000006 /* Assets.xcassets */; };
 		A1000007 /* Obstacle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000007 /* Obstacle.swift */; };
 		A1000008 /* GlowEffectFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000008 /* GlowEffectFactory.swift */; };
+		D1000001 /* NearMissEmitterFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000001 /* NearMissEmitterFactory.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +39,7 @@
 		A2000006 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A2000007 /* Obstacle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Obstacle.swift; sourceTree = "<group>"; };
 		A2000008 /* GlowEffectFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlowEffectFactory.swift; sourceTree = "<group>"; };
+		D2000001 /* NearMissEmitterFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearMissEmitterFactory.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +74,7 @@
 				B2000001 /* Haptics.swift */,
 				A2000007 /* Obstacle.swift */,
 				A2000008 /* GlowEffectFactory.swift */,
+				D2000001 /* NearMissEmitterFactory.swift */,
 				A2000006 /* Assets.xcassets */,
 				591680A02EC58DB600078791 /* Ethnocentric-Regular.otf */,
 				C2000003 /* whoosh.wav */,
@@ -168,6 +171,7 @@
 				C1000001 /* SoundManager.swift in Sources */,
 				A1000007 /* Obstacle.swift in Sources */,
 				A1000008 /* GlowEffectFactory.swift in Sources */,
+				D1000001 /* NearMissEmitterFactory.swift in Sources */,
 				B1000001 /* Haptics.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -1,8 +1,24 @@
-Add minimal SFX:
+Replace this:
+let playerFrame = player.calculateAccumulatedFrame()
+let obstacleFrame = obstacle.calculateAccumulatedFrame()
 
-- Add SoundManager.swift to preload 3 short sounds (spawnTick.wav, whoosh.wav, thud.wav) from bundle.
-- On obstacle spawn: quiet tick at most every 300ms (rate-limit).
-- On near-miss: soft whoosh.
-- On collision: thud.
+if playerFrame.intersects(obstacleFrame) {
+    continue
+}
 
-Add a HUD mute/unmute button (top-right). Persist preference in UserDefaults. When muted, skip play calls.
+With a simple geometric check:
+let distX = abs(player.position.x - obstacle.position.x)
+let distY = abs(player.position.y - obstacle.position.y)
+
+let horizontalOverlap = distX < (playerRadius + obstacle.halfWidth)
+let verticalOverlap = distY < (playerRadius + obstacle.halfHeight)
+
+if horizontalOverlap && verticalOverlap {
+    // This is a real collision; skip near-miss
+    continue
+}
+
+
+No SpriteKit traversal.
+No node tree walking.
+No expensive bounding box calculations.

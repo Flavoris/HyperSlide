@@ -56,6 +56,40 @@ final class SoundManagerTests: XCTestCase {
         XCTAssertTrue(manager.playNearMiss(), "Playback should resume after unmuting.")
         XCTAssertEqual(player.playCallCount, 2)
     }
+    
+    func testPrimeAudioRunsOnlyOnce() {
+        let suiteName = "SoundManagerTests.PrimeAudio"
+        guard let defaults = UserDefaults(suiteName: suiteName) else {
+            XCTFail("Failed to create UserDefaults suite for testing.")
+            return
+        }
+        defaults.removePersistentDomain(forName: suiteName)
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        
+        let manager = SoundManager(defaults: defaults)
+        let whooshPlayer = MockSoundPlayer()
+        let collisionPlayer = MockSoundPlayer()
+        manager.setPlayer(whooshPlayer, for: .nearMissWhoosh)
+        manager.setPlayer(collisionPlayer, for: .collisionThud)
+        
+        let firstExpectation = expectation(description: "Audio warmup completes")
+        manager.primeAudioIfNeeded {
+            firstExpectation.fulfill()
+        }
+        wait(for: [firstExpectation], timeout: 1.5)
+        
+        XCTAssertEqual(whooshPlayer.playCallCount, 1)
+        XCTAssertEqual(collisionPlayer.playCallCount, 1)
+        
+        let secondExpectation = expectation(description: "Second prime returns immediately")
+        manager.primeAudioIfNeeded {
+            secondExpectation.fulfill()
+        }
+        wait(for: [secondExpectation], timeout: 0.2)
+        
+        XCTAssertEqual(whooshPlayer.playCallCount, 1)
+        XCTAssertEqual(collisionPlayer.playCallCount, 1)
+    }
 }
 
 // MARK: - Test Doubles
@@ -71,6 +105,8 @@ private final class MockSoundPlayer: SoundPlayer {
         playCallCount += 1
         return true
     }
+    
+    func stop() {}
 }
 
 

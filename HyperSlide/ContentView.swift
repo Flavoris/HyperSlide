@@ -34,6 +34,7 @@ struct ContentView: View {
             // Inject game state when view appears
             gameScene.gameState = gameState
             gameScene.soundManager = soundManager
+            soundManager.primeAudioIfNeeded()
         }
     }
     
