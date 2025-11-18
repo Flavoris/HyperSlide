@@ -69,8 +69,12 @@ class ObstacleNode: SKShapeNode {
     /// Half-height helper for distance calculations.
     var halfHeight: CGFloat { hitboxSize.height / 2 }
     
-    /// Initialize an obstacle with specified width, height, and speed
-    convenience init(width: CGFloat, height: CGFloat, speedY: CGFloat) {
+    /// Initialize an obstacle with specified width, height, speed, and colors
+    convenience init(width: CGFloat, 
+                     height: CGFloat, 
+                     speedY: CGFloat,
+                     coreColor: (CGFloat, CGFloat, CGFloat) = (1.0, 0.1, 0.6),
+                     glowColor: (CGFloat, CGFloat, CGFloat) = (1.0, 0.35, 0.75)) {
         self.init()
         
         // Store speed
@@ -81,17 +85,23 @@ class ObstacleNode: SKShapeNode {
         let rect = CGRect(x: -width / 2, y: -height / 2, width: width, height: height)
         self.path = CGPath(roundedRect: rect, cornerWidth: 8, cornerHeight: 8, transform: nil)
         
-        // Hot pink/magenta styling with glow (vibrant neon)
-        let coreColor = SKColor(red: 1.0, green: 0.1, blue: 0.6, alpha: 1.0)
+        // Apply core color styling with glow (vibrant neon)
+        let obstacleCore = SKColor(red: coreColor.0, 
+                                   green: coreColor.1, 
+                                   blue: coreColor.2, 
+                                   alpha: 1.0)
         self.strokeColor = .clear
-        self.fillColor = coreColor
+        self.fillColor = obstacleCore
         self.lineWidth = 0
         
         // Add neon bloom similar to arcade obstacles
-        let glowColor = SKColor(red: 1.0, green: 0.35, blue: 0.75, alpha: 1.0)
+        let obstacleGlow = SKColor(red: glowColor.0, 
+                                   green: glowColor.1, 
+                                   blue: glowColor.2, 
+                                   alpha: 1.0)
         let glowNode = GlowEffectFactory.makeRoundedRectangleGlow(size: CGSize(width: width, height: height),
                                                                   cornerRadius: 8,
-                                                                  color: glowColor,
+                                                                  color: obstacleGlow,
                                                                   blurRadius: 14,
                                                                   alpha: 0.85,
                                                                   scale: 1.18)

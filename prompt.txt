@@ -1,24 +1,11 @@
-Replace this:
-let playerFrame = player.calculateAccumulatedFrame()
-let obstacleFrame = obstacle.calculateAccumulatedFrame()
+Add pause + settings:
 
-if playerFrame.intersects(obstacleFrame) {
-    continue
-}
+- Settings panel (SwiftUI Sheet or overlay):
+  - Difficulty ramp speed (Normal/Fast)
+  - Tilt control toggle (off by default)
+  - Color theme (Neon Blue/Purple or Synthwave variant)
+- Accessibility:
+  - Use large, high-contrast HUD fonts.
 
-With a simple geometric check:
-let distX = abs(player.position.x - obstacle.position.x)
-let distY = abs(player.position.y - obstacle.position.y)
-
-let horizontalOverlap = distX < (playerRadius + obstacle.halfWidth)
-let verticalOverlap = distY < (playerRadius + obstacle.halfHeight)
-
-if horizontalOverlap && verticalOverlap {
-    // This is a real collision; skip near-miss
-    continue
-}
-
-
-No SpriteKit traversal.
-No node tree walking.
-No expensive bounding box calculations.
+Wire setting changes to GameScene (e.g., rampFactor multiplier).
+Success check: Settings change behavior live.

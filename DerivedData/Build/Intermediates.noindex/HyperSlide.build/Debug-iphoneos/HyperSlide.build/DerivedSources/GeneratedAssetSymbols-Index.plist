@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>colors</key>
+	<array>
+		<dict>
+			<key>catalogPath</key>
+			<string>/Users/flavorisbelue/Desktop/HyperSlide/HyperSlide/Assets.xcassets</string>
+			<key>objcSymbol</key>
+			<string>ACColorNameDarkBG</string>
+			<key>relativePath</key>
+			<string>./DarkBG.colorset</string>
+			<key>swiftSymbol</key>
+			<string>darkBG</string>
+		</dict>
+		<dict>
+			<key>catalogPath</key>
+			<string>/Users/flavorisbelue/Desktop/HyperSlide/HyperSlide/Assets.xcassets</string>
+			<key>objcSymbol</key>
+			<string>ACColorNameNeonBlue</string>
+			<key>relativePath</key>
+			<string>./NeonBlue.colorset</string>
+			<key>swiftSymbol</key>
+			<string>neonBlue</string>
+		</dict>
+		<dict>
+			<key>catalogPath</key>
+			<string>/Users/flavorisbelue/Desktop/HyperSlide/HyperSlide/Assets.xcassets</string>
+			<key>objcSymbol</key>
+			<string>ACColorNameNeonPurple</string>
+			<key>relativePath</key>
+			<string>./NeonPurple.colorset</string>
+			<key>swiftSymbol</key>
+			<string>neonPurple</string>
+		</dict>
+	</array>
+	<key>images</key>
+	<array/>
+	<key>symbols</key>
+	<array/>
+</dict>
+</plist>

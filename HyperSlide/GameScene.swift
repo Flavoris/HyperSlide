@@ -7,6 +7,7 @@
 
 import SpriteKit
 import SwiftUI
+import CoreMotion
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     private static let offscreenRenderer: SKView = {
@@ -18,6 +19,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // Reference to game state (injected via delegate pattern)
     weak var gameState: GameState?
+    
+    // Settings reference for difficulty, theme, and controls
+    var settings: Settings?
     
     // Shared sound manager supplied by SwiftUI host.
     var soundManager: SoundManager?
@@ -54,6 +58,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private let particleLayer = SKNode()
     private var nearMissEmitterFactory: NearMissEmitterFactory?
     private var shouldPrimeEmitterOnPresentation = true
+    
+    // Tilt control
+    private let motionManager = CMMotionManager()
+    private let tiltSensitivity: CGFloat = 800.0  // Adjust for tilt responsiveness
+    
     // MARK: - Obstacle Properties
     
     // Array of active obstacles
@@ -89,6 +98,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         scaleMode = .resizeFill
         
         setupScene()
+        setupTiltControl()
         nearMissEmitterFactory?.attachPool(to: particleLayer)
         
         if shouldPrimeEmitterOnPresentation {
@@ -114,14 +124,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Create the player shape (glowing circle)
         player = SKShapeNode(circleOfRadius: playerRadius)
         
-        // Vibrant cyan core
-        let coreColor = SKColor(red: 0.0, green: 0.82, blue: 1.0, alpha: 1.0)
+        // Get theme colors from settings, default to neon blue
+        let colors = settings?.colorTheme.playerColor ?? 
+                    (core: (0.0, 0.82, 1.0), glow: (0.0, 0.95, 1.0))
+        
+        // Vibrant core color from theme
+        let coreColor = SKColor(red: colors.core.0, 
+                               green: colors.core.1, 
+                               blue: colors.core.2, 
+                               alpha: 1.0)
         player.strokeColor = .clear
         player.fillColor = coreColor
         player.lineWidth = 0
         
         // Additive blurred glow that mimics the neon reference style
-        let glowColor = SKColor(red: 0.0, green: 0.95, blue: 1.0, alpha: 1.0)
+        let glowColor = SKColor(red: colors.glow.0, 
+                               green: colors.glow.1, 
+                               blue: colors.glow.2, 
+                               alpha: 1.0)
         let glowNode = GlowEffectFactory.makeCircularGlow(radius: playerRadius,
                                                           color: glowColor,
                                                           blurRadius: 18,
@@ -162,6 +182,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         player.physicsBody?.affectedByGravity = false
         player.physicsBody?.usesPreciseCollisionDetection = true
     }
+    
+    private func setupTiltControl() {
+        // Start accelerometer updates if available
+        if motionManager.isAccelerometerAvailable {
+            motionManager.accelerometerUpdateInterval = 1.0 / 60.0  // 60 Hz
+            motionManager.startAccelerometerUpdates()
+        }
+    }
+    
     // MARK: - Update Loop
     
     override func update(_ currentTime: TimeInterval) {
@@ -205,8 +234,26 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private func updatePlayerMovement(deltaTime: TimeInterval) {
         guard let player = player else { return }
         
-        // Smooth LERP toward targetX with easing
         let currentX = player.position.x
+        
+        // Check if tilt control is enabled
+        if settings?.tiltControlEnabled == true,
+           let accelerometerData = motionManager.accelerometerData {
+            // Use tilt control: device tilt angle controls target position
+            // accelerometerData.acceleration.x ranges from -1 to 1
+            let tiltX = CGFloat(accelerometerData.acceleration.x)
+            
+            // Map tilt to screen position (inverted for natural feel)
+            let centerX = size.width / 2
+            let offset = -tiltX * tiltSensitivity
+            targetX = centerX + offset
+            
+            // Clamp target within scene bounds
+            let margin: CGFloat = 30.0
+            targetX = max(margin, min(size.width - margin, targetX))
+        }
+        
+        // Smooth LERP toward targetX with easing
         let diff = targetX - currentX
         
         // Apply LERP interpolation
@@ -262,8 +309,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Reset timer
         spawnTimer = 0
         
-        // Get difficulty (0.0 to 1.0)
-        let difficulty = CGFloat(gameState?.difficulty ?? 0.0)
+        // Get difficulty (0.0 to 1.0) and apply difficulty ramp multiplier
+        let baseDifficulty = gameState?.difficulty ?? 0.0
+        let difficultyMultiplier = settings?.difficultyMultiplier ?? 1.0
+        let difficulty = CGFloat(min(1.0, baseDifficulty * difficultyMultiplier))
         
         // Calculate spawn interval using lerp: 1.0 -> 0.3 based on difficulty
         let spawnInterval = lerp(1.0, 0.3, difficulty)
@@ -300,8 +349,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let maxX = size.width - margin - width / 2
         let randomX = CGFloat.random(in: minX...maxX)
         
-        // Create and position obstacle
-        let obstacle = ObstacleNode(width: width, height: height, speedY: speedY)
+        // Get theme colors for obstacles, default to hot pink
+        let obstacleColors = settings?.colorTheme.obstacleColor ?? 
+                            (core: (1.0, 0.1, 0.6), glow: (1.0, 0.35, 0.75))
+        
+        // Create and position obstacle with theme colors
+        let obstacle = ObstacleNode(width: width, 
+                                   height: height, 
+                                   speedY: speedY,
+                                   coreColor: obstacleColors.core,
+                                   glowColor: obstacleColors.glow)
         obstacle.position = CGPoint(x: randomX, y: size.height + height)
         
         // Add to scene and tracking array
@@ -532,6 +589,53 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // MARK: - Public Methods
     
+    /// Update player colors based on current theme
+    func updatePlayerColors() {
+        guard let player = player else { return }
+        
+        // Get theme colors from settings, default to neon blue
+        let colors = settings?.colorTheme.playerColor ?? 
+                    (core: (0.0, 0.82, 1.0), glow: (0.0, 0.95, 1.0))
+        
+        // Update core color
+        let coreColor = SKColor(red: colors.core.0, 
+                               green: colors.core.1, 
+                               blue: colors.core.2, 
+                               alpha: 1.0)
+        player.fillColor = coreColor
+        
+        // Update glow colors on child nodes
+        let glowColor = SKColor(red: colors.glow.0, 
+                               green: colors.glow.1, 
+                               blue: colors.glow.2, 
+                               alpha: 1.0)
+        
+        // Update all glow effect children
+        for child in player.children {
+            if let effectNode = child as? SKEffectNode {
+                // Update the glow filter color if possible
+                effectNode.removeFromParent()
+            }
+        }
+        
+        // Re-add glow nodes with new colors
+        let glowNode = GlowEffectFactory.makeCircularGlow(radius: playerRadius,
+                                                          color: glowColor,
+                                                          blurRadius: 18,
+                                                          alpha: 0.9,
+                                                          scale: 1.45)
+        glowNode.zPosition = -1
+        player.addChild(glowNode)
+        
+        let innerBloom = GlowEffectFactory.makeCircularGlow(radius: playerRadius * 0.55,
+                                                            color: coreColor,
+                                                            blurRadius: 8,
+                                                            alpha: 0.75,
+                                                            scale: 1.12)
+        innerBloom.zPosition = -0.5
+        player.addChild(innerBloom)
+    }
+    
     /// Reset the game scene and reposition player
     func resetGame(state: GameState) {
         // Reset player position to center bottom
@@ -562,6 +666,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         isCameraShaking = false
         removeAction(forKey: "cameraShake")
         position = .zero
+    }
+    
+    deinit {
+        // Stop motion updates when scene is deallocated
+        motionManager.stopAccelerometerUpdates()
     }
 }
 

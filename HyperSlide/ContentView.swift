@@ -10,6 +10,7 @@ import SpriteKit
 
 struct ContentView: View {
     @State private var gameState = GameState()
+    @State private var settings = Settings()
     @StateObject private var soundManager = SoundManager()
     @State private var gameScene: GameScene = {
         let scene = GameScene()
@@ -26,15 +27,21 @@ struct ContentView: View {
             
             // SwiftUI HUD Overlay
             HUDView(gameState: gameState,
+                    settings: settings,
                     soundManager: soundManager,
                     onRestart: handleRestart)
         }
         .preferredColorScheme(.dark)
         .onAppear {
-            // Inject game state when view appears
+            // Inject game state and settings when view appears
             gameScene.gameState = gameState
+            gameScene.settings = settings
             gameScene.soundManager = soundManager
             soundManager.primeAudioIfNeeded()
+        }
+        .onChange(of: settings.colorTheme) { _, _ in
+            // Update player colors when theme changes
+            gameScene.updatePlayerColors()
         }
     }
     

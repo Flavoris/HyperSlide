@@ -9,8 +9,11 @@ import SwiftUI
 
 struct HUDView: View {
     @Bindable var gameState: GameState
+    @Bindable var settings: Settings
     @ObservedObject var soundManager: SoundManager
     var onRestart: () -> Void
+    
+    @State private var showSettings = false
     
     var body: some View {
         ZStack {
@@ -46,8 +49,9 @@ struct HUDView: View {
     
     private var scoreDisplay: some View {
         Text("\(Int(gameState.score.rounded()))")
-            .font(.system(size: 60, weight: .bold, design: .rounded))
+            .font(.system(size: 72, weight: .heavy, design: .rounded))
             .foregroundStyle(.white)
+            .accessibilityLabel("Score: \(Int(gameState.score.rounded()))")
     }
     
     // MARK: - Overlays
@@ -68,7 +72,7 @@ struct HUDView: View {
                 .foregroundStyle(.white)
                 .tracking(3)
                 .multilineTextAlignment(.center)
-                .neonGlow(color: Color("NeonBlue"), radius: 22, intensity: 0.85)
+                .neonGlow(color: settings.colorTheme.primaryColor, radius: 22, intensity: 0.85)
             
             // Instructions
             Text("Dodge the falling objects")
@@ -82,16 +86,17 @@ struct HUDView: View {
                 startGame()
             } label: {
                 Text("START")
-                    .font(.system(size: 24, weight: .bold, design: .rounded))
-                    .foregroundStyle(Color("NeonBlue"))
+                    .font(.system(size: 26, weight: .heavy, design: .rounded))
+                    .foregroundStyle(settings.colorTheme.primaryColor)
                     .tracking(3)
                     .padding(.horizontal, 60)
                     .padding(.vertical, 20)
                     .background(
                         RoundedRectangle(cornerRadius: 50)
-                            .strokeBorder(Color("NeonBlue"), lineWidth: 3)
+                            .strokeBorder(settings.colorTheme.primaryColor, lineWidth: 3)
                     )
             }
+            .accessibilityLabel("Start game")
             
             Spacer()
         }
@@ -120,7 +125,7 @@ struct HUDView: View {
                 restartGame()
             } label: {
                 Text("RESTART")
-                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                    .font(.system(size: 26, weight: .heavy, design: .rounded))
                     .foregroundStyle(Color(red: 1.0, green: 0.2, blue: 0.6))
                     .tracking(3)
                     .padding(.horizontal, 50)
@@ -131,6 +136,7 @@ struct HUDView: View {
                     )
             }
             .padding(.top, 10)
+            .accessibilityLabel("Restart game")
         }
     }
     
@@ -149,7 +155,7 @@ struct HUDView: View {
     private var pausedOverlay: some View {
         VStack(spacing: 25) {
             Text("PAUSED")
-                .font(.system(size: 50, weight: .black, design: .rounded))
+                .font(.system(size: 56, weight: .black, design: .rounded))
                 .foregroundStyle(.white)
                 .tracking(3)
             
@@ -157,16 +163,17 @@ struct HUDView: View {
                 gameState.togglePause()
             } label: {
                 Text("RESUME")
-                    .font(.system(size: 24, weight: .bold, design: .rounded))
-                    .foregroundStyle(Color("NeonBlue"))
+                    .font(.system(size: 26, weight: .heavy, design: .rounded))
+                    .foregroundStyle(settings.colorTheme.primaryColor)
                     .tracking(3)
                     .padding(.horizontal, 50)
                     .padding(.vertical, 20)
                     .background(
                         RoundedRectangle(cornerRadius: 50)
-                            .strokeBorder(Color("NeonBlue"), lineWidth: 3)
+                            .strokeBorder(settings.colorTheme.primaryColor, lineWidth: 3)
                     )
             }
+            .accessibilityLabel("Resume game")
         }
     }
     
@@ -175,28 +182,62 @@ struct HUDView: View {
     private var bottomBar: some View {
         HStack {
             // Pause/Resume Button (left corner)
-            if gameState.hasStarted {
+            if gameState.hasStarted && !gameState.isGameOver {
                 Button {
                     gameState.togglePause()
                 } label: {
                     Image(systemName: gameState.isPaused ? "play.fill" : "pause.fill")
-                        .font(.title2)
+                        .font(.system(size: 22, weight: .bold))
                         .foregroundStyle(.white)
-                        .frame(width: 50, height: 50)
+                        .frame(width: 54, height: 54)
                         .background(
                             Circle()
-                                .fill(Color.white.opacity(0.1))
+                                .fill(Color.white.opacity(0.12))
                         )
                 }
-                .disabled(gameState.isGameOver)
+                .accessibilityLabel(gameState.isPaused ? "Resume game" : "Pause game")
             }
             
             Spacer()
             
-            if gameState.isPaused {
-                muteButton
+            // Settings and Mute buttons
+            HStack(spacing: 12) {
+                if gameState.isPaused || !gameState.hasStarted {
+                    settingsButton
+                }
+                
+                if gameState.isPaused {
+                    muteButton
+                }
             }
         }
+        .sheet(isPresented: $showSettings) {
+            SettingsView(settings: settings)
+                .presentationBackground(.clear)
+                .presentationCornerRadius(0)
+                .presentationBackgroundInteraction(.enabled)
+        }
+    }
+    
+    private var settingsButton: some View {
+        Button {
+            showSettings = true
+        } label: {
+            Image(systemName: "gearshape.fill")
+                .font(.system(size: 22, weight: .semibold))
+                .foregroundStyle(.white)
+                .frame(width: 54, height: 54)
+                .background(
+                    Circle()
+                        .fill(Color.white.opacity(0.12))
+                        .overlay(
+                            Circle()
+                                .stroke(Color.white.opacity(0.24), lineWidth: 1)
+                        )
+                )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Open settings")
     }
     
     private var muteButton: some View {
@@ -204,9 +245,9 @@ struct HUDView: View {
             soundManager.toggleMute()
         } label: {
             Image(systemName: soundManager.isMuted ? "speaker.slash.fill" : "speaker.wave.2.fill")
-                .font(.system(size: 20, weight: .semibold))
+                .font(.system(size: 22, weight: .semibold))
                 .foregroundStyle(.white)
-                .frame(width: 48, height: 48)
+                .frame(width: 54, height: 54)
                 .background(
                     Circle()
                         .fill(Color.white.opacity(0.12))
@@ -229,6 +270,7 @@ struct HUDView: View {
         Color.black.ignoresSafeArea()
         
         HUDView(gameState: GameState(),
+                settings: Settings(),
                 soundManager: SoundManager(),
                 onRestart: {})
     }

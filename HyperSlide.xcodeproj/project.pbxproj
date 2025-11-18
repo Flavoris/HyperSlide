@@ -21,6 +21,8 @@
 		A1000007 /* Obstacle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000007 /* Obstacle.swift */; };
 		A1000008 /* GlowEffectFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000008 /* GlowEffectFactory.swift */; };
 		D1000001 /* NearMissEmitterFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000001 /* NearMissEmitterFactory.swift */; };
+		E1000001 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000001 /* Settings.swift */; };
+		E1000002 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000002 /* SettingsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +42,8 @@
 		A2000007 /* Obstacle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Obstacle.swift; sourceTree = "<group>"; };
 		A2000008 /* GlowEffectFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlowEffectFactory.swift; sourceTree = "<group>"; };
 		D2000001 /* NearMissEmitterFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearMissEmitterFactory.swift; sourceTree = "<group>"; };
+		E2000001 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
+		E2000002 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,7 +73,9 @@
 				A2000002 /* ContentView.swift */,
 				A2000003 /* GameScene.swift */,
 				A2000004 /* GameState.swift */,
+				E2000001 /* Settings.swift */,
 				A2000005 /* HUDView.swift */,
+				E2000002 /* SettingsView.swift */,
 				C2000001 /* SoundManager.swift */,
 				B2000001 /* Haptics.swift */,
 				A2000007 /* Obstacle.swift */,
@@ -167,7 +173,9 @@
 				A1000002 /* ContentView.swift in Sources */,
 				A1000003 /* GameScene.swift in Sources */,
 				A1000004 /* GameState.swift in Sources */,
+				E1000001 /* Settings.swift in Sources */,
 				A1000005 /* HUDView.swift in Sources */,
+				E1000002 /* SettingsView.swift in Sources */,
 				C1000001 /* SoundManager.swift in Sources */,
 				A1000007 /* Obstacle.swift in Sources */,
 				A1000008 /* GlowEffectFactory.swift in Sources */,
