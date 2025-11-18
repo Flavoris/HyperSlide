@@ -6,5 +6,16 @@
 	<array>
 		<string>Ethnocentric-Regular.otf</string>
 	</array>
+	<key>NSMotionUsageDescription</key>
+	<string>Tilt control needs motion access to move the player using device orientation.</string>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+	</array>
 </dict>
 </plist>

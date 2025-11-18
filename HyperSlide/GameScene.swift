@@ -8,6 +8,7 @@
 import SpriteKit
 import SwiftUI
 import CoreMotion
+import Foundation
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     private static let offscreenRenderer: SKView = {
@@ -48,6 +49,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private var velocityX: CGFloat = 0     // Current X velocity
     private let playerRadius: CGFloat = 25.0
     private let playerVerticalPositionRatio: CGFloat = 0.22
+    private let movementHorizontalMargin: CGFloat = 30.0
+    private var dragInputActive = false
+    private var filteredTiltVelocity: CGFloat = 0
     
     // Game feel tuning
     private var lastVelocitySign: CGFloat = 0
@@ -61,7 +65,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // Tilt control
     private let motionManager = CMMotionManager()
-    private let tiltSensitivity: CGFloat = 800.0  // Adjust for tilt responsiveness
+    private var motionActivityManager: CMMotionActivityManager?
+    private var isDeviceMotionActive = false
+    private var hasRequestedMotionPermission = false
+    private let tiltDeadZone: CGFloat = 0.05
+    private let tiltMaxSpeed: CGFloat = 1100.0
+    private let tiltResponsiveness: CGFloat = 12.0  // higher == snappier response
     
     // MARK: - Obstacle Properties
     
@@ -184,11 +193,50 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     private func setupTiltControl() {
-        // Start accelerometer updates if available
-        if motionManager.isAccelerometerAvailable {
-            motionManager.accelerometerUpdateInterval = 1.0 / 60.0  // 60 Hz
-            motionManager.startAccelerometerUpdates()
+        motionManager.deviceMotionUpdateInterval = 1.0 / 60.0  // 60 Hz sampling
+        updateTiltControlPreference(isEnabled: settings?.tiltControlEnabled == true)
+    }
+    
+    func updateTiltControlPreference(isEnabled: Bool) {
+        if isEnabled {
+            requestMotionPermissionIfNeeded()
+            startDeviceMotionUpdates()
+        } else {
+            stopDeviceMotionUpdates()
+            filteredTiltVelocity = 0
         }
+    }
+    
+    private func requestMotionPermissionIfNeeded() {
+        guard !hasRequestedMotionPermission else { return }
+        hasRequestedMotionPermission = true
+        
+        guard CMMotionActivityManager.isActivityAvailable() else { return }
+        
+        if #available(iOS 11.0, *) {
+            let status = CMMotionActivityManager.authorizationStatus()
+            guard status != .denied && status != .restricted else { return }
+        }
+        
+        let manager = CMMotionActivityManager()
+        motionActivityManager = manager
+        let now = Date()
+        manager.queryActivityStarting(from: now, to: now, to: OperationQueue.main) { [weak self] _, _ in
+            self?.startDeviceMotionUpdates()
+        }
+    }
+    
+    private func startDeviceMotionUpdates() {
+        guard !isDeviceMotionActive,
+              motionManager.isDeviceMotionAvailable else { return }
+        motionManager.startDeviceMotionUpdates(using: .xArbitraryCorrectedZVertical)
+        isDeviceMotionActive = true
+    }
+    
+    private func stopDeviceMotionUpdates() {
+        guard isDeviceMotionActive else { return }
+        motionManager.stopDeviceMotionUpdates()
+        isDeviceMotionActive = false
     }
     
     // MARK: - Update Loop
@@ -235,44 +283,54 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         guard let player = player else { return }
         
         let currentX = player.position.x
+        let dt = max(CGFloat(deltaTime), 0.0001)
         
-        // Check if tilt control is enabled
-        if settings?.tiltControlEnabled == true,
-           let accelerometerData = motionManager.accelerometerData {
-            // Use tilt control: device tilt angle controls target position
-            // accelerometerData.acceleration.x ranges from -1 to 1
-            let tiltX = CGFloat(accelerometerData.acceleration.x)
-            
-            // Map tilt to screen position (inverted for natural feel)
-            let centerX = size.width / 2
-            let offset = -tiltX * tiltSensitivity
-            targetX = centerX + offset
-            
-            // Clamp target within scene bounds
-            let margin: CGFloat = 30.0
-            targetX = max(margin, min(size.width - margin, targetX))
+        if dragInputActive {
+            let diff = targetX - currentX
+            let lerpFactor = min(1.0, moveSpeed * dt)
+            velocityX = diff * lerpFactor / dt
+            velocityX = max(-maxSpeed, min(maxSpeed, velocityX))
+            handleDirectionChangeIfNeeded()
+            let newX = clampWithinHorizontalBounds(currentX + velocityX * dt)
+            player.position.x = newX
+        } else if settings?.tiltControlEnabled == true {
+            let tiltVelocity = resolveTiltVelocity(deltaTime: deltaTime)
+            velocityX = tiltVelocity
+            handleDirectionChangeIfNeeded()
+            let newX = clampWithinHorizontalBounds(currentX + tiltVelocity * dt)
+            player.position.x = newX
+            targetX = newX // Keep drag target aligned when switching back
+        } else {
+            filteredTiltVelocity = 0
+            velocityX = 0
+        }
+    }
+    
+    private func clampWithinHorizontalBounds(_ value: CGFloat) -> CGFloat {
+        guard size.width.isFinite else { return value }
+        let minX = movementHorizontalMargin
+        let maxX = max(minX, size.width - movementHorizontalMargin)
+        return max(minX, min(maxX, value))
+    }
+    
+    private func updateDragTarget(with touch: UITouch) {
+        let location = touch.location(in: self)
+        targetX = clampWithinHorizontalBounds(location.x)
+    }
+    
+    private func resolveTiltVelocity(deltaTime: TimeInterval) -> CGFloat {
+        guard isDeviceMotionActive,
+              let motion = motionManager.deviceMotion else {
+            filteredTiltVelocity = 0
+            return 0
         }
         
-        // Smooth LERP toward targetX with easing
-        let diff = targetX - currentX
-        
-        // Apply LERP interpolation
-        let lerpFactor = min(1.0, moveSpeed * CGFloat(deltaTime))
-        velocityX = diff * lerpFactor / CGFloat(deltaTime)
-        
-        // Clamp velocity to max speed
-        velocityX = max(-maxSpeed, min(maxSpeed, velocityX))
-        
-        handleDirectionChangeIfNeeded()
-        
-        // Update position
-        var newX = currentX + velocityX * CGFloat(deltaTime)
-        
-        // Clamp within scene bounds (with margins)
-        let margin: CGFloat = 30.0
-        newX = max(margin, min(size.width - margin, newX))
-        
-        player.position.x = newX
+        let targetVelocity = TiltInputMapper.velocity(for: motion.gravity.x,
+                                                      deadZone: tiltDeadZone,
+                                                      maxSpeed: tiltMaxSpeed)
+        let response = min(1.0, CGFloat(deltaTime) * tiltResponsiveness)
+        filteredTiltVelocity = lerp(filteredTiltVelocity, targetVelocity, response)
+        return filteredTiltVelocity
     }
     
     private func updateObstacles(deltaTime: TimeInterval) {
@@ -549,15 +607,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         guard let state = gameState else { return }
         
         // Handle touches based on game state
-        if !state.hasStarted || state.isGameOver {
+        if !state.hasStarted || state.isGameOver || state.isPaused {
             // Touch to start/restart will be handled by HUD buttons
             return
         }
         
-        // Set target position for player movement
         if let touch = touches.first {
-            let location = touch.location(in: self)
-            targetX = location.x
+            dragInputActive = true
+            updateDragTarget(with: touch)
         }
     }
     
@@ -567,10 +624,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
               !state.isGameOver, 
               !state.isPaused else { return }
         
-        // Update target position as user drags
         if let touch = touches.first {
-            let location = touch.location(in: self)
-            targetX = location.x
+            dragInputActive = true
+            updateDragTarget(with: touch)
         }
     }
     
@@ -580,11 +636,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
               !state.isGameOver, 
               !state.isPaused else { return }
         
-        // Update target position on touch release
         if let touch = touches.first {
-            let location = touch.location(in: self)
-            targetX = location.x
+            updateDragTarget(with: touch)
         }
+        dragInputActive = false
+    }
+    
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        dragInputActive = false
+        super.touchesCancelled(touches, with: event)
     }
     
     // MARK: - Public Methods
@@ -644,6 +704,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             player.position = CGPoint(x: size.width / 2, y: playerY)
             targetX = player.position.x
             velocityX = 0
+            filteredTiltVelocity = 0
             player.yScale = 1.0
             player.xScale = 1.0
             player.removeAction(forKey: "directionSquash")
@@ -666,11 +727,31 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         isCameraShaking = false
         removeAction(forKey: "cameraShake")
         position = .zero
+        dragInputActive = false
     }
     
     deinit {
         // Stop motion updates when scene is deallocated
-        motionManager.stopAccelerometerUpdates()
+        stopDeviceMotionUpdates()
     }
 }
+
+/// Maps Core Motion gravity samples to a horizontal velocity with deadzone + clamping.
+struct TiltInputMapper {
+    static func velocity(for gravityX: Double,
+                         deadZone: CGFloat,
+                         maxSpeed: CGFloat) -> CGFloat {
+        guard maxSpeed > 0 else { return 0 }
+        let clamped = CGFloat(max(-1.0, min(1.0, gravityX)))
+        let magnitude = abs(clamped)
+        
+        guard magnitude > deadZone else { return 0 }
+        
+        let usableRange = max(1.0 - deadZone, .leastNonzeroMagnitude)
+        let normalized = (magnitude - deadZone) / usableRange
+        let direction: CGFloat = clamped >= 0 ? 1 : -1
+        return normalized * maxSpeed * direction
+    }
+}
+
 

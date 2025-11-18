@@ -50,7 +50,12 @@ class Settings {
             self.difficultyRamp = .normal
         }
         
-        self.tiltControlEnabled = UserDefaults.standard.bool(forKey: Settings.tiltControlKey)
+        if UserDefaults.standard.object(forKey: Settings.tiltControlKey) == nil {
+            self.tiltControlEnabled = true
+            UserDefaults.standard.set(true, forKey: Settings.tiltControlKey)
+        } else {
+            self.tiltControlEnabled = UserDefaults.standard.bool(forKey: Settings.tiltControlKey)
+        }
         
         if let savedTheme = UserDefaults.standard.string(forKey: Settings.colorThemeKey),
            let theme = ColorTheme(rawValue: savedTheme) {

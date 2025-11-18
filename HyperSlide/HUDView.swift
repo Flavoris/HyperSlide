@@ -14,6 +14,8 @@ struct HUDView: View {
     var onRestart: () -> Void
     
     @State private var showSettings = false
+    @State private var showMovementHint = false
+    @State private var hintDismissTask: Task<Void, Never>?
     
     var body: some View {
         ZStack {
@@ -42,6 +44,22 @@ struct HUDView: View {
                     .padding(.bottom, 20)
             }
             .padding(.horizontal)
+        }
+        .overlay(alignment: .bottom) {
+            if showMovementHint {
+                MovementHintChip(accentColor: settings.colorTheme.primaryColor)
+                    .padding(.bottom, 120)
+                    .padding(.horizontal, 24)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
+        .onChange(of: gameState.hasStarted) { _, hasStarted in
+            handleGameStartChange(hasStarted)
+        }
+        .onChange(of: gameState.isGameOver) { _, isGameOver in
+            if isGameOver {
+                hideMovementHint()
+            }
         }
     }
     
@@ -177,6 +195,39 @@ struct HUDView: View {
         }
     }
     
+    // MARK: - Movement Hint
+    
+    private func handleGameStartChange(_ hasStarted: Bool) {
+        if hasStarted && !gameState.isGameOver {
+            showMovementHintForNewRun()
+        } else {
+            hideMovementHint()
+        }
+    }
+    
+    private func showMovementHintForNewRun() {
+        hintDismissTask?.cancel()
+        hintDismissTask = nil
+        withAnimation(.spring(response: 0.45, dampingFraction: 0.85)) {
+            showMovementHint = true
+        }
+        
+        hintDismissTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 3_000_000_000)
+            if Task.isCancelled { return }
+            hideMovementHint()
+        }
+    }
+    
+    private func hideMovementHint() {
+        hintDismissTask?.cancel()
+        hintDismissTask = nil
+        guard showMovementHint else { return }
+        withAnimation(.easeOut(duration: 0.45)) {
+            showMovementHint = false
+        }
+    }
+    
     // MARK: - Bottom Bar
     
     private var bottomBar: some View {
@@ -277,6 +328,33 @@ struct HUDView: View {
 }
 
 // MARK: - Neon Glow Effect
+
+private struct MovementHintChip: View {
+    let accentColor: Color
+    
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "hand.draw")
+                .font(.system(size: 14, weight: .semibold))
+            
+            Text("Drag or tilt to move")
+                .font(.system(size: 15, weight: .semibold, design: .rounded))
+        }
+        .foregroundStyle(.white)
+        .padding(.vertical, 8)
+        .padding(.horizontal, 16)
+        .background(
+            Capsule()
+                .fill(Color.black.opacity(0.68))
+                .overlay(
+                    Capsule()
+                        .stroke(accentColor.opacity(0.5), lineWidth: 1)
+                )
+        )
+        .shadow(color: accentColor.opacity(0.4), radius: 16, x: 0, y: 8)
+        .accessibilityLabel("Hint: Drag or tilt to move")
+    }
+}
 
 private struct NeonGlowModifier: ViewModifier {
     let color: Color

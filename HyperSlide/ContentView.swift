@@ -38,10 +38,14 @@ struct ContentView: View {
             gameScene.settings = settings
             gameScene.soundManager = soundManager
             soundManager.primeAudioIfNeeded()
+            gameScene.updateTiltControlPreference(isEnabled: settings.tiltControlEnabled)
         }
         .onChange(of: settings.colorTheme) { _, _ in
             // Update player colors when theme changes
             gameScene.updatePlayerColors()
+        }
+        .onChange(of: settings.tiltControlEnabled) { _, newValue in
+            gameScene.updateTiltControlPreference(isEnabled: newValue)
         }
     }
     

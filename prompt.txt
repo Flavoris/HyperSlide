@@ -1,11 +1,5 @@
-Add pause + settings:
+Add tilt controls:
 
-- Settings panel (SwiftUI Sheet or overlay):
-  - Difficulty ramp speed (Normal/Fast)
-  - Tilt control toggle (off by default)
-  - Color theme (Neon Blue/Purple or Synthwave variant)
-- Accessibility:
-  - Use large, high-contrast HUD fonts.
+- tilt: request motion permission, read CMMotionManager’s deviceMotion, map `attitude.roll` or `gravity.x` to a horizontal speed, with deadzone and clamp. Merge with drag so drag overrides while active. user can turn off in settings
 
-Wire setting changes to GameScene (e.g., rampFactor multiplier).
-Success check: Settings change behavior live.
+Add a small “Drag or tilt to move” hint that fades after 3 seconds at run start.
