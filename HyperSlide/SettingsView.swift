@@ -89,6 +89,8 @@ struct SettingsView: View {
                                     }
                                 }
                                 .tint(settings.colorTheme.primaryColor)
+                                
+                                tiltSensitivityControl
                             }
                         }
                         
@@ -180,6 +182,36 @@ struct SettingsView: View {
                             .stroke(Color.white.opacity(0.25), lineWidth: 1.2)
                     )
             )
+    }
+    
+    private var tiltSensitivityControl: some View {
+        let percentage = Int((settings.tiltSensitivity * 100).rounded())
+        return VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text("Tilt Sensitivity")
+                    .font(.system(size: 15, weight: .medium))
+                    .foregroundStyle(.white)
+                
+                Spacer()
+                
+                Text("\(percentage)%")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(.white.opacity(0.85))
+                    .accessibilityLabel("Tilt sensitivity \(percentage) percent")
+            }
+            
+            Slider(value: $settings.tiltSensitivity,
+                   in: Settings.tiltSensitivityRange,
+                   step: 0.05) {
+                Text("Tilt Sensitivity Slider")
+            }
+                   .tint(settings.colorTheme.primaryColor)
+                   .accessibilityValue("\(percentage) percent")
+        }
+        .padding(.top, 6)
+        .opacity(settings.tiltControlEnabled ? 1 : 0.35)
+        .allowsHitTesting(settings.tiltControlEnabled)
+        .animation(.easeInOut(duration: 0.2), value: settings.tiltControlEnabled)
     }
 }
 

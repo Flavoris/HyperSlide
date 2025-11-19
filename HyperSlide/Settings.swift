@@ -14,7 +14,10 @@ class Settings {
     // UserDefaults keys
     private static let difficultyRampKey = "HyperSlide.DifficultyRamp"
     private static let tiltControlKey = "HyperSlide.TiltControl"
+    private static let tiltSensitivityKey = "HyperSlide.TiltSensitivity"
     private static let colorThemeKey = "HyperSlide.ColorTheme"
+    
+    static let tiltSensitivityRange: ClosedRange<Double> = 0.6...1.4
     
     // MARK: - Settings Properties
     
@@ -29,6 +32,18 @@ class Settings {
     var tiltControlEnabled: Bool {
         didSet {
             UserDefaults.standard.set(tiltControlEnabled, forKey: Settings.tiltControlKey)
+        }
+    }
+    
+    /// User-adjustable multiplier applied to base tilt responsiveness/speed
+    var tiltSensitivity: Double {
+        didSet {
+            let clamped = Settings.clampTiltSensitivity(tiltSensitivity)
+            if tiltSensitivity != clamped {
+                tiltSensitivity = clamped
+                return
+            }
+            UserDefaults.standard.set(tiltSensitivity, forKey: Settings.tiltSensitivityKey)
         }
     }
     
@@ -50,11 +65,20 @@ class Settings {
             self.difficultyRamp = .normal
         }
         
-        if UserDefaults.standard.object(forKey: Settings.tiltControlKey) == nil {
+        let defaults = UserDefaults.standard
+        if defaults.object(forKey: Settings.tiltControlKey) == nil {
             self.tiltControlEnabled = true
-            UserDefaults.standard.set(true, forKey: Settings.tiltControlKey)
+            defaults.set(true, forKey: Settings.tiltControlKey)
         } else {
-            self.tiltControlEnabled = UserDefaults.standard.bool(forKey: Settings.tiltControlKey)
+            self.tiltControlEnabled = defaults.bool(forKey: Settings.tiltControlKey)
+        }
+        
+        if defaults.object(forKey: Settings.tiltSensitivityKey) == nil {
+            self.tiltSensitivity = 1.0
+            defaults.set(1.0, forKey: Settings.tiltSensitivityKey)
+        } else {
+            let storedValue = defaults.double(forKey: Settings.tiltSensitivityKey)
+            self.tiltSensitivity = Settings.clampTiltSensitivity(storedValue)
         }
         
         if let savedTheme = UserDefaults.standard.string(forKey: Settings.colorThemeKey),
@@ -70,6 +94,12 @@ class Settings {
     /// Get the difficulty ramp multiplier (1.0 for normal, 1.5 for fast)
     var difficultyMultiplier: Double {
         difficultyRamp.multiplier
+    }
+    
+    // MARK: - Helpers
+    
+    private static func clampTiltSensitivity(_ value: Double) -> Double {
+        min(max(value, tiltSensitivityRange.lowerBound), tiltSensitivityRange.upperBound)
     }
 }
 
@@ -157,6 +187,19 @@ enum ColorTheme: String, CaseIterable {
         case .synthwave:
             // Cyan/turquoise - complementary to hot pink
             return (core: (0.0, 0.9, 1.0), glow: (0.2, 0.95, 1.0))
+        }
+    }
+    
+    /// Power-up color palette (ring + glow) to keep collectibles on-theme.
+    var powerUpColor: (ring: (CGFloat, CGFloat, CGFloat),
+                       glow: (CGFloat, CGFloat, CGFloat)) {
+        switch self {
+        case .neonBlue:
+            return (ring: (0.1, 1.0, 0.8), glow: (0.3, 1.0, 0.85))
+        case .neonPurple:
+            return (ring: (0.2, 0.95, 1.0), glow: (0.4, 1.0, 1.0))
+        case .synthwave:
+            return (ring: (1.0, 0.85, 0.25), glow: (1.0, 0.7, 0.2))
         }
     }
 }

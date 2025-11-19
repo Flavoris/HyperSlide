@@ -23,6 +23,8 @@
 		D1000001 /* NearMissEmitterFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000001 /* NearMissEmitterFactory.swift */; };
 		E1000001 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000001 /* Settings.swift */; };
 		E1000002 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000002 /* SettingsView.swift */; };
+		F1000001 /* PowerUpNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2000001 /* PowerUpNode.swift */; };
+		F1000002 /* SlowMotionEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2000002 /* SlowMotionEffect.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,6 +46,8 @@
 		D2000001 /* NearMissEmitterFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearMissEmitterFactory.swift; sourceTree = "<group>"; };
 		E2000001 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		E2000002 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		F2000001 /* PowerUpNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PowerUpNode.swift; sourceTree = "<group>"; };
+		F2000002 /* SlowMotionEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlowMotionEffect.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +83,8 @@
 				C2000001 /* SoundManager.swift */,
 				B2000001 /* Haptics.swift */,
 				A2000007 /* Obstacle.swift */,
+				F2000001 /* PowerUpNode.swift */,
+				F2000002 /* SlowMotionEffect.swift */,
 				A2000008 /* GlowEffectFactory.swift */,
 				D2000001 /* NearMissEmitterFactory.swift */,
 				A2000006 /* Assets.xcassets */,
@@ -178,6 +184,8 @@
 				E1000002 /* SettingsView.swift in Sources */,
 				C1000001 /* SoundManager.swift in Sources */,
 				A1000007 /* Obstacle.swift in Sources */,
+				F1000001 /* PowerUpNode.swift in Sources */,
+				F1000002 /* SlowMotionEffect.swift in Sources */,
 				A1000008 /* GlowEffectFactory.swift in Sources */,
 				D1000001 /* NearMissEmitterFactory.swift in Sources */,
 				B1000001 /* Haptics.swift in Sources */,

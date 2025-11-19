@@ -13,6 +13,9 @@ struct HUDView: View {
     @ObservedObject var soundManager: SoundManager
     var onRestart: () -> Void
     
+    /// Accent color for the Game Over title and button, using a deeper neon red for better contrast.
+    private let gameOverAccentColor = Color(red: 0.78, green: 0.02, blue: 0.12)
+    
     @State private var showSettings = false
     @State private var showMovementHint = false
     @State private var hintDismissTask: Task<Void, Never>?
@@ -125,7 +128,7 @@ struct HUDView: View {
             // GAME OVER Text
             Text("GAME OVER")
                 .font(.system(size: 50, weight: .black, design: .rounded))
-                .foregroundStyle(Color(red: 1.0, green: 0.3, blue: 0.3))
+                .foregroundStyle(gameOverAccentColor)
                 .tracking(3)
             
             // Score
@@ -144,13 +147,13 @@ struct HUDView: View {
             } label: {
                 Text("RESTART")
                     .font(.system(size: 26, weight: .heavy, design: .rounded))
-                    .foregroundStyle(Color(red: 1.0, green: 0.2, blue: 0.6))
+                    .foregroundStyle(gameOverAccentColor)
                     .tracking(3)
                     .padding(.horizontal, 50)
                     .padding(.vertical, 20)
                     .background(
                         RoundedRectangle(cornerRadius: 50)
-                            .strokeBorder(Color(red: 1.0, green: 0.2, blue: 0.6), lineWidth: 3)
+                            .strokeBorder(gameOverAccentColor, lineWidth: 3)
                     )
             }
             .padding(.top, 10)

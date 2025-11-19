@@ -10,6 +10,8 @@ import XCTest
 
 final class GameFeelTests: XCTestCase {
     
+    private let tiltSensitivityDefaultsKey = "HyperSlide.TiltSensitivity"
+    
     func testNearMissAwardsBonusDuringActivePlay() {
         let state = GameState()
         state.startGame()
@@ -56,6 +58,29 @@ final class GameFeelTests: XCTestCase {
                                                 deadZone: 0.05,
                                                 maxSpeed: 750)
         XCTAssertEqual(velocity, 750, accuracy: 0.0001, "Velocity should clamp to the configured max speed.")
+    }
+    
+    func testTiltSensitivityDefaultsToBaseline() {
+        let defaults = UserDefaults.standard
+        defaults.removeObject(forKey: tiltSensitivityDefaultsKey)
+        
+        let settings = Settings()
+        XCTAssertEqual(settings.tiltSensitivity, 1.0, accuracy: 0.0001, "Baseline tilt sensitivity should initialize at 1.0.")
+        
+        defaults.removeObject(forKey: tiltSensitivityDefaultsKey)
+    }
+    
+    func testTiltSensitivityPersistsAcrossInstances() {
+        let defaults = UserDefaults.standard
+        defaults.removeObject(forKey: tiltSensitivityDefaultsKey)
+        
+        let firstSession = Settings()
+        firstSession.tiltSensitivity = 1.25
+        
+        let secondSession = Settings()
+        XCTAssertEqual(secondSession.tiltSensitivity, 1.25, accuracy: 0.0001, "Tilt sensitivity should persist via UserDefaults.")
+        
+        defaults.removeObject(forKey: tiltSensitivityDefaultsKey)
     }
 }
 

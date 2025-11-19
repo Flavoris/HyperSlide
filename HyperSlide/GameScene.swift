@@ -69,8 +69,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private var isDeviceMotionActive = false
     private var hasRequestedMotionPermission = false
     private let tiltDeadZone: CGFloat = 0.05
-    private let tiltMaxSpeed: CGFloat = 1100.0
-    private let tiltResponsiveness: CGFloat = 12.0  // higher == snappier response
+    private let baseTiltMaxSpeed: CGFloat = 1100.0
+    private let baseTiltResponsiveness: CGFloat = 12.0  // higher == snappier response
     
     // MARK: - Obstacle Properties
     
@@ -81,6 +81,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private var spawnTimer: TimeInterval = 0
     private var nextSpawnInterval: TimeInterval = 1.0
     private var obstacleConfig = ObstacleConfig.default
+    
+    // MARK: - Power-Up Properties
+    
+    private var powerUps: [PowerUpNode] = []
+    private var powerUpSpawnTimer: TimeInterval = 0
+    private var nextPowerUpSpawnInterval: TimeInterval = 12
+    private let powerUpSpawnIntervalRange: ClosedRange<TimeInterval> = 12...18
+    private let powerUpDifficultyThreshold: Double = 0.25
+    private var slowMotionEffect = SlowMotionEffect(duration: 3.0,
+                                                   speedScale: 0.4,
+                                                   maxStackDuration: 6.0) // 3 second slow to 40%, stackable to 6s
+    private var slowMotionOverlay: SKShapeNode?
+    private let slowMotionOverlayMaxAlpha: CGFloat = 0.92
+    private let slowMotionOverlayFadeInRate: CGFloat = 12.0
+    private let slowMotionOverlayFadeOutRate: CGFloat = 4.0
     
     // MARK: - Scene Lifecycle
     
@@ -116,6 +131,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         fullyWarmEmitterPipeline()
+        powerUpSpawnTimer = 0
+        scheduleNextPowerUpSpawn()
+        updateSlowMotionOverlayGeometry()
+    }
+    
+    override func didChangeSize(_ oldSize: CGSize) {
+        super.didChangeSize(oldSize)
+        updateSlowMotionOverlayGeometry()
     }
     
     // MARK: - Setup
@@ -186,7 +209,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Configure physics properties
         player.physicsBody?.isDynamic = false  // Player controlled by touch, not physics
         player.physicsBody?.categoryBitMask = PhysicsCategory.player
-        player.physicsBody?.contactTestBitMask = PhysicsCategory.obstacle
+        player.physicsBody?.contactTestBitMask = PhysicsCategory.obstacle | PhysicsCategory.powerUp
         player.physicsBody?.collisionBitMask = PhysicsCategory.none
         player.physicsBody?.affectedByGravity = false
         player.physicsBody?.usesPreciseCollisionDetection = true
@@ -271,6 +294,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         updateObstacles(deltaTime: deltaTime)
         detectNearMisses()
         spawnObstacles(deltaTime: deltaTime)
+        updatePowerUps(deltaTime: deltaTime)
         updateScore(deltaTime: deltaTime)
     }
     
@@ -318,6 +342,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         targetX = clampWithinHorizontalBounds(location.x)
     }
     
+    private func currentTiltSensitivity() -> CGFloat {
+        guard let multiplier = settings?.tiltSensitivity else {
+            return 1.0
+        }
+        return CGFloat(multiplier)
+    }
+    
     private func resolveTiltVelocity(deltaTime: TimeInterval) -> CGFloat {
         guard isDeviceMotionActive,
               let motion = motionManager.deviceMotion else {
@@ -325,10 +356,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             return 0
         }
         
+        let sensitivity = currentTiltSensitivity()
+        let adjustedMaxSpeed = baseTiltMaxSpeed * sensitivity
         let targetVelocity = TiltInputMapper.velocity(for: motion.gravity.x,
                                                       deadZone: tiltDeadZone,
-                                                      maxSpeed: tiltMaxSpeed)
-        let response = min(1.0, CGFloat(deltaTime) * tiltResponsiveness)
+                                                      maxSpeed: adjustedMaxSpeed)
+        let response = min(1.0, CGFloat(deltaTime) * baseTiltResponsiveness * sensitivity)
         filteredTiltVelocity = lerp(filteredTiltVelocity, targetVelocity, response)
         return filteredTiltVelocity
     }
@@ -336,7 +369,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private func updateObstacles(deltaTime: TimeInterval) {
         // Update each obstacle's position (freeze or reduce speed when game over)
         let gameOver = gameState?.isGameOver ?? false
-        let speedMultiplier = gameOver ? 0.05 : 1.0  // Slow to 5% when game over
+        let baseMultiplier: Double = gameOver ? 0.05 : 1.0  // Slow to 5% when game over
+        let slowMultiplier = Double(slowMotionEffect.speedMultiplier)
+        let speedMultiplier = baseMultiplier * slowMultiplier
         
         for obstacle in obstacles {
             obstacle.update(deltaTime: deltaTime * speedMultiplier)
@@ -424,14 +459,171 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         obstacles.append(obstacle)
     }
     
+    private func updatePowerUps(deltaTime: TimeInterval) {
+        slowMotionEffect.update(deltaTime: deltaTime)
+        updateSlowMotionOverlay(deltaTime: deltaTime)
+        
+        guard let state = gameState,
+              state.hasStarted,
+              !state.isGameOver else {
+            return
+        }
+        
+        for powerUp in powerUps {
+            powerUp.update(deltaTime: deltaTime)
+        }
+        
+        powerUps.removeAll { powerUp in
+            if powerUp.isOffScreen(sceneHeight: size.height) {
+                powerUp.removeFromParent()
+                return true
+            }
+            return false
+        }
+        
+        spawnPowerUpIfNeeded(deltaTime: deltaTime, difficulty: state.difficulty)
+    }
+    
+    private func spawnPowerUpIfNeeded(deltaTime: TimeInterval, difficulty: Double) {
+        guard difficulty >= powerUpDifficultyThreshold else {
+            // Hold timer at zero until the game ramps up enough.
+            powerUpSpawnTimer = 0
+            return
+        }
+        
+        guard powerUps.isEmpty else { return }
+        
+        powerUpSpawnTimer += deltaTime
+        guard powerUpSpawnTimer >= nextPowerUpSpawnInterval else { return }
+        
+        powerUpSpawnTimer = 0
+        scheduleNextPowerUpSpawn()
+        spawnPowerUp(difficulty: difficulty)
+    }
+    
+    private func spawnPowerUp(difficulty: Double) {
+        guard size.width.isFinite, size.height.isFinite else { return }
+        
+        let t = CGFloat(min(max(difficulty, 0), 1))
+        let radius = lerp(26, 32, t)
+        let speedY = lerp(180, 260, t)
+        let horizontalMargin = max(movementHorizontalMargin, radius + 24)
+        let minX = horizontalMargin
+        let maxX = max(horizontalMargin, size.width - horizontalMargin)
+        guard maxX > minX else { return }
+        
+        let positionX = CGFloat.random(in: minX...maxX)
+        let positionY = size.height + radius * 2
+        
+        let colors = powerUpThemeColors()
+        
+        let powerUp = PowerUpNode(radius: radius,
+                                  ringWidth: 8,
+                                  speedY: speedY,
+                                  coreColor: colors.ring,
+                                  glowColor: colors.glow)
+        powerUp.position = CGPoint(x: positionX, y: positionY)
+        
+        addChild(powerUp)
+        powerUps.append(powerUp)
+    }
+    
+    private func scheduleNextPowerUpSpawn() {
+        nextPowerUpSpawnInterval = Double.random(in: powerUpSpawnIntervalRange)
+    }
+    
+    private func powerUpThemeColors() -> (ring: SKColor, glow: SKColor) {
+        let themeColors = settings?.colorTheme.powerUpColor ??
+                          (ring: (0.1, 1.0, 0.8), glow: (0.3, 1.0, 0.85))
+        let ringColor = SKColor(red: themeColors.ring.0,
+                                green: themeColors.ring.1,
+                                blue: themeColors.ring.2,
+                                alpha: 1.0)
+        let glowColor = SKColor(red: themeColors.glow.0,
+                                green: themeColors.glow.1,
+                                blue: themeColors.glow.2,
+                                alpha: 1.0)
+        return (ring: ringColor, glow: glowColor)
+    }
+    
+    private func updateSlowMotionOverlay(deltaTime: TimeInterval) {
+        let dt = CGFloat(max(0, min(deltaTime, 1)))
+        
+        if slowMotionEffect.isActive {
+            let overlay = ensureSlowMotionOverlay()
+            updateSlowMotionOverlayGeometry()
+            overlay.strokeColor = powerUpThemeColors().glow
+            overlay.alpha = min(slowMotionOverlayMaxAlpha,
+                                overlay.alpha + slowMotionOverlayFadeInRate * dt)
+        } else if let overlay = slowMotionOverlay {
+            overlay.alpha = max(0, overlay.alpha - slowMotionOverlayFadeOutRate * dt)
+            if overlay.alpha <= 0.01 {
+                clearSlowMotionOverlay()
+            }
+        }
+    }
+    
+    private func activateSlowMotionOverlayImmediately() {
+        let overlay = ensureSlowMotionOverlay()
+        overlay.strokeColor = powerUpThemeColors().glow
+        updateSlowMotionOverlayGeometry()
+        overlay.alpha = slowMotionOverlayMaxAlpha
+    }
+    
+    private func ensureSlowMotionOverlay() -> SKShapeNode {
+        if let overlay = slowMotionOverlay {
+            return overlay
+        }
+        
+        let overlay = SKShapeNode()
+        overlay.fillColor = .clear
+        overlay.lineWidth = 8
+        overlay.glowWidth = 28
+        overlay.alpha = 0
+        overlay.blendMode = .add
+        overlay.zPosition = 500
+        overlay.isUserInteractionEnabled = false
+        addChild(overlay)
+        slowMotionOverlay = overlay
+        return overlay
+    }
+    
+    private func updateSlowMotionOverlayGeometry() {
+        guard let overlay = slowMotionOverlay,
+              size.width.isFinite,
+              size.height.isFinite else { return }
+        
+        let inset: CGFloat = 14
+        let width = max(0, size.width - inset * 2)
+        let height = max(0, size.height - inset * 2)
+        let rect = CGRect(x: -width / 2,
+                          y: -height / 2,
+                          width: width,
+                          height: height)
+        overlay.path = CGPath(roundedRect: rect,
+                              cornerWidth: 42,
+                              cornerHeight: 42,
+                              transform: nil)
+        overlay.position = CGPoint(x: size.width / 2, y: size.height / 2)
+    }
+    
+    private func clearSlowMotionOverlay() {
+        slowMotionOverlay?.removeFromParent()
+        slowMotionOverlay = nil
+    }
+    
     // MARK: - Collision Handling
     
     func didBegin(_ contact: SKPhysicsContact) {
-        // Check if collision involves player and obstacle
+        // Check if collision involves player and obstacle or power-up
         let collision = contact.bodyA.categoryBitMask | contact.bodyB.categoryBitMask
         
         if collision == PhysicsCategory.player | PhysicsCategory.obstacle {
             handleCollision()
+        } else if collision == PhysicsCategory.player | PhysicsCategory.powerUp {
+            if let node = (contact.bodyA.node as? PowerUpNode) ?? (contact.bodyB.node as? PowerUpNode) {
+                handlePowerUpCollection(node)
+            }
         }
     }
     
@@ -441,6 +633,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // Trigger game over
         state.isGameOver = true
+        slowMotionEffect.reset()
+        clearSlowMotionOverlay()
         performCollisionFeedback()
     }
     
@@ -449,6 +643,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         startCameraShake()
         soundManager?.playCollision()
         Haptics.playCollisionImpact()
+    }
+    
+    private func handlePowerUpCollection(_ powerUp: PowerUpNode) {
+        guard let state = gameState,
+              state.hasStarted,
+              !state.isGameOver else { return }
+        
+        guard let index = powerUps.firstIndex(where: { $0 === powerUp }) else { return }
+        powerUps.remove(at: index)
+        
+        slowMotionEffect.trigger()
+        activateSlowMotionOverlayImmediately()
+        Haptics.playNearMissImpact(intensity: 0.9)
+        
+        powerUp.playCollectionAnimation { [weak powerUp] in
+            powerUp?.removeFromParent()
+        }
     }
     
     private func startCameraShake(duration: TimeInterval = 0.18,
@@ -715,6 +926,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             obstacle.removeFromParent()
         }
         obstacles.removeAll()
+        
+        // Clear active power-ups
+        for powerUp in powerUps {
+            powerUp.removeFromParent()
+        }
+        powerUps.removeAll()
+        powerUpSpawnTimer = 0
+        scheduleNextPowerUpSpawn()
+        slowMotionEffect.reset()
+        clearSlowMotionOverlay()
         
         // Reset spawn timer
         spawnTimer = 0
