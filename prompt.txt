@@ -1,5 +1,9 @@
-Add tilt controls:
+Hardening:
 
-- tilt: request motion permission, read CMMotionManager’s deviceMotion, map `attitude.roll` or `gravity.x` to a horizontal speed, with deadzone and clamp. Merge with drag so drag overrides while active. user can turn off in settings
+- Cap dt to 1/30 to avoid jump after app resumes from background.
+- Use SKAction/emitters sparingly; pool obstacle nodes if possible (simple reuse list).
+- On resize / safe area changes (different devices), recalc margins; keep player’s relative x (% of width).
+- Guard UserDefaults reads/writes with simple try-like pattern; default safely.
 
-Add a small “Drag or tilt to move” hint that fades after 3 seconds at run start.
+Testing:
+- Simulate low FPS (Xcode GPU tools) and verify: fewer particles, slightly slower spawn (adaptive). Implement a “performance governor” that reduces particle rate if average FPS < 45 for 2s.

@@ -12,6 +12,7 @@ import Observation
 class GameState {
     // UserDefaults key for best score persistence
     private static let bestScoreKey = "HyperSlide.BestScore"
+    private let defaults: UserDefaults
     
     // Current game score (time + dodge points)
     var score: Double = 0
@@ -19,7 +20,15 @@ class GameState {
     // Best score achieved across all games (persisted)
     var bestScore: Double {
         didSet {
-            UserDefaults.standard.set(bestScore, forKey: GameState.bestScoreKey)
+            guard bestScore != oldValue else { return }
+            let sanitizedScore = max(0, bestScore)
+            if sanitizedScore != bestScore {
+                bestScore = sanitizedScore
+                return
+            }
+            DefaultsGuard.write(on: defaults) { store in
+                store.set(sanitizedScore, forKey: GameState.bestScoreKey)
+            }
         }
     }
     
@@ -44,9 +53,18 @@ class GameState {
     
     // MARK: - Initialization
     
-    init() {
-        // Load best score from UserDefaults
-        self.bestScore = UserDefaults.standard.double(forKey: GameState.bestScoreKey)
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+        if defaults.object(forKey: GameState.bestScoreKey) == nil {
+            self.bestScore = 0
+            DefaultsGuard.write(on: defaults) { store in
+                store.set(0, forKey: GameState.bestScoreKey)
+            }
+        } else {
+            self.bestScore = DefaultsGuard.read(from: defaults) { store in
+                store.double(forKey: GameState.bestScoreKey)
+            } ?? 0
+        }
     }
     
     // MARK: - Game Actions

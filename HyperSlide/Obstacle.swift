@@ -55,6 +55,8 @@ struct ObstacleConfig {
 
 /// Obstacle node that falls vertically down the screen
 class ObstacleNode: SKShapeNode {
+    private static let glowNodeName = "ObstacleGlow"
+    
     /// Vertical speed (negative value for downward movement)
     var speedY: CGFloat = 0
     
@@ -77,40 +79,53 @@ class ObstacleNode: SKShapeNode {
                      coreColor: (CGFloat, CGFloat, CGFloat) = (1.0, 0.1, 0.6),
                      glowColor: (CGFloat, CGFloat, CGFloat) = (1.0, 0.35, 0.75)) {
         self.init()
-        
-        // Store speed
+        configure(width: width, height: height, speedY: speedY, coreColor: coreColor, glowColor: glowColor)
+    }
+    
+    /// Reconfigures the node so pooled instances can be reused without reallocation.
+    func configure(width: CGFloat,
+                   height: CGFloat,
+                   speedY: CGFloat,
+                   coreColor: (CGFloat, CGFloat, CGFloat),
+                   glowColor: (CGFloat, CGFloat, CGFloat)) {
         self.speedY = speedY
-        self.hitboxSize = CGSize(width: width, height: height)
+        hitboxSize = CGSize(width: width, height: height)
+        hasTriggeredNearMiss = false
         
-        // Create rounded rectangle path
         let rect = CGRect(x: -width / 2, y: -height / 2, width: width, height: height)
-        self.path = CGPath(roundedRect: rect, cornerWidth: 8, cornerHeight: 8, transform: nil)
+        path = CGPath(roundedRect: rect, cornerWidth: 8, cornerHeight: 8, transform: nil)
         
-        // Apply core color styling with glow (vibrant neon)
-        let obstacleCore = SKColor(red: coreColor.0, 
-                                   green: coreColor.1, 
-                                   blue: coreColor.2, 
-                                   alpha: 1.0)
-        self.strokeColor = .clear
-        self.fillColor = obstacleCore
-        self.lineWidth = 0
+        strokeColor = .clear
+        fillColor = SKColor(red: coreColor.0, 
+                            green: coreColor.1, 
+                            blue: coreColor.2, 
+                            alpha: 1.0)
+        lineWidth = 0
         
-        // Add neon bloom similar to arcade obstacles
-        let obstacleGlow = SKColor(red: glowColor.0, 
-                                   green: glowColor.1, 
-                                   blue: glowColor.2, 
-                                   alpha: 1.0)
+        childNode(withName: Self.glowNodeName)?.removeFromParent()
         let glowNode = GlowEffectFactory.makeRoundedRectangleGlow(size: CGSize(width: width, height: height),
                                                                   cornerRadius: 8,
-                                                                  color: obstacleGlow,
+                                                                  color: SKColor(red: glowColor.0,
+                                                                                 green: glowColor.1,
+                                                                                 blue: glowColor.2,
+                                                                                 alpha: 1.0),
                                                                   blurRadius: 14,
                                                                   alpha: 0.85,
                                                                   scale: 1.18)
+        glowNode.name = Self.glowNodeName
         glowNode.zPosition = -1
         addChild(glowNode)
         
-        // Setup physics body
-        setupPhysics(size: CGSize(width: width, height: height))
+        setupPhysics(size: hitboxSize)
+    }
+    
+    /// Prepares a recycled node for the next use.
+    func prepareForReuse() {
+        removeAllActions()
+        physicsBody?.velocity = .zero
+        zRotation = 0
+        alpha = 1
+        isHidden = false
     }
     
     /// Marks the near-miss as consumed so we do not award multiple bonuses.
@@ -145,4 +160,48 @@ class ObstacleNode: SKShapeNode {
         return position.y < -50  // 50 point margin below screen
     }
 }
+
+// MARK: - Simple Obstacle Pool
+
+final class ObstaclePool {
+    private var storage: [ObstacleNode] = []
+    private let maxCapacity: Int
+    
+    init(maximumCapacity: Int = 24) {
+        self.maxCapacity = max(1, maximumCapacity)
+    }
+    
+    func dequeue(width: CGFloat,
+                 height: CGFloat,
+                 speedY: CGFloat,
+                 coreColor: (CGFloat, CGFloat, CGFloat),
+                 glowColor: (CGFloat, CGFloat, CGFloat)) -> ObstacleNode {
+        let obstacle: ObstacleNode
+        if let reused = storage.popLast() {
+            obstacle = reused
+            obstacle.prepareForReuse()
+        } else {
+            obstacle = ObstacleNode()
+        }
+        obstacle.configure(width: width,
+                           height: height,
+                           speedY: speedY,
+                           coreColor: coreColor,
+                           glowColor: glowColor)
+        return obstacle
+    }
+    
+    func recycle(_ obstacle: ObstacleNode) {
+        guard storage.count < maxCapacity else { return }
+        obstacle.removeAllActions()
+        obstacle.alpha = 0
+        obstacle.isHidden = true
+        storage.append(obstacle)
+    }
+    
+    func drain() {
+        storage.removeAll()
+    }
+}
+
 

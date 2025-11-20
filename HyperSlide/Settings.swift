@@ -19,19 +19,27 @@ class Settings {
     
     static let tiltSensitivityRange: ClosedRange<Double> = 0.6...1.4
     
+    private let defaults: UserDefaults
+    
     // MARK: - Settings Properties
     
     /// Difficulty ramp speed multiplier
     var difficultyRamp: DifficultyRamp {
         didSet {
-            UserDefaults.standard.set(difficultyRamp.rawValue, forKey: Settings.difficultyRampKey)
+            guard difficultyRamp != oldValue else { return }
+            DefaultsGuard.write(on: defaults) { store in
+                store.set(difficultyRamp.rawValue, forKey: Settings.difficultyRampKey)
+            }
         }
     }
     
     /// Tilt control enabled/disabled
     var tiltControlEnabled: Bool {
         didSet {
-            UserDefaults.standard.set(tiltControlEnabled, forKey: Settings.tiltControlKey)
+            guard tiltControlEnabled != oldValue else { return }
+            DefaultsGuard.write(on: defaults) { store in
+                store.set(tiltControlEnabled, forKey: Settings.tiltControlKey)
+            }
         }
     }
     
@@ -43,46 +51,84 @@ class Settings {
                 tiltSensitivity = clamped
                 return
             }
-            UserDefaults.standard.set(tiltSensitivity, forKey: Settings.tiltSensitivityKey)
+            guard tiltSensitivity != oldValue else { return }
+            DefaultsGuard.write(on: defaults) { store in
+                store.set(tiltSensitivity, forKey: Settings.tiltSensitivityKey)
+            }
         }
     }
     
     /// Color theme selection
     var colorTheme: ColorTheme {
         didSet {
-            UserDefaults.standard.set(colorTheme.rawValue, forKey: Settings.colorThemeKey)
+            guard colorTheme != oldValue else { return }
+            DefaultsGuard.write(on: defaults) { store in
+                store.set(colorTheme.rawValue, forKey: Settings.colorThemeKey)
+            }
         }
     }
     
     // MARK: - Initialization
     
-    init() {
-        // Load settings from UserDefaults
-        if let savedRamp = UserDefaults.standard.string(forKey: Settings.difficultyRampKey),
-           let ramp = DifficultyRamp(rawValue: savedRamp) {
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+        
+        if defaults.object(forKey: Settings.difficultyRampKey) == nil {
+            let defaultRamp: DifficultyRamp = .normal
+            self.difficultyRamp = defaultRamp
+            DefaultsGuard.write(on: defaults) { store in
+                store.set(defaultRamp.rawValue, forKey: Settings.difficultyRampKey)
+            }
+        } else if let ramp = DefaultsGuard.read(from: defaults, { store -> DifficultyRamp in
+            guard let savedRamp = store.string(forKey: Settings.difficultyRampKey),
+                  let parsed = DifficultyRamp(rawValue: savedRamp) else {
+                throw DefaultsGuardError.invalidValue(key: Settings.difficultyRampKey)
+            }
+            return parsed
+        }) {
             self.difficultyRamp = ramp
         } else {
             self.difficultyRamp = .normal
         }
         
-        let defaults = UserDefaults.standard
         if defaults.object(forKey: Settings.tiltControlKey) == nil {
-            self.tiltControlEnabled = true
-            defaults.set(true, forKey: Settings.tiltControlKey)
+            let defaultTiltControl = true
+            self.tiltControlEnabled = defaultTiltControl
+            DefaultsGuard.write(on: defaults) { store in
+                store.set(defaultTiltControl, forKey: Settings.tiltControlKey)
+            }
         } else {
-            self.tiltControlEnabled = defaults.bool(forKey: Settings.tiltControlKey)
+            self.tiltControlEnabled = DefaultsGuard.read(from: defaults) { store in
+                store.bool(forKey: Settings.tiltControlKey)
+            } ?? true
         }
         
         if defaults.object(forKey: Settings.tiltSensitivityKey) == nil {
-            self.tiltSensitivity = 1.0
-            defaults.set(1.0, forKey: Settings.tiltSensitivityKey)
+            let defaultSensitivity = 1.0
+            self.tiltSensitivity = defaultSensitivity
+            DefaultsGuard.write(on: defaults) { store in
+                store.set(defaultSensitivity, forKey: Settings.tiltSensitivityKey)
+            }
         } else {
-            let storedValue = defaults.double(forKey: Settings.tiltSensitivityKey)
+            let storedValue = DefaultsGuard.read(from: defaults) { store in
+                store.double(forKey: Settings.tiltSensitivityKey)
+            } ?? 1.0
             self.tiltSensitivity = Settings.clampTiltSensitivity(storedValue)
         }
         
-        if let savedTheme = UserDefaults.standard.string(forKey: Settings.colorThemeKey),
-           let theme = ColorTheme(rawValue: savedTheme) {
+        if defaults.object(forKey: Settings.colorThemeKey) == nil {
+            let defaultTheme: ColorTheme = .neonBlue
+            self.colorTheme = defaultTheme
+            DefaultsGuard.write(on: defaults) { store in
+                store.set(defaultTheme.rawValue, forKey: Settings.colorThemeKey)
+            }
+        } else if let theme = DefaultsGuard.read(from: defaults, { store -> ColorTheme in
+            guard let raw = store.string(forKey: Settings.colorThemeKey),
+                  let parsed = ColorTheme(rawValue: raw) else {
+                throw DefaultsGuardError.invalidValue(key: Settings.colorThemeKey)
+            }
+            return parsed
+        }) {
             self.colorTheme = theme
         } else {
             self.colorTheme = .neonBlue

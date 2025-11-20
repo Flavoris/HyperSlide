@@ -81,7 +81,16 @@ final class SoundManager: ObservableObject {
          defaults: UserDefaults = .standard) {
         self.bundle = bundle
         self.defaults = defaults
-        self.isMuted = defaults.bool(forKey: Self.muteDefaultsKey)
+        if defaults.object(forKey: Self.muteDefaultsKey) == nil {
+            self.isMuted = false
+            DefaultsGuard.write(on: defaults) { store in
+                store.set(false, forKey: Self.muteDefaultsKey)
+            }
+        } else {
+            self.isMuted = DefaultsGuard.read(from: defaults) { store in
+                store.bool(forKey: Self.muteDefaultsKey)
+            } ?? false
+        }
         
         configureAudioSession()
         preloadPlayers()
@@ -93,7 +102,9 @@ final class SoundManager: ObservableObject {
     func setMuted(_ muted: Bool) {
         guard isMuted != muted else { return }
         isMuted = muted
-        defaults.set(muted, forKey: Self.muteDefaultsKey)
+        DefaultsGuard.write(on: defaults) { store in
+            store.set(muted, forKey: Self.muteDefaultsKey)
+        }
     }
     
     /// Convenience wrapper for UI bindings.

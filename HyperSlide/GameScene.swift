@@ -6,6 +6,7 @@
 //
 
 import SpriteKit
+import UIKit
 import SwiftUI
 import CoreMotion
 import Foundation
@@ -29,6 +30,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // Track time for delta calculations
     private var lastUpdateTime: TimeInterval = 0
+    private static let maxDeltaTime: TimeInterval = 1.0 / 30.0
+    
+    // Bounds + safe-area context
+    private let minimumMovementMargin: CGFloat = 30.0
+    private var movementHorizontalMargin: CGFloat = 30.0
+    private var lastKnownSafeAreaInsets: UIEdgeInsets = .zero
+    private typealias HorizontalBounds = (min: CGFloat, max: CGFloat)
     
     // MARK: - Helper Functions
     
@@ -49,7 +57,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private var velocityX: CGFloat = 0     // Current X velocity
     private let playerRadius: CGFloat = 25.0
     private let playerVerticalPositionRatio: CGFloat = 0.22
-    private let movementHorizontalMargin: CGFloat = 30.0
     private var dragInputActive = false
     private var filteredTiltVelocity: CGFloat = 0
     
@@ -62,6 +69,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private let particleLayer = SKNode()
     private var nearMissEmitterFactory: NearMissEmitterFactory?
     private var shouldPrimeEmitterOnPresentation = true
+    private let performanceGovernor = PerformanceGovernor()
     
     // Tilt control
     private let motionManager = CMMotionManager()
@@ -76,6 +84,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // Array of active obstacles
     private var obstacles: [ObstacleNode] = []
+    private let obstaclePool = ObstaclePool(maximumCapacity: 32)
     
     // Obstacle spawning
     private var spawnTimer: TimeInterval = 0
@@ -120,10 +129,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         physicsWorld.gravity = CGVector(dx: 0, dy: 0)
         physicsWorld.contactDelegate = self
         scaleMode = .resizeFill
+        lastKnownSafeAreaInsets = view.safeAreaInsets
+        movementHorizontalMargin = computeMovementMargin(for: lastKnownSafeAreaInsets)
         
         setupScene()
+        refreshSafeAreaInsets(force: true)
         setupTiltControl()
         nearMissEmitterFactory?.attachPool(to: particleLayer)
+        applyCurrentPerformanceMode()
         
         if shouldPrimeEmitterOnPresentation {
             nearMissEmitterFactory?.prime(in: self)
@@ -138,6 +151,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func didChangeSize(_ oldSize: CGSize) {
         super.didChangeSize(oldSize)
+        handleSceneSizeChange(from: oldSize)
         updateSlowMotionOverlayGeometry()
     }
     
@@ -200,6 +214,66 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         setupPlayerPhysics(radius: playerRadius)
         
         addChild(player)
+    }
+    
+    // MARK: - Layout & Safe Area
+    
+    private func handleSceneSizeChange(from oldSize: CGSize) {
+        let previousBounds = horizontalBounds(for: oldSize.width, margin: movementHorizontalMargin)
+        refreshSafeAreaInsets(force: true, previousBounds: previousBounds)
+    }
+    
+    private func refreshSafeAreaInsets(force: Bool = false,
+                                       previousBounds: HorizontalBounds? = nil) {
+        guard let currentView = view else { return }
+        let safeInsets = currentView.safeAreaInsets
+        if !force && safeInsets == lastKnownSafeAreaInsets {
+            return
+        }
+        
+        let referenceBounds = previousBounds ?? horizontalBounds()
+        lastKnownSafeAreaInsets = safeInsets
+        movementHorizontalMargin = computeMovementMargin(for: safeInsets)
+        restorePlayerPosition(relativeTo: referenceBounds)
+    }
+    
+    private func computeMovementMargin(for safeArea: UIEdgeInsets) -> CGFloat {
+        guard size.width.isFinite else { return minimumMovementMargin }
+        let horizontalInset = max(safeArea.left, safeArea.right)
+        let radiusBuffer = playerRadius + 12
+        let requestedMargin = max(minimumMovementMargin, horizontalInset + radiusBuffer)
+        let halfWidth = size.width / 2
+        let maxAllowedMargin = max(minimumMovementMargin, halfWidth - (playerRadius + 4))
+        let sanitizedMax = max(minimumMovementMargin, maxAllowedMargin)
+        return min(requestedMargin, sanitizedMax)
+    }
+    
+    private func restorePlayerPosition(relativeTo previousBounds: HorizontalBounds) {
+        guard let player = player else { return }
+        let currentBounds = horizontalBounds()
+        let ratio = normalizedPosition(for: player.position.x, within: previousBounds)
+        let span = currentBounds.max - currentBounds.min
+        let newX = currentBounds.min + ratio * span
+        let clampedX = clampWithinHorizontalBounds(newX)
+        player.position.x = clampedX
+        targetX = clampedX
+    }
+    
+    private func horizontalBounds(for width: CGFloat? = nil,
+                                  margin: CGFloat? = nil) -> HorizontalBounds {
+        let sceneWidth = width ?? size.width
+        let marginValue = margin ?? movementHorizontalMargin
+        guard sceneWidth.isFinite else { return (marginValue, marginValue) }
+        let minX = marginValue
+        let maxX = max(minX, sceneWidth - marginValue)
+        return (minX, maxX)
+    }
+    
+    private func normalizedPosition(for x: CGFloat,
+                                    within bounds: HorizontalBounds) -> CGFloat {
+        let span = max(bounds.max - bounds.min, .leastNonzeroMagnitude)
+        let normalized = (x - bounds.min) / span
+        return min(max(normalized, 0), 1)
     }
     
     private func setupPlayerPhysics(radius: CGFloat) {
@@ -269,8 +343,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if lastUpdateTime == 0 {
             lastUpdateTime = currentTime
         }
-        let deltaTime = currentTime - lastUpdateTime
+        let rawDeltaTime = max(0, currentTime - lastUpdateTime)
         lastUpdateTime = currentTime
+        let deltaTime = min(rawDeltaTime, GameScene.maxDeltaTime)
+        
+        refreshSafeAreaInsets()
+        
+        if performanceGovernor.registerFrame(deltaTime: rawDeltaTime, currentTime: currentTime) {
+            applyCurrentPerformanceMode()
+        }
         
         // Update game state time and difficulty
         gameState?.updateTime(delta: deltaTime)
@@ -380,13 +461,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Remove offscreen obstacles and award dodge bonus
         obstacles.removeAll { obstacle in
             if obstacle.isOffScreen(sceneHeight: size.height) {
-                obstacle.removeFromParent()
+                recycleObstacle(obstacle)
                 // Award 10 points for dodging an obstacle
                 gameState?.addDodge(points: 10)
                 return true
             }
             return false
         }
+    }
+    
+    private func recycleObstacle(_ obstacle: ObstacleNode) {
+        obstacle.removeAllActions()
+        obstacle.removeFromParent()
+        obstaclePool.recycle(obstacle)
     }
     
     private func spawnObstacles(deltaTime: TimeInterval) {
@@ -409,7 +496,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // Calculate spawn interval using lerp: 1.0 -> 0.3 based on difficulty
         let spawnInterval = lerp(1.0, 0.3, difficulty)
-        nextSpawnInterval = TimeInterval(spawnInterval)
+        let intervalWithGovernor = spawnInterval * CGFloat(performanceGovernor.spawnIntervalMultiplier)
+        nextSpawnInterval = TimeInterval(intervalWithGovernor)
         
         // Calculate base obstacle speed using lerp: 240 -> 700 based on difficulty
         let baseSpeedY = lerp(240, 700, difficulty)
@@ -447,15 +535,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                             (core: (1.0, 0.1, 0.6), glow: (1.0, 0.35, 0.75))
         
         // Create and position obstacle with theme colors
-        let obstacle = ObstacleNode(width: width, 
-                                   height: height, 
-                                   speedY: speedY,
-                                   coreColor: obstacleColors.core,
-                                   glowColor: obstacleColors.glow)
+        let obstacle = obstaclePool.dequeue(width: width,
+                                            height: height,
+                                            speedY: speedY,
+                                            coreColor: obstacleColors.core,
+                                            glowColor: obstacleColors.glow)
         obstacle.position = CGPoint(x: randomX, y: size.height + height)
         
         // Add to scene and tracking array
-        addChild(obstacle)
+        if obstacle.parent !== self {
+            addChild(obstacle)
+        }
         obstacles.append(obstacle)
     }
     
@@ -797,6 +887,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             restoreAndRecycle
         ]))
     }
+    
+    private func applyCurrentPerformanceMode() {
+        nearMissEmitterFactory?.setIntensityMultiplier(performanceGovernor.particleIntensityMultiplier)
+    }
     private func flashScreen() {
         // Create a brief red flash overlay for collision feedback
         let flash = SKShapeNode(rect: frame)
@@ -923,7 +1017,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // Clear all obstacles
         for obstacle in obstacles {
-            obstacle.removeFromParent()
+            recycleObstacle(obstacle)
         }
         obstacles.removeAll()
         
@@ -949,6 +1043,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         removeAction(forKey: "cameraShake")
         position = .zero
         dragInputActive = false
+        
+        if performanceGovernor.reset() {
+            applyCurrentPerformanceMode()
+        }
     }
     
     deinit {

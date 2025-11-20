@@ -10,6 +10,8 @@
 		591680A12EC58DB600078791 /* Ethnocentric-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 591680A02EC58DB600078791 /* Ethnocentric-Regular.otf */; };
 		B1000001 /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000001 /* Haptics.swift */; };
 		C1000001 /* SoundManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2000001 /* SoundManager.swift */; };
+		G1000001 /* DefaultsGuard.swift in Sources */ = {isa = PBXBuildFile; fileRef = G2000001 /* DefaultsGuard.swift */; };
+		G1000002 /* PerformanceGovernor.swift in Sources */ = {isa = PBXBuildFile; fileRef = G2000002 /* PerformanceGovernor.swift */; };
 		C1000003 /* whoosh.wav in Resources */ = {isa = PBXBuildFile; fileRef = C2000003 /* whoosh.wav */; };
 		C1000004 /* thud.wav in Resources */ = {isa = PBXBuildFile; fileRef = C2000004 /* thud.wav */; };
 		A1000001 /* HyperSlideApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000001 /* HyperSlideApp.swift */; };
@@ -31,6 +33,8 @@
 		591680A02EC58DB600078791 /* Ethnocentric-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Ethnocentric-Regular.otf"; sourceTree = "<group>"; };
 		B2000001 /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
 		C2000001 /* SoundManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundManager.swift; sourceTree = "<group>"; };
+		G2000001 /* DefaultsGuard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsGuard.swift; sourceTree = "<group>"; };
+		G2000002 /* PerformanceGovernor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerformanceGovernor.swift; sourceTree = "<group>"; };
 		C2000003 /* whoosh.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = whoosh.wav; sourceTree = "<group>"; };
 		C2000004 /* thud.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = thud.wav; sourceTree = "<group>"; };
 		59BFBE242EC587A800EA9135 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -73,6 +77,8 @@
 			isa = PBXGroup;
 			children = (
 				59BFBE242EC587A800EA9135 /* Info.plist */,
+				G2000001 /* DefaultsGuard.swift */,
+				G2000002 /* PerformanceGovernor.swift */,
 				A2000001 /* HyperSlideApp.swift */,
 				A2000002 /* ContentView.swift */,
 				A2000003 /* GameScene.swift */,
@@ -178,6 +184,8 @@
 				A1000001 /* HyperSlideApp.swift in Sources */,
 				A1000002 /* ContentView.swift in Sources */,
 				A1000003 /* GameScene.swift in Sources */,
+				G1000001 /* DefaultsGuard.swift in Sources */,
+				G1000002 /* PerformanceGovernor.swift in Sources */,
 				A1000004 /* GameState.swift in Sources */,
 				E1000001 /* Settings.swift in Sources */,
 				A1000005 /* HUDView.swift in Sources */,

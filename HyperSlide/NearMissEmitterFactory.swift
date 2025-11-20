@@ -19,6 +19,16 @@ final class NearMissEmitterFactory {
     private var availableEmitters: [SKEmitterNode] = []
     private weak var poolParent: SKNode?
     private var hasPrimedEmitter = false
+    private var intensityMultiplier: CGFloat = 1.0
+    
+    private enum Constants {
+        static let baseBirthRate: CGFloat = 200
+        static let baseParticleCount: CGFloat = 12
+        static let baseSpeed: CGFloat = 320
+        static let baseSpeedRange: CGFloat = 120
+        static let minIntensity: CGFloat = 0.45
+        static let maxIntensity: CGFloat = 1.0
+    }
     
     init?(renderer: SKView, poolSize: Int = 8) {
         guard let particleTexture = Self.buildParticleTexture(using: renderer) else {
@@ -37,6 +47,8 @@ final class NearMissEmitterFactory {
             emitter.alpha = 0
             emitter.resetSimulation()
         }
+        applyIntensity(to: prototypeEmitter)
+        availableEmitters.forEach(applyIntensity)
     }
     
     /// Ensures the pooled emitters are attached to a shared parent node.
@@ -73,6 +85,7 @@ final class NearMissEmitterFactory {
         emitter.position = position
         emitter.isHidden = false
         emitter.resetSimulation()
+        applyIntensity(to: emitter)
         return emitter
     }
     
@@ -116,9 +129,34 @@ final class NearMissEmitterFactory {
     }
 }
 
+extension NearMissEmitterFactory {
+    func setIntensityMultiplier(_ multiplier: CGFloat) {
+        let clamped = max(Constants.minIntensity, min(Constants.maxIntensity, multiplier))
+        guard abs(clamped - intensityMultiplier) > 0.01 else { return }
+        intensityMultiplier = clamped
+        
+        applyIntensity(to: prototypeEmitter)
+        availableEmitters.forEach(applyIntensity)
+        if let parent = poolParent {
+            parent.children
+                .compactMap { $0 as? SKEmitterNode }
+                .forEach(applyIntensity)
+        }
+    }
+}
+
+
 // MARK: - Private Builders
 
 private extension NearMissEmitterFactory {
+    func applyIntensity(to emitter: SKEmitterNode) {
+        emitter.particleBirthRate = Constants.baseBirthRate * intensityMultiplier
+        let particleCount = max(3, Int(round(Constants.baseParticleCount * intensityMultiplier)))
+        emitter.numParticlesToEmit = particleCount
+        emitter.particleSpeed = Constants.baseSpeed * (0.85 + 0.15 * intensityMultiplier)
+        emitter.particleSpeedRange = Constants.baseSpeedRange * intensityMultiplier
+    }
+    
     static func buildParticleTexture(using renderer: SKView) -> SKTexture? {
         // Draw a simple circle without expensive glow effects for optimal performance.
         // The glow will be achieved through additive blending and alpha properties.
@@ -142,14 +180,14 @@ private extension NearMissEmitterFactory {
         emitter.particleBlendMode = .add
         
         // Reduced particle count for smoother performance while maintaining visual impact
-        emitter.particleBirthRate = 200
-        emitter.numParticlesToEmit = 12
+        emitter.particleBirthRate = Constants.baseBirthRate
+        emitter.numParticlesToEmit = Int(Constants.baseParticleCount)
         emitter.particleLifetime = 0.35
         emitter.particleLifetimeRange = 0.1
         
         emitter.emissionAngleRange = .pi * 2
-        emitter.particleSpeed = 320
-        emitter.particleSpeedRange = 120
+        emitter.particleSpeed = Constants.baseSpeed
+        emitter.particleSpeedRange = Constants.baseSpeedRange
         
         emitter.particleAlpha = 0.85
         emitter.particleAlphaRange = 0.15
