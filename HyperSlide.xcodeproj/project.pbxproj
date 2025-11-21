@@ -10,6 +10,8 @@
 		591680A12EC58DB600078791 /* Ethnocentric-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 591680A02EC58DB600078791 /* Ethnocentric-Regular.otf */; };
 		B1000001 /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000001 /* Haptics.swift */; };
 		C1000001 /* SoundManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2000001 /* SoundManager.swift */; };
+		H1000001 /* BackgroundMusicAssetEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = H2000001 /* BackgroundMusicAssetEngine.swift */; };
+		H1000003 /* HyperSlide Music.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = H2000003 /* HyperSlide Music.mp3 */; };
 		G1000001 /* DefaultsGuard.swift in Sources */ = {isa = PBXBuildFile; fileRef = G2000001 /* DefaultsGuard.swift */; };
 		G1000002 /* PerformanceGovernor.swift in Sources */ = {isa = PBXBuildFile; fileRef = G2000002 /* PerformanceGovernor.swift */; };
 		C1000003 /* whoosh.wav in Resources */ = {isa = PBXBuildFile; fileRef = C2000003 /* whoosh.wav */; };
@@ -33,6 +35,8 @@
 		591680A02EC58DB600078791 /* Ethnocentric-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Ethnocentric-Regular.otf"; sourceTree = "<group>"; };
 		B2000001 /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
 		C2000001 /* SoundManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundManager.swift; sourceTree = "<group>"; };
+		H2000001 /* BackgroundMusicAssetEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundMusicAssetEngine.swift; sourceTree = "<group>"; };
+		H2000003 /* HyperSlide Music.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "HyperSlide Music.mp3"; sourceTree = "<group>"; };
 		G2000001 /* DefaultsGuard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsGuard.swift; sourceTree = "<group>"; };
 		G2000002 /* PerformanceGovernor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerformanceGovernor.swift; sourceTree = "<group>"; };
 		C2000003 /* whoosh.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = whoosh.wav; sourceTree = "<group>"; };
@@ -87,6 +91,8 @@
 				A2000005 /* HUDView.swift */,
 				E2000002 /* SettingsView.swift */,
 				C2000001 /* SoundManager.swift */,
+				H2000001 /* BackgroundMusicAssetEngine.swift */,
+				H2000003 /* HyperSlide Music.mp3 */,
 				B2000001 /* Haptics.swift */,
 				A2000007 /* Obstacle.swift */,
 				F2000001 /* PowerUpNode.swift */,
@@ -171,6 +177,7 @@
 				A1000006 /* Assets.xcassets in Resources */,
 				C1000003 /* whoosh.wav in Resources */,
 				C1000004 /* thud.wav in Resources */,
+				H1000003 /* HyperSlide Music.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -191,6 +198,7 @@
 				A1000005 /* HUDView.swift in Sources */,
 				E1000002 /* SettingsView.swift in Sources */,
 				C1000001 /* SoundManager.swift in Sources */,
+				H1000001 /* BackgroundMusicAssetEngine.swift in Sources */,
 				A1000007 /* Obstacle.swift in Sources */,
 				F1000001 /* PowerUpNode.swift in Sources */,
 				F1000002 /* SlowMotionEffect.swift in Sources */,

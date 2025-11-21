@@ -112,9 +112,25 @@ class GameState {
         }
     }
     
+    /// Force the game into a paused state if an active run is in progress.
+    func pauseGame() {
+        guard hasStarted, !isGameOver, !isPaused else { return }
+        isPaused = true
+    }
+    
+    /// Resume gameplay if the user previously paused the active run.
+    func resumeGame() {
+        guard hasStarted, !isGameOver, isPaused else { return }
+        isPaused = false
+    }
+    
     /// Toggle pause state
     func togglePause() {
-        isPaused.toggle()
+        if isPaused {
+            resumeGame()
+        } else {
+            pauseGame()
+        }
     }
     
     /// Update elapsed time (difficulty is computed from elapsed)

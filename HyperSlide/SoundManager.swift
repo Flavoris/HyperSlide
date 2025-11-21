@@ -74,13 +74,18 @@ final class SoundManager: ObservableObject {
     
     private var players: [SoundEffect: SoundPlayer] = [:]
     private var hasPrimedAudio = false
+    private let backgroundMusic: BackgroundMusicControlling
+    private var sfxVolume: Float = 1.0
+    private var musicVolume: Float = 1.0
     
     // MARK: Initialization
     
     init(bundle: Bundle = .main,
-         defaults: UserDefaults = .standard) {
+         defaults: UserDefaults = .standard,
+         backgroundMusic: BackgroundMusicControlling = BackgroundMusicAssetEngine()) {
         self.bundle = bundle
         self.defaults = defaults
+        self.backgroundMusic = backgroundMusic
         if defaults.object(forKey: Self.muteDefaultsKey) == nil {
             self.isMuted = false
             DefaultsGuard.write(on: defaults) { store in
@@ -94,6 +99,9 @@ final class SoundManager: ObservableObject {
         
         configureAudioSession()
         preloadPlayers()
+        self.backgroundMusic.setUserVolume(musicVolume)
+        self.backgroundMusic.setMuted(isMuted)
+        self.backgroundMusic.start()
     }
     
     // MARK: Public API
@@ -102,6 +110,7 @@ final class SoundManager: ObservableObject {
     func setMuted(_ muted: Bool) {
         guard isMuted != muted else { return }
         isMuted = muted
+        backgroundMusic.setMuted(muted)
         DefaultsGuard.write(on: defaults) { store in
             store.set(muted, forKey: Self.muteDefaultsKey)
         }
@@ -110,6 +119,22 @@ final class SoundManager: ObservableObject {
     /// Convenience wrapper for UI bindings.
     func toggleMute() {
         setMuted(!isMuted)
+    }
+    
+    /// Adjusts the master SFX volume (0...1) applied on top of per-effect tuning.
+    func setSFXVolume(_ volume: Float) {
+        let clamped = Self.clampVolume(volume)
+        guard sfxVolume != clamped else { return }
+        sfxVolume = clamped
+        applySFXVolume()
+    }
+    
+    /// Adjusts the background music volume (0...1) while keeping mute state intact.
+    func setMusicVolume(_ volume: Float) {
+        let clamped = Self.clampVolume(volume)
+        guard musicVolume != clamped else { return }
+        musicVolume = clamped
+        backgroundMusic.setUserVolume(clamped)
     }
     
     /// Warms the audio pipeline to prevent the first playback from blocking the main thread.
@@ -185,7 +210,7 @@ final class SoundManager: ObservableObject {
             
             do {
                 let player = try AVAudioPlayer(contentsOf: url)
-                player.volume = effect.defaultVolume
+                player.volume = effect.defaultVolume * sfxVolume
                 player.prepareToPlay()
                 players[effect] = player
             } catch {
@@ -203,6 +228,17 @@ final class SoundManager: ObservableObject {
         
         player.currentTime = 0
         return player.play()
+    }
+    
+    private func applySFXVolume() {
+        SoundEffect.allCases.forEach { effect in
+            guard let player = players[effect] else { return }
+            player.volume = effect.defaultVolume * sfxVolume
+        }
+    }
+    
+    private static func clampVolume(_ value: Float) -> Float {
+        min(max(value, 0), 1)
     }
 }
 

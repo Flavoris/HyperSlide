@@ -16,8 +16,11 @@ class Settings {
     private static let tiltControlKey = "HyperSlide.TiltControl"
     private static let tiltSensitivityKey = "HyperSlide.TiltSensitivity"
     private static let colorThemeKey = "HyperSlide.ColorTheme"
+    private static let musicVolumeKey = "HyperSlide.MusicVolume"
+    private static let sfxVolumeKey = "HyperSlide.SFXVolume"
     
     static let tiltSensitivityRange: ClosedRange<Double> = 0.6...1.4
+    static let audioVolumeRange: ClosedRange<Double> = 0.0...1.0
     
     private let defaults: UserDefaults
     
@@ -64,6 +67,36 @@ class Settings {
             guard colorTheme != oldValue else { return }
             DefaultsGuard.write(on: defaults) { store in
                 store.set(colorTheme.rawValue, forKey: Settings.colorThemeKey)
+            }
+        }
+    }
+    
+    /// Background music volume (0...1)
+    var musicVolume: Double {
+        didSet {
+            let clamped = Settings.clampAudioVolume(musicVolume)
+            if clamped != musicVolume {
+                musicVolume = clamped
+                return
+            }
+            guard musicVolume != oldValue else { return }
+            DefaultsGuard.write(on: defaults) { store in
+                store.set(musicVolume, forKey: Settings.musicVolumeKey)
+            }
+        }
+    }
+    
+    /// Sound effects volume (0...1)
+    var sfxVolume: Double {
+        didSet {
+            let clamped = Settings.clampAudioVolume(sfxVolume)
+            if clamped != sfxVolume {
+                sfxVolume = clamped
+                return
+            }
+            guard sfxVolume != oldValue else { return }
+            DefaultsGuard.write(on: defaults) { store in
+                store.set(sfxVolume, forKey: Settings.sfxVolumeKey)
             }
         }
     }
@@ -133,6 +166,32 @@ class Settings {
         } else {
             self.colorTheme = .neonBlue
         }
+        
+        if defaults.object(forKey: Settings.musicVolumeKey) == nil {
+            let defaultMusicVolume = 0.85
+            self.musicVolume = defaultMusicVolume
+            DefaultsGuard.write(on: defaults) { store in
+                store.set(defaultMusicVolume, forKey: Settings.musicVolumeKey)
+            }
+        } else {
+            let storedValue = DefaultsGuard.read(from: defaults) { store in
+                store.double(forKey: Settings.musicVolumeKey)
+            } ?? 0.85
+            self.musicVolume = Settings.clampAudioVolume(storedValue)
+        }
+        
+        if defaults.object(forKey: Settings.sfxVolumeKey) == nil {
+            let defaultSFXVolume = 1.0
+            self.sfxVolume = defaultSFXVolume
+            DefaultsGuard.write(on: defaults) { store in
+                store.set(defaultSFXVolume, forKey: Settings.sfxVolumeKey)
+            }
+        } else {
+            let storedValue = DefaultsGuard.read(from: defaults) { store in
+                store.double(forKey: Settings.sfxVolumeKey)
+            } ?? 1.0
+            self.sfxVolume = Settings.clampAudioVolume(storedValue)
+        }
     }
     
     // MARK: - Computed Properties
@@ -146,6 +205,10 @@ class Settings {
     
     private static func clampTiltSensitivity(_ value: Double) -> Double {
         min(max(value, tiltSensitivityRange.lowerBound), tiltSensitivityRange.upperBound)
+    }
+    
+    private static func clampAudioVolume(_ value: Double) -> Double {
+        min(max(value, audioVolumeRange.lowerBound), audioVolumeRange.upperBound)
     }
 }
 

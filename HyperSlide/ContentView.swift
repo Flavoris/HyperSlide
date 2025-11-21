@@ -28,7 +28,6 @@ struct ContentView: View {
             // SwiftUI HUD Overlay
             HUDView(gameState: gameState,
                     settings: settings,
-                    soundManager: soundManager,
                     onRestart: handleRestart)
         }
         .preferredColorScheme(.dark)
@@ -38,6 +37,8 @@ struct ContentView: View {
             gameScene.settings = settings
             gameScene.soundManager = soundManager
             soundManager.primeAudioIfNeeded()
+            soundManager.setMusicVolume(Float(settings.musicVolume))
+            soundManager.setSFXVolume(Float(settings.sfxVolume))
             gameScene.updateTiltControlPreference(isEnabled: settings.tiltControlEnabled)
         }
         .onChange(of: settings.colorTheme) { _, _ in
@@ -46,6 +47,12 @@ struct ContentView: View {
         }
         .onChange(of: settings.tiltControlEnabled) { _, newValue in
             gameScene.updateTiltControlPreference(isEnabled: newValue)
+        }
+        .onChange(of: settings.musicVolume) { _, newValue in
+            soundManager.setMusicVolume(Float(newValue))
+        }
+        .onChange(of: settings.sfxVolume) { _, newValue in
+            soundManager.setSFXVolume(Float(newValue))
         }
     }
     

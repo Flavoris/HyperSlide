@@ -1,9 +1,6 @@
-Hardening:
+Handle lifecycle:
 
-- Cap dt to 1/30 to avoid jump after app resumes from background.
-- Use SKAction/emitters sparingly; pool obstacle nodes if possible (simple reuse list).
-- On resize / safe area changes (different devices), recalc margins; keep player’s relative x (% of width).
-- Guard UserDefaults reads/writes with simple try-like pattern; default safely.
-
-Testing:
-- Simulate low FPS (Xcode GPU tools) and verify: fewer particles, slightly slower spawn (adaptive). Implement a “performance governor” that reduces particle rate if average FPS < 45 for 2s.
+- On sceneWillResignActive / appWillResignActive: auto-pause and show paused overlay.
+- On resume: don’t auto-unpause; require user tap.
+- Persist bestScore and user settings immediately on change.
+- Do not persist in-progress run (keep it simple for v1).

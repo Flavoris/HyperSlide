@@ -94,6 +94,25 @@ struct SettingsView: View {
                             }
                         }
                         
+                        // Audio Section
+                        settingsCard {
+                            VStack(alignment: .leading, spacing: 16) {
+                                Text("Audio")
+                                    .font(.system(size: 20, weight: .bold))
+                                    .foregroundStyle(.white)
+                                
+                                audioSlider(title: "Music Volume",
+                                            value: $settings.musicVolume)
+                                
+                                audioSlider(title: "SFX Volume",
+                                            value: $settings.sfxVolume)
+                                
+                                Text("Dial in the mix between soundtrack and effects.")
+                                    .font(.system(size: 13))
+                                    .foregroundStyle(.white.opacity(0.6))
+                            }
+                        }
+                        
                         // Theme Section
                         settingsCard {
                             VStack(alignment: .leading, spacing: 16) {
@@ -212,6 +231,33 @@ struct SettingsView: View {
         .opacity(settings.tiltControlEnabled ? 1 : 0.35)
         .allowsHitTesting(settings.tiltControlEnabled)
         .animation(.easeInOut(duration: 0.2), value: settings.tiltControlEnabled)
+    }
+    
+    private func audioSlider(title: String,
+                             value: Binding<Double>) -> some View {
+        let percentage = Int((value.wrappedValue * 100).rounded())
+        return VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text(title)
+                    .font(.system(size: 15, weight: .medium))
+                    .foregroundStyle(.white)
+                
+                Spacer()
+                
+                Text("\(percentage)%")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(.white.opacity(0.85))
+                    .accessibilityLabel("\(title) \(percentage) percent")
+            }
+            
+            Slider(value: value,
+                   in: Settings.audioVolumeRange,
+                   step: 0.01) {
+                Text(title)
+            }
+                   .tint(settings.colorTheme.primaryColor)
+                   .accessibilityValue("\(percentage) percent")
+        }
     }
 }
 

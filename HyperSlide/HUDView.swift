@@ -10,7 +10,6 @@ import SwiftUI
 struct HUDView: View {
     @Bindable var gameState: GameState
     @Bindable var settings: Settings
-    @ObservedObject var soundManager: SoundManager
     var onRestart: () -> Void
     
     /// Accent color for the Game Over title and button, using a deeper neon red for better contrast.
@@ -181,7 +180,7 @@ struct HUDView: View {
                 .tracking(3)
             
             Button {
-                gameState.togglePause()
+                gameState.resumeGame()
             } label: {
                 Text("RESUME")
                     .font(.system(size: 26, weight: .heavy, design: .rounded))
@@ -238,7 +237,11 @@ struct HUDView: View {
             // Pause/Resume Button (left corner)
             if gameState.hasStarted && !gameState.isGameOver {
                 Button {
-                    gameState.togglePause()
+                    if gameState.isPaused {
+                        gameState.resumeGame()
+                    } else {
+                        gameState.pauseGame()
+                    }
                 } label: {
                     Image(systemName: gameState.isPaused ? "play.fill" : "pause.fill")
                         .font(.system(size: 22, weight: .bold))
@@ -260,9 +263,6 @@ struct HUDView: View {
                     settingsButton
                 }
                 
-                if gameState.isPaused {
-                    muteButton
-                }
             }
         }
         .sheet(isPresented: $showSettings) {
@@ -294,27 +294,6 @@ struct HUDView: View {
         .accessibilityLabel("Open settings")
     }
     
-    private var muteButton: some View {
-        Button {
-            soundManager.toggleMute()
-        } label: {
-            Image(systemName: soundManager.isMuted ? "speaker.slash.fill" : "speaker.wave.2.fill")
-                .font(.system(size: 22, weight: .semibold))
-                .foregroundStyle(.white)
-                .frame(width: 54, height: 54)
-                .background(
-                    Circle()
-                        .fill(Color.white.opacity(0.12))
-                        .overlay(
-                            Circle()
-                                .stroke(Color.white.opacity(0.24), lineWidth: 1)
-                        )
-                )
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel(soundManager.isMuted ? "Unmute sound effects" : "Mute sound effects")
-        .accessibilityHint("Toggles HyperSlide's sound effects.")
-    }
 }
 
 // MARK: - Preview
@@ -325,7 +304,6 @@ struct HUDView: View {
         
         HUDView(gameState: GameState(),
                 settings: Settings(),
-                soundManager: SoundManager(),
                 onRestart: {})
     }
 }

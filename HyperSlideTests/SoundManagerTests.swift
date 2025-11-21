@@ -20,16 +20,23 @@ final class SoundManagerTests: XCTestCase {
         defaults.removePersistentDomain(forName: suiteName)
         defer { defaults.removePersistentDomain(forName: suiteName) }
         
-        let manager = SoundManager(defaults: defaults)
+        let background = MockBackgroundMusicController()
+        let manager = SoundManager(defaults: defaults,
+                                   backgroundMusic: background)
         XCTAssertFalse(manager.isMuted, "Manager should default to unmuted.")
         
         manager.setMuted(true)
         XCTAssertTrue(manager.isMuted, "Manager should update its published mute state.")
         XCTAssertTrue(defaults.bool(forKey: "HyperSlide.SoundManager.Muted"),
                       "Mute preference must persist in UserDefaults.")
+        XCTAssertTrue(background.lastMuteState, "Background engine should receive updated mute state.")
         
-        let rehydrated = SoundManager(defaults: defaults)
+        let rehydratedBackground = MockBackgroundMusicController()
+        let rehydrated = SoundManager(defaults: defaults,
+                                      backgroundMusic: rehydratedBackground)
         XCTAssertTrue(rehydrated.isMuted, "Reloaded manager should respect stored mute preference.")
+        XCTAssertTrue(rehydratedBackground.lastMuteState,
+                      "Background engine should inherit persisted mute state.")
     }
     
     func testMuteTogglePreventsPlayback() {
@@ -41,7 +48,8 @@ final class SoundManagerTests: XCTestCase {
         defaults.removePersistentDomain(forName: suiteName)
         defer { defaults.removePersistentDomain(forName: suiteName) }
         
-        let manager = SoundManager(defaults: defaults)
+        let manager = SoundManager(defaults: defaults,
+                                   backgroundMusic: MockBackgroundMusicController())
         let player = MockSoundPlayer()
         manager.setPlayer(player, for: .nearMissWhoosh)
         
@@ -66,7 +74,8 @@ final class SoundManagerTests: XCTestCase {
         defaults.removePersistentDomain(forName: suiteName)
         defer { defaults.removePersistentDomain(forName: suiteName) }
         
-        let manager = SoundManager(defaults: defaults)
+        let manager = SoundManager(defaults: defaults,
+                                   backgroundMusic: MockBackgroundMusicController())
         let whooshPlayer = MockSoundPlayer()
         let collisionPlayer = MockSoundPlayer()
         manager.setPlayer(whooshPlayer, for: .nearMissWhoosh)
@@ -90,6 +99,47 @@ final class SoundManagerTests: XCTestCase {
         XCTAssertEqual(whooshPlayer.playCallCount, 1)
         XCTAssertEqual(collisionPlayer.playCallCount, 1)
     }
+    
+    func testAdjustingSFXVolumeRescalesPlayers() {
+        let suiteName = "SoundManagerTests.SFXVolume"
+        guard let defaults = UserDefaults(suiteName: suiteName) else {
+            XCTFail("Failed to create UserDefaults suite for testing.")
+            return
+        }
+        defaults.removePersistentDomain(forName: suiteName)
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        
+        let background = MockBackgroundMusicController()
+        let manager = SoundManager(defaults: defaults,
+                                   backgroundMusic: background)
+        let mockPlayer = MockSoundPlayer()
+        manager.setPlayer(mockPlayer, for: .nearMissWhoosh)
+        
+        manager.setSFXVolume(0.5)
+        
+        XCTAssertEqual(mockPlayer.volume,
+                       SoundManager.SoundEffect.nearMissWhoosh.defaultVolume * 0.5,
+                       accuracy: 0.0001)
+    }
+    
+    func testSetMusicVolumePassesThroughToBackgroundEngine() {
+        let suiteName = "SoundManagerTests.MusicVolume"
+        guard let defaults = UserDefaults(suiteName: suiteName) else {
+            XCTFail("Failed to create UserDefaults suite for testing.")
+            return
+        }
+        defaults.removePersistentDomain(forName: suiteName)
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        
+        let background = MockBackgroundMusicController()
+        let manager = SoundManager(defaults: defaults,
+                                   backgroundMusic: background)
+        
+        manager.setMusicVolume(0.3)
+        
+        XCTAssertEqual(background.lastUserVolume, 0.3, accuracy: 0.0001)
+        XCTAssertEqual(background.setUserVolumeCallCount, 1)
+    }
 }
 
 // MARK: - Test Doubles
@@ -107,6 +157,30 @@ private final class MockSoundPlayer: SoundPlayer {
     }
     
     func stop() {}
+}
+
+private final class MockBackgroundMusicController: BackgroundMusicControlling {
+    private(set) var startCallCount = 0
+    private(set) var setMutedCallCount = 0
+    private(set) var lastMuteState = false
+    private(set) var setUserVolumeCallCount = 0
+    private(set) var lastUserVolume: Float = 1.0
+    
+    func start() {
+        startCallCount += 1
+    }
+    
+    func stop() {}
+    
+    func setMuted(_ muted: Bool) {
+        lastMuteState = muted
+        setMutedCallCount += 1
+    }
+    
+    func setUserVolume(_ volume: Float) {
+        lastUserVolume = volume
+        setUserVolumeCallCount += 1
+    }
 }
 
 

@@ -71,6 +71,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private var shouldPrimeEmitterOnPresentation = true
     private let performanceGovernor = PerformanceGovernor()
     
+    private enum LifecyclePauseTrigger {
+        case sceneWillResignActive
+        case applicationWillResignActive
+    }
+    
+    private var lifecycleObservers: [NSObjectProtocol] = []
+    
     // Tilt control
     private let motionManager = CMMotionManager()
     private var motionActivityManager: CMMotionActivityManager?
@@ -147,6 +154,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         powerUpSpawnTimer = 0
         scheduleNextPowerUpSpawn()
         updateSlowMotionOverlayGeometry()
+        registerLifecycleNotifications()
+    }
+    
+    override func willMove(from view: SKView) {
+        super.willMove(from: view)
+        unregisterLifecycleNotifications()
     }
     
     override func didChangeSize(_ oldSize: CGSize) {
@@ -334,6 +347,43 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         guard isDeviceMotionActive else { return }
         motionManager.stopDeviceMotionUpdates()
         isDeviceMotionActive = false
+    }
+    
+    // MARK: - Lifecycle Handling
+    
+    private func registerLifecycleNotifications() {
+        guard lifecycleObservers.isEmpty else { return }
+        let center = NotificationCenter.default
+        let sceneWillDeactivate = center.addObserver(forName: UIScene.willDeactivateNotification,
+                                                     object: nil,
+                                                     queue: .main) { [weak self] _ in
+            self?.handleLifecyclePause(trigger: .sceneWillResignActive)
+        }
+        let appWillResign = center.addObserver(forName: UIApplication.willResignActiveNotification,
+                                               object: nil,
+                                               queue: .main) { [weak self] _ in
+            self?.handleLifecyclePause(trigger: .applicationWillResignActive)
+        }
+        lifecycleObservers.append(sceneWillDeactivate)
+        lifecycleObservers.append(appWillResign)
+    }
+    
+    private func unregisterLifecycleNotifications() {
+        guard !lifecycleObservers.isEmpty else { return }
+        let center = NotificationCenter.default
+        lifecycleObservers.forEach { center.removeObserver($0) }
+        lifecycleObservers.removeAll()
+    }
+    
+    private func handleLifecyclePause(trigger _: LifecyclePauseTrigger) {
+        guard let state = gameState,
+              state.hasStarted,
+              !state.isGameOver,
+              !state.isPaused else {
+            return
+        }
+        dragInputActive = false
+        state.pauseGame()
     }
     
     // MARK: - Update Loop
@@ -723,6 +773,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // Trigger game over
         state.isGameOver = true
+        state.recordBest()
         slowMotionEffect.reset()
         clearSlowMotionOverlay()
         performCollisionFeedback()
@@ -1051,7 +1102,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     deinit {
         // Stop motion updates when scene is deallocated
+        unregisterLifecycleNotifications()
         stopDeviceMotionUpdates()
+    }
+}
+
+// MARK: - Testing Hooks
+
+extension GameScene {
+    /// Exposes lifecycle pause logic to unit tests without depending on iOS notifications.
+    func simulateLifecyclePauseForTesting() {
+        handleLifecyclePause(trigger: .sceneWillResignActive)
     }
 }
 
