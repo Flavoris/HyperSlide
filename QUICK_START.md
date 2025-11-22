@@ -1,8 +1,8 @@
-# HyperSlide - Quick Start Guide
+# HyprGlide - Quick Start Guide
 
 ## ✅ Project Status: READY TO RUN
 
-Your HyperSlide iOS app has been successfully created, built, and tested!
+Your HyprGlide iOS app has been successfully created, built, and tested!
 
 ---
 
@@ -10,16 +10,16 @@ Your HyperSlide iOS app has been successfully created, built, and tested!
 
 ### Method 1: Xcode (Easiest)
 ```bash
-1. Double-click: HyperSlide.xcodeproj
+1. Double-click: HyprGlide.xcodeproj
 2. Select an iPhone simulator (e.g., iPhone 17)
 3. Press ⌘R or click the Play button
 ```
 
 ### Method 2: Command Line
 ```bash
-cd /Users/flavorisbelue/Desktop/HyperSlide
-xcodebuild -project HyperSlide.xcodeproj \
-  -scheme HyperSlide \
+cd /Users/flavorisbelue/Desktop/HyprGlide
+xcodebuild -project HyprGlide.xcodeproj \
+  -scheme HyprGlide \
   -destination 'platform=iOS Simulator,name=iPhone 17' \
   build
 ```
@@ -60,10 +60,10 @@ When the app launches:
 ## 📁 Project Structure
 
 ```
-HyperSlide/
-├── HyperSlide.xcodeproj          ← Open this in Xcode
-├── HyperSlide/
-│   ├── HyperSlideApp.swift       ← App entry point
+HyprGlide/
+├── HyprGlide.xcodeproj          ← Open this in Xcode
+├── HyprGlide/
+│   ├── HyprGlideApp.swift       ← App entry point
 │   ├── ContentView.swift         ← SwiftUI + SpriteKit container
 │   ├── GameScene.swift           ← SpriteKit game scene
 │   ├── GameState.swift           ← Observable game state
@@ -98,7 +98,7 @@ The app includes three custom color sets:
 ## 🔧 Technical Specs
 
 - **Architecture**: SwiftUI + SpriteKit Hybrid
-- **State Management**: @Observable (iOS 17+)
+- **State Management**: ObservableObject (Combine)
 - **Update Loop**: 60 FPS with delta time
 - **Difficulty System**: Progressive (10% per 30s)
 - **Memory**: Efficient with no retain cycles
@@ -179,7 +179,7 @@ xcode-select --install
 A: Go to Xcode > Settings > Platforms and download iOS simulators
 
 **Q: App crashes on launch**  
-A: Verify you're using iOS 17+ simulator (required for @Observable)
+A: Verify your simulator supports iOS 16.0+
 
 ---
 
@@ -198,13 +198,13 @@ You know it's working when you see:
 
 ```bash
 # Navigate to project
-cd /Users/flavorisbelue/Desktop/HyperSlide
+cd /Users/flavorisbelue/Desktop/HyprGlide
 
 # Open in Xcode
-open HyperSlide.xcodeproj
+open HyprGlide.xcodeproj
 
 # Build from command line
-xcodebuild -project HyperSlide.xcodeproj -scheme HyperSlide build
+xcodebuild -project HyprGlide.xcodeproj -scheme HyprGlide build
 
 # Clean build
 xcodebuild clean
@@ -217,9 +217,9 @@ xcrun simctl list devices available
 
 ## 🌟 You're All Set!
 
-Your HyperSlide app is **production-ready** for the initial shell. 
+Your HyprGlide app is **production-ready** for the initial shell. 
 
-Open `HyperSlide.xcodeproj` in Xcode and press **⌘R** to see it in action!
+Open `HyprGlide.xcodeproj` in Xcode and press **⌘R** to see it in action!
 
 **Happy Coding! 🚀**
 

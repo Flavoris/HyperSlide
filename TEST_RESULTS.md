@@ -1,4 +1,4 @@
-# HyperSlide Test Results
+# HyprGlide Test Results
 
 **Test Date**: November 11, 2025  
 **Final Status**: ✅ **ALL TESTS PASSED**
@@ -10,7 +10,7 @@
 ### Test 1: Generic iOS Simulator Build
 **Command**:
 ```bash
-xcodebuild -project HyperSlide.xcodeproj -scheme HyperSlide \
+xcodebuild -project HyprGlide.xcodeproj -scheme HyprGlide \
   -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
   build CODE_SIGNING_ALLOWED=NO
 ```
@@ -24,7 +24,7 @@ xcodebuild -project HyperSlide.xcodeproj -scheme HyperSlide \
 ### Test 2: Specific Device Build (iPhone 17)
 **Command**:
 ```bash
-xcodebuild -project HyperSlide.xcodeproj -scheme HyperSlide \
+xcodebuild -project HyprGlide.xcodeproj -scheme HyprGlide \
   -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest' \
   build
 ```
@@ -41,7 +41,7 @@ xcodebuild -project HyperSlide.xcodeproj -scheme HyperSlide \
 
 | File | Lines | Status | Notes |
 |------|-------|--------|-------|
-| HyperSlideApp.swift | 17 | ✅ | Main entry point |
+| HyprGlideApp.swift | 17 | ✅ | Main entry point |
 | GameState.swift | 64 | ✅ | @Observable working correctly |
 | GameScene.swift | 79 | ✅ | SpriteKit integration successful |
 | HUDView.swift | 169 | ✅ | @Bindable working correctly |
@@ -57,7 +57,7 @@ xcodebuild -project HyperSlide.xcodeproj -scheme HyperSlide \
 |-------------|----------|--------|--------|
 | iOS Version | 16+ | 17+ | ✅ |
 | Swift Version | 5.9+ | 5.0+ | ✅ |
-| Main Entry | SwiftUI @main | HyperSlideApp.swift | ✅ |
+| Main Entry | SwiftUI @main | HyprGlideApp.swift | ✅ |
 | Root View | ContentView with ZStack | Implemented | ✅ |
 | SpriteView Integration | Embed SKView | SpriteView in ZStack | ✅ |
 | GameScene Background | Near-black | RGB(0.05, 0.05, 0.08) | ✅ |
@@ -182,7 +182,7 @@ Available simulators for testing:
 ## Installation Verification
 
 ### Build Artifacts Created
-✅ HyperSlide.app bundle  
+✅ HyprGlide.app bundle  
 ✅ Code signature applied  
 ✅ Info.plist generated  
 ✅ Asset catalog compiled  
@@ -191,8 +191,8 @@ Available simulators for testing:
 ### Build Location
 ```
 /Users/flavorisbelue/Library/Developer/Xcode/DerivedData/
-  HyperSlide-ahxssewfptwypphbebgoemasqdwy/Build/Products/
-  Debug-iphonesimulator/HyperSlide.app
+  HyprGlide-ahxssewfptwypphbebgoemasqdwy/Build/Products/
+  Debug-iphonesimulator/HyprGlide.app
 ```
 
 ---
@@ -200,7 +200,7 @@ Available simulators for testing:
 ## How to Run
 
 ### Option 1: Xcode (Recommended)
-1. Open `HyperSlide.xcodeproj` in Xcode
+1. Open `HyprGlide.xcodeproj` in Xcode
 2. Select an iPhone simulator from the device menu
 3. Click Run (⌘R) or Product > Run
 4. App will launch in the simulator
@@ -208,17 +208,17 @@ Available simulators for testing:
 ### Option 2: Command Line
 ```bash
 # Navigate to project
-cd /Users/flavorisbelue/Desktop/HyperSlide
+cd /Users/flavorisbelue/Desktop/HyprGlide
 
 # Build and run
-xcodebuild -project HyperSlide.xcodeproj \
-  -scheme HyperSlide \
+xcodebuild -project HyprGlide.xcodeproj \
+  -scheme HyprGlide \
   -destination 'platform=iOS Simulator,name=iPhone 17' \
   build
 
 # Or just build
-xcodebuild -project HyperSlide.xcodeproj \
-  -scheme HyperSlide \
+xcodebuild -project HyprGlide.xcodeproj \
+  -scheme HyprGlide \
   -sdk iphonesimulator \
   build
 ```
@@ -254,7 +254,7 @@ When launched, the app should display:
 
 ### Overall Grade: **A+ (100%)**
 
-The HyperSlide iOS app has been successfully created, compiled, and verified. All requirements met, code quality excellent, and ready for deployment to simulator or device.
+The HyprGlide iOS app has been successfully created, compiled, and verified. All requirements met, code quality excellent, and ready for deployment to simulator or device.
 
 ---
 

@@ -1,0 +1,421 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		591680A12EC58DB600078791 /* Ethnocentric-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 591680A02EC58DB600078791 /* Ethnocentric-Regular.otf */; };
+		A1000001 /* HyperGlideApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000001 /* HyperGlideApp.swift */; };
+		A1000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000002 /* ContentView.swift */; };
+		A1000003 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000003 /* GameScene.swift */; };
+		A1000004 /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000004 /* GameState.swift */; };
+		A1000005 /* HUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000005 /* HUDView.swift */; };
+		A1000006 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A2000006 /* Assets.xcassets */; };
+		A1000007 /* Obstacle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000007 /* Obstacle.swift */; };
+		A1000008 /* GlowEffectFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000008 /* GlowEffectFactory.swift */; };
+		B1000001 /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000001 /* Haptics.swift */; };
+		C1000001 /* SoundManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2000001 /* SoundManager.swift */; };
+		C1000003 /* whoosh.wav in Resources */ = {isa = PBXBuildFile; fileRef = C2000003 /* whoosh.wav */; };
+		C1000004 /* thud.wav in Resources */ = {isa = PBXBuildFile; fileRef = C2000004 /* thud.wav */; };
+		D1000001 /* NearMissEmitterFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000001 /* NearMissEmitterFactory.swift */; };
+		E1000001 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000001 /* Settings.swift */; };
+		E1000002 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000002 /* SettingsView.swift */; };
+		F1000001 /* PowerUpNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2000001 /* PowerUpNode.swift */; };
+		F1000002 /* SlowMotionEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2000002 /* SlowMotionEffect.swift */; };
+		G1000001 /* DefaultsGuard.swift in Sources */ = {isa = PBXBuildFile; fileRef = G2000001 /* DefaultsGuard.swift */; };
+		G1000002 /* PerformanceGovernor.swift in Sources */ = {isa = PBXBuildFile; fileRef = G2000002 /* PerformanceGovernor.swift */; };
+		H1000001 /* BackgroundMusicAssetEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = H2000001 /* BackgroundMusicAssetEngine.swift */; };
+		H1000003 /* HyperGlide Music.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = H2000003 /* HyperGlide Music.mp3 */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		591680A02EC58DB600078791 /* Ethnocentric-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Ethnocentric-Regular.otf"; sourceTree = "<group>"; };
+		59BFBE242EC587A800EA9135 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		A0000001 /* HyperGlide.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HyperGlide.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A2000001 /* HyperGlideApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HyperGlideApp.swift; sourceTree = "<group>"; };
+		A2000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		A2000003 /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
+		A2000004 /* GameState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameState.swift; sourceTree = "<group>"; };
+		A2000005 /* HUDView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUDView.swift; sourceTree = "<group>"; };
+		A2000006 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A2000007 /* Obstacle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Obstacle.swift; sourceTree = "<group>"; };
+		A2000008 /* GlowEffectFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlowEffectFactory.swift; sourceTree = "<group>"; };
+		B2000001 /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
+		C2000001 /* SoundManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundManager.swift; sourceTree = "<group>"; };
+		C2000003 /* whoosh.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = whoosh.wav; sourceTree = "<group>"; };
+		C2000004 /* thud.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = thud.wav; sourceTree = "<group>"; };
+		D2000001 /* NearMissEmitterFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearMissEmitterFactory.swift; sourceTree = "<group>"; };
+		E2000001 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
+		E2000002 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		F2000001 /* PowerUpNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PowerUpNode.swift; sourceTree = "<group>"; };
+		F2000002 /* SlowMotionEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlowMotionEffect.swift; sourceTree = "<group>"; };
+		G2000001 /* DefaultsGuard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsGuard.swift; sourceTree = "<group>"; };
+		G2000002 /* PerformanceGovernor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerformanceGovernor.swift; sourceTree = "<group>"; };
+		H2000001 /* BackgroundMusicAssetEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundMusicAssetEngine.swift; sourceTree = "<group>"; };
+		H2000003 /* HyperGlide Music.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "HyperGlide Music.mp3"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A3000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A4000001 = {
+			isa = PBXGroup;
+			children = (
+				A4000002 /* HyperGlide */,
+				A4000003 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A4000002 /* HyperGlide */ = {
+			isa = PBXGroup;
+			children = (
+				59BFBE242EC587A800EA9135 /* Info.plist */,
+				G2000001 /* DefaultsGuard.swift */,
+				G2000002 /* PerformanceGovernor.swift */,
+				A2000001 /* HyperGlideApp.swift */,
+				A2000002 /* ContentView.swift */,
+				A2000003 /* GameScene.swift */,
+				A2000004 /* GameState.swift */,
+				E2000001 /* Settings.swift */,
+				A2000005 /* HUDView.swift */,
+				E2000002 /* SettingsView.swift */,
+				C2000001 /* SoundManager.swift */,
+				H2000001 /* BackgroundMusicAssetEngine.swift */,
+				H2000003 /* HyperGlide Music.mp3 */,
+				B2000001 /* Haptics.swift */,
+				A2000007 /* Obstacle.swift */,
+				F2000001 /* PowerUpNode.swift */,
+				F2000002 /* SlowMotionEffect.swift */,
+				A2000008 /* GlowEffectFactory.swift */,
+				D2000001 /* NearMissEmitterFactory.swift */,
+				A2000006 /* Assets.xcassets */,
+				591680A02EC58DB600078791 /* Ethnocentric-Regular.otf */,
+				C2000003 /* whoosh.wav */,
+				C2000004 /* thud.wav */,
+			);
+			path = HyperGlide;
+			sourceTree = "<group>";
+		};
+		A4000003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A0000001 /* HyperGlide.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A5000001 /* HyperGlide */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A6000001 /* Build configuration list for PBXNativeTarget "HyperGlide" */;
+			buildPhases = (
+				A7000001 /* Sources */,
+				A3000001 /* Frameworks */,
+				A8000001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = HyperGlide;
+			productName = HyperGlide;
+			productReference = A0000001 /* HyperGlide.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A9000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 2610;
+				TargetAttributes = {
+					A5000001 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = A6000002 /* Build configuration list for PBXProject "HyperGlide" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A4000001;
+			productRefGroup = A4000003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A5000001 /* HyperGlide */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A8000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				591680A12EC58DB600078791 /* Ethnocentric-Regular.otf in Resources */,
+				A1000006 /* Assets.xcassets in Resources */,
+				C1000003 /* whoosh.wav in Resources */,
+				C1000004 /* thud.wav in Resources */,
+				H1000003 /* HyperGlide Music.mp3 in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A7000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1000001 /* HyperGlideApp.swift in Sources */,
+				A1000002 /* ContentView.swift in Sources */,
+				A1000003 /* GameScene.swift in Sources */,
+				G1000001 /* DefaultsGuard.swift in Sources */,
+				G1000002 /* PerformanceGovernor.swift in Sources */,
+				A1000004 /* GameState.swift in Sources */,
+				E1000001 /* Settings.swift in Sources */,
+				A1000005 /* HUDView.swift in Sources */,
+				E1000002 /* SettingsView.swift in Sources */,
+				C1000001 /* SoundManager.swift in Sources */,
+				H1000001 /* BackgroundMusicAssetEngine.swift in Sources */,
+				A1000007 /* Obstacle.swift in Sources */,
+				F1000001 /* PowerUpNode.swift in Sources */,
+				F1000002 /* SlowMotionEffect.swift in Sources */,
+				A1000008 /* GlowEffectFactory.swift in Sources */,
+				D1000001 /* NearMissEmitterFactory.swift in Sources */,
+				B1000001 /* Haptics.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A6000003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		A6000004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A6000005 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = D8KQ63QMS2;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = HyperGlide/Info.plist;
+				INFOPLIST_KEY_NSMotionUsageDescription = "Tilt control needs motion access to move the player using device orientation.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hyperglide.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A6000006 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = D8KQ63QMS2;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = HyperGlide/Info.plist;
+				INFOPLIST_KEY_NSMotionUsageDescription = "Tilt control needs motion access to move the player using device orientation.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hyperglide.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A6000001 /* Build configuration list for PBXNativeTarget "HyperGlide" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A6000005 /* Debug */,
+				A6000006 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A6000002 /* Build configuration list for PBXProject "HyperGlide" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A6000003 /* Debug */,
+				A6000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A9000001 /* Project object */;
+}

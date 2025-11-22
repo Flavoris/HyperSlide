@@ -156,7 +156,7 @@ Themes affect:
 ### **Test 7: Accessibility**
 1. Go to iOS Settings → Accessibility → Display & Text Size
 2. Enable "Larger Text" and max out slider
-3. Return to HyperSlide
+3. Return to HyprGlide
 4. **Expected**: Text scales appropriately, remains readable
 
 ## 📝 Code Quality
@@ -186,9 +186,9 @@ All requirements from prompt.txt have been met:
 ## 🔧 Technical Details
 
 ### **Settings Storage Keys**:
-- `HyperSlide.DifficultyRamp` → String
-- `HyperSlide.TiltControl` → Bool
-- `HyperSlide.ColorTheme` → String
+- `HyprGlide.DifficultyRamp` → String
+- `HyprGlide.TiltControl` → Bool
+- `HyprGlide.ColorTheme` → String
 
 ### **Difficulty Multiplier Application**:
 ```swift

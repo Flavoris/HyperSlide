@@ -1,6 +1,9 @@
-Handle lifecycle:
+Prepare for TestFlight/App Store:
 
-- On sceneWillResignActive / appWillResignActive: auto-pause and show paused overlay.
-- On resume: don’t auto-unpause; require user tap.
-- Persist bestScore and user settings immediately on change.
-- Do not persist in-progress run (keep it simple for v1).
+- Set General > Deployment Target iOS 16.0.
+- Enable “Requires full screen” (landscape not supported in v1).
+- In Info.plist:
+  - NSMotionUsageDescription with friendly text if tilt is used.
+- Add a simple README.md with: features, controls, settings, and known limitations.
+- Ensure no unused capabilities (Game Center, iCloud) are enabled.
+- Product > Archive should succeed with no warnings.

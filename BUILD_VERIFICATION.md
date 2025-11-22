@@ -1,16 +1,16 @@
-# HyperSlide Build Verification Report
+# HyprGlide Build Verification Report
 
 **Date**: November 11, 2025  
 **Status**: ✅ **SUCCESSFUL**
 
 ## Build Summary
 
-The HyperSlide iOS app has been successfully created, compiled, and verified.
+The HyprGlide iOS app has been successfully created, compiled, and verified.
 
 ### Build Command
 ```bash
-xcodebuild -project HyperSlide.xcodeproj \
-  -scheme HyperSlide \
+xcodebuild -project HyprGlide.xcodeproj \
+  -scheme HyprGlide \
   -sdk iphonesimulator \
   -destination 'generic/platform=iOS Simulator' \
   build \
@@ -26,7 +26,7 @@ xcodebuild -project HyperSlide.xcodeproj \
 
 | Requirement | Status | Implementation |
 |-------------|--------|----------------|
-| SwiftUI @main entry | ✅ | `HyperSlideApp.swift` |
+| SwiftUI @main entry | ✅ | `HyprGlideApp.swift` |
 | ContentView with ZStack | ✅ | `ContentView.swift` - SpriteView + HUD overlay |
 | GameScene with SpriteKit | ✅ | `GameScene.swift` - near-black background + update loop |
 | Observable GameState | ✅ | `GameState.swift` - @Observable with all required fields |
@@ -38,7 +38,7 @@ xcodebuild -project HyperSlide.xcodeproj \
 
 ## Code Files Created
 
-### 1. HyperSlideApp.swift (17 lines)
+### 1. HyprGlideApp.swift (17 lines)
 - SwiftUI `@main` entry point
 - WindowGroup with ContentView
 
@@ -161,7 +161,7 @@ ContentView (SwiftUI)
 
 ## Conclusion
 
-✅ The HyperSlide app has been **successfully created and compiled**.  
+✅ The HyprGlide app has been **successfully created and compiled**.  
 ✅ All requirements from the specification have been **implemented**.  
 ✅ The app is **ready to run** on iOS Simulator or device (iOS 17+).  
 ✅ Code follows **best practices** and is well-organized.
