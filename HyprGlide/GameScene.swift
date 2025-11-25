@@ -71,6 +71,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private var shouldPrimeEmitterOnPresentation = true
     private let performanceGovernor = PerformanceGovernor()
     
+    // Edge squish effect properties
+    private var currentEdgeSquish: CGFloat = 0  // 0 = no squish, 1 = max squish
+    private let edgeSquishMaxScale: CGFloat = 0.72  // How flat the orb gets at max squish
+    private let edgeSquishStretchScale: CGFloat = 1.22  // How tall the orb gets at max squish
+    private let edgeSquishVelocityThreshold: CGFloat = 150  // Velocity needed for noticeable squish
+    private let edgeSquishMaxVelocity: CGFloat = 800  // Velocity at which max squish occurs
+    private let edgeSquishSmoothRate: CGFloat = 18.0  // How fast squish responds
+    private let edgeSquishRecoverRate: CGFloat = 12.0  // How fast it recovers
+    
+    // Edge bounce-back properties
+    private var edgeBounceVelocity: CGFloat = 0  // Current bounce-back velocity
+    private var lastEdgeHitSide: EdgeSide = .none  // Which edge we hit
+    private var edgeBounceActive = false  // Whether a bounce is in progress
+    private let edgeBounceStrength: CGFloat = 0.25  // Fraction of impact velocity reflected
+    private let edgeBounceDamping: CGFloat = 8.0  // How quickly bounce velocity decays
+    private let edgeBounceMinVelocity: CGFloat = 20  // Minimum velocity to keep bouncing
+    
     private enum LifecyclePauseTrigger {
         case sceneWillResignActive
         case applicationWillResignActive
@@ -97,6 +114,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private var spawnTimer: TimeInterval = 0
     private var nextSpawnInterval: TimeInterval = 1.0
     private var obstacleConfig = ObstacleConfig.default
+    
+    // Edge-riding prevention
+    private var edgeLingerTime: TimeInterval = 0
+    private let edgeZoneWidth: CGFloat = 80  // Width of the "edge zone"
+    private let edgeLingerThreshold: TimeInterval = 1.5  // Time before punishing edge riding
+    private let edgeFlushSpawnChance: Double = 0.7  // 70% chance to spawn edge-flush when lingering
+    private var lastEdgeSide: EdgeSide = .none
+    
+    private enum EdgeSide {
+        case none, left, right
+    }
     
     // MARK: - Power-Up Properties
     
@@ -459,6 +487,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             filteredTiltVelocity = 0
             velocityX = 0
         }
+        
+        // Apply edge squish effect when hitting screen bounds
+        updateEdgeSquish(deltaTime: deltaTime)
     }
     
     private func clampWithinHorizontalBounds(_ value: CGFloat) -> CGFloat {
@@ -530,6 +561,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Stop spawning if game is over
         guard !(gameState?.isGameOver ?? true) else { return }
         
+        // Track edge-riding behavior
+        updateEdgeLingerTracking(deltaTime: deltaTime)
+        
         // Increment spawn timer
         spawnTimer += deltaTime
         
@@ -551,6 +585,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // Calculate base obstacle speed using lerp: 240 -> 700 based on difficulty
         let baseSpeedY = lerp(240, 700, difficulty)
+        
+        // Determine if we should spawn an edge-punishing obstacle
+        let shouldPunishEdge = edgeLingerTime >= edgeLingerThreshold && 
+                               lastEdgeSide != .none &&
+                               Double.random(in: 0...1) < edgeFlushSpawnChance
+        
+        if shouldPunishEdge {
+            spawnEdgeFlushObstacle(edgeSide: lastEdgeSide, baseSpeedY: baseSpeedY, difficulty: difficulty)
+            edgeLingerTime = 0  // Reset after punishing
+            return
+        }
         
         // Determine obstacle variant with probability weighted by difficulty
         // At d=0: mostly wide slow (70% wide, 30% narrow)
@@ -574,11 +619,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         let height = obstacleConfig.height
         
-        // Calculate safe spawn position (with margins)
-        let margin: CGFloat = 50.0
-        let minX = margin + width / 2
-        let maxX = size.width - margin - width / 2
-        let randomX = CGFloat.random(in: minX...maxX)
+        // Calculate spawn position - bias toward player's position or edges
+        let positionX = calculateObstacleSpawnX(width: width, difficulty: difficulty)
         
         // Get theme colors for obstacles, default to hot pink
         let obstacleColors = settings?.colorTheme.obstacleColor ?? 
@@ -590,13 +632,106 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                                             speedY: speedY,
                                             coreColor: obstacleColors.core,
                                             glowColor: obstacleColors.glow)
-        obstacle.position = CGPoint(x: randomX, y: size.height + height)
+        obstacle.position = CGPoint(x: positionX, y: size.height + height)
         
         // Add to scene and tracking array
         if obstacle.parent !== self {
             addChild(obstacle)
         }
         obstacles.append(obstacle)
+    }
+    
+    // MARK: - Edge-Riding Prevention
+    
+    private func updateEdgeLingerTracking(deltaTime: TimeInterval) {
+        guard let player = player else {
+            edgeLingerTime = 0
+            lastEdgeSide = .none
+            return
+        }
+        
+        let playerX = player.position.x
+        let leftEdgeBoundary = movementHorizontalMargin + edgeZoneWidth
+        let rightEdgeBoundary = size.width - movementHorizontalMargin - edgeZoneWidth
+        
+        let currentEdge: EdgeSide
+        if playerX <= leftEdgeBoundary {
+            currentEdge = .left
+        } else if playerX >= rightEdgeBoundary {
+            currentEdge = .right
+        } else {
+            currentEdge = .none
+        }
+        
+        if currentEdge == lastEdgeSide && currentEdge != .none {
+            // Continue accumulating edge linger time
+            edgeLingerTime += deltaTime
+        } else {
+            // Reset when switching sides or moving to center
+            edgeLingerTime = 0
+            lastEdgeSide = currentEdge
+        }
+    }
+    
+    private func spawnEdgeFlushObstacle(edgeSide: EdgeSide, baseSpeedY: CGFloat, difficulty: CGFloat) {
+        let height = obstacleConfig.height
+        
+        // Create a wide obstacle that covers the edge zone and extends inward
+        // This forces the player to move toward the center
+        let edgeCoverageWidth = edgeZoneWidth + movementHorizontalMargin + 40  // Extra coverage
+        let speedY = baseSpeedY * 1.1  // Slightly faster than normal
+        
+        let positionX: CGFloat
+        switch edgeSide {
+        case .left:
+            positionX = edgeCoverageWidth / 2
+        case .right:
+            positionX = size.width - edgeCoverageWidth / 2
+        case .none:
+            return
+        }
+        
+        let obstacleColors = settings?.colorTheme.obstacleColor ?? 
+                            (core: (1.0, 0.1, 0.6), glow: (1.0, 0.35, 0.75))
+        
+        let obstacle = obstaclePool.dequeue(width: edgeCoverageWidth,
+                                            height: height,
+                                            speedY: speedY,
+                                            coreColor: obstacleColors.core,
+                                            glowColor: obstacleColors.glow)
+        obstacle.position = CGPoint(x: positionX, y: size.height + height)
+        
+        if obstacle.parent !== self {
+            addChild(obstacle)
+        }
+        obstacles.append(obstacle)
+    }
+    
+    private func calculateObstacleSpawnX(width: CGFloat, difficulty: CGFloat) -> CGFloat {
+        let margin: CGFloat = 20.0  // Reduced margin to allow obstacles closer to edges
+        let minX = margin + width / 2
+        let maxX = size.width - margin - width / 2
+        
+        guard maxX > minX else {
+            return size.width / 2
+        }
+        
+        // As difficulty increases, obstacles have a higher chance to spawn near edges
+        // This prevents edges from being safe zones even without prolonged camping
+        let edgeSpawnChance = Double(difficulty * 0.3 + 0.15)  // 15% to 45% chance
+        
+        if Double.random(in: 0...1) < edgeSpawnChance {
+            // Spawn obstacle flush to left or right edge
+            let spawnOnLeft = Bool.random()
+            if spawnOnLeft {
+                return minX
+            } else {
+                return maxX
+            }
+        }
+        
+        // Normal random spawn across the full width
+        return CGFloat.random(in: minX...maxX)
     }
     
     private func updatePowerUps(deltaTime: TimeInterval) {
@@ -864,6 +999,96 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         player.run(SKAction.sequence([squash, rebound]), withKey: squashKey)
     }
     
+    // MARK: - Edge Squish Effect
+    
+    private func updateEdgeSquish(deltaTime: TimeInterval) {
+        guard let player = player else { return }
+        
+        // Skip if a direction squash animation is actively playing
+        if player.action(forKey: "directionSquash") != nil {
+            currentEdgeSquish = 0
+            edgeBounceActive = false
+            edgeBounceVelocity = 0
+            return
+        }
+        
+        let dt = CGFloat(max(0.0001, deltaTime))
+        let playerX = player.position.x
+        let bounds = horizontalBounds()
+        let edgeTolerance: CGFloat = 2.0  // Consider "at edge" within 2 points
+        
+        let atLeftEdge = playerX <= bounds.min + edgeTolerance
+        let atRightEdge = playerX >= bounds.max - edgeTolerance
+        
+        // Check for new edge collision (hitting the edge with velocity)
+        var justHitEdge = false
+        var impactVelocity: CGFloat = 0
+        
+        if atLeftEdge && velocityX < -edgeSquishVelocityThreshold && lastEdgeHitSide != .left {
+            // Just hit left edge
+            justHitEdge = true
+            impactVelocity = abs(velocityX)
+            lastEdgeHitSide = .left
+        } else if atRightEdge && velocityX > edgeSquishVelocityThreshold && lastEdgeHitSide != .right {
+            // Just hit right edge
+            justHitEdge = true
+            impactVelocity = abs(velocityX)
+            lastEdgeHitSide = .right
+        } else if !atLeftEdge && !atRightEdge {
+            // Moved away from edges
+            lastEdgeHitSide = .none
+        }
+        
+        // Trigger bounce-back when hitting an edge
+        if justHitEdge {
+            let normalizedImpact = min(1.0, (impactVelocity - edgeSquishVelocityThreshold) /
+                                       (edgeSquishMaxVelocity - edgeSquishVelocityThreshold))
+            // Set squish to peak immediately on impact
+            currentEdgeSquish = normalizedImpact
+            // Calculate bounce velocity (opposite to impact direction)
+            let bounceDirection: CGFloat = lastEdgeHitSide == .left ? 1.0 : -1.0
+            edgeBounceVelocity = impactVelocity * edgeBounceStrength * bounceDirection
+            edgeBounceActive = true
+        }
+        
+        // Apply bounce-back movement
+        if edgeBounceActive {
+            // Apply bounce velocity to player position
+            let bounceMovement = edgeBounceVelocity * dt
+            let newX = clampWithinHorizontalBounds(player.position.x + bounceMovement)
+            player.position.x = newX
+            targetX = newX  // Update target so drag doesn't fight the bounce
+            
+            // Decay the bounce velocity
+            let decayFactor = exp(-edgeBounceDamping * dt)
+            edgeBounceVelocity *= decayFactor
+            
+            // End bounce when velocity is negligible
+            if abs(edgeBounceVelocity) < edgeBounceMinVelocity {
+                edgeBounceVelocity = 0
+                edgeBounceActive = false
+            }
+        }
+        
+        // Smoothly recover squish (always decay toward 0 now)
+        let targetSquish: CGFloat = 0
+        let recoveryLerpFactor = min(1.0, edgeSquishRecoverRate * dt)
+        currentEdgeSquish = lerp(currentEdgeSquish, targetSquish, recoveryLerpFactor)
+        
+        // Clamp very small values to 0
+        if currentEdgeSquish < 0.01 {
+            currentEdgeSquish = 0
+        }
+        
+        // Apply the squish effect to scale
+        // When squished: X gets smaller, Y gets taller (like squishing against a wall)
+        let scaleX = lerp(1.0, edgeSquishMaxScale, currentEdgeSquish)
+        let scaleY = lerp(1.0, edgeSquishStretchScale, currentEdgeSquish)
+        
+        player.xScale = scaleX
+        player.yScale = scaleY
+    }
+    
     private func detectNearMisses() {
         guard let player = player,
               let state = gameState,
@@ -1061,6 +1286,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             targetX = player.position.x
             velocityX = 0
             filteredTiltVelocity = 0
+            currentEdgeSquish = 0
+            edgeBounceVelocity = 0
+            edgeBounceActive = false
+            lastEdgeHitSide = .none
             player.yScale = 1.0
             player.xScale = 1.0
             player.removeAction(forKey: "directionSquash")
@@ -1085,6 +1314,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Reset spawn timer
         spawnTimer = 0
         nextSpawnInterval = 1.0
+        
+        // Reset edge-riding tracking
+        edgeLingerTime = 0
+        lastEdgeSide = .none
         
         // Reset game state
         state.resetGame()
