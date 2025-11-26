@@ -25,6 +25,8 @@
 		E1000002 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000002 /* SettingsView.swift */; };
 		F1000001 /* PowerUpNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2000001 /* PowerUpNode.swift */; };
 		F1000002 /* SlowMotionEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2000002 /* SlowMotionEffect.swift */; };
+		F1000003 /* InvincibilityEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2000003 /* InvincibilityEffect.swift */; };
+		F1000004 /* AttackModeEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2000004 /* AttackModeEffect.swift */; };
 		G1000001 /* DefaultsGuard.swift in Sources */ = {isa = PBXBuildFile; fileRef = G2000001 /* DefaultsGuard.swift */; };
 		G1000002 /* PerformanceGovernor.swift in Sources */ = {isa = PBXBuildFile; fileRef = G2000002 /* PerformanceGovernor.swift */; };
 		H1000001 /* BackgroundMusicAssetEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = H2000001 /* BackgroundMusicAssetEngine.swift */; };
@@ -52,6 +54,8 @@
 		E2000002 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		F2000001 /* PowerUpNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PowerUpNode.swift; sourceTree = "<group>"; };
 		F2000002 /* SlowMotionEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlowMotionEffect.swift; sourceTree = "<group>"; };
+		F2000003 /* InvincibilityEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvincibilityEffect.swift; sourceTree = "<group>"; };
+		F2000004 /* AttackModeEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttackModeEffect.swift; sourceTree = "<group>"; };
 		G2000001 /* DefaultsGuard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsGuard.swift; sourceTree = "<group>"; };
 		G2000002 /* PerformanceGovernor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerformanceGovernor.swift; sourceTree = "<group>"; };
 		H2000001 /* BackgroundMusicAssetEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundMusicAssetEngine.swift; sourceTree = "<group>"; };
@@ -97,6 +101,8 @@
 				A2000007 /* Obstacle.swift */,
 				F2000001 /* PowerUpNode.swift */,
 				F2000002 /* SlowMotionEffect.swift */,
+				F2000003 /* InvincibilityEffect.swift */,
+				F2000004 /* AttackModeEffect.swift */,
 				A2000008 /* GlowEffectFactory.swift */,
 				D2000001 /* NearMissEmitterFactory.swift */,
 				A2000006 /* Assets.xcassets */,
@@ -202,6 +208,8 @@
 				A1000007 /* Obstacle.swift in Sources */,
 				F1000001 /* PowerUpNode.swift in Sources */,
 				F1000002 /* SlowMotionEffect.swift in Sources */,
+				F1000003 /* InvincibilityEffect.swift in Sources */,
+				F1000004 /* AttackModeEffect.swift in Sources */,
 				A1000008 /* GlowEffectFactory.swift in Sources */,
 				D1000001 /* NearMissEmitterFactory.swift in Sources */,
 				B1000001 /* Haptics.swift in Sources */,

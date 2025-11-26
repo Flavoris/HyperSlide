@@ -7,8 +7,19 @@
 
 import SpriteKit
 
-/// Glowing collectible ring that grants a temporary slowdown effect.
+/// Defines the type of power-up effect.
+enum PowerUpType {
+    case slowMotion
+    case invincibility
+    case attackMode
+}
+
+/// Glowing collectible ring or shape that grants a temporary effect.
 final class PowerUpNode: SKNode {
+    
+    // MARK: - Public Properties
+    
+    let type: PowerUpType
     
     // MARK: - Private Properties
     
@@ -19,32 +30,48 @@ final class PowerUpNode: SKNode {
     
     // MARK: - Initialization
     
-    init(radius: CGFloat,
+    init(type: PowerUpType,
+         radius: CGFloat,
          ringWidth: CGFloat = 8,
          speedY: CGFloat,
          coreColor: SKColor,
          glowColor: SKColor) {
+        self.type = type
         self.ringRadius = radius
         self.speedY = speedY
         
         let adjustedRadius = max(4, radius - (ringWidth / 2))
         let pathRadius = max(2, adjustedRadius)
-        let ring = SKShapeNode(circleOfRadius: pathRadius)
-        ring.lineWidth = ringWidth
-        ring.strokeColor = coreColor
-        ring.fillColor = .clear
-        ring.glowWidth = ringWidth * 0.45
-        ring.blendMode = .add
-        self.ringNode = ring
+        
+        // Shape creation based on type
+        let shape: SKShapeNode
+        switch type {
+        case .slowMotion:
+            shape = SKShapeNode(circleOfRadius: pathRadius)
+        case .invincibility:
+            let sideLength = pathRadius * 2
+            shape = SKShapeNode(rectOf: CGSize(width: sideLength, height: sideLength), cornerRadius: 4)
+        case .attackMode:
+            let sideLength = pathRadius * 2.2
+            let trianglePath = GlowEffectFactory.trianglePath(sideLength: sideLength)
+            shape = SKShapeNode(path: trianglePath)
+        }
+        
+        shape.lineWidth = ringWidth
+        shape.strokeColor = coreColor
+        shape.fillColor = .clear
+        shape.glowWidth = ringWidth * 0.45
+        shape.blendMode = .add
+        self.ringNode = shape
         
         super.init()
         
         zPosition = 160
         isUserInteractionEnabled = false
         
-        addChild(ring)
-        addGlow(radius: radius, color: glowColor)
-        configurePhysicsBody(radius: adjustedRadius)
+        addChild(shape)
+        addGlow(type: type, radius: radius, color: glowColor)
+        configurePhysicsBody(type: type, radius: adjustedRadius)
         runPulseAnimation()
     }
     
@@ -86,18 +113,49 @@ final class PowerUpNode: SKNode {
     
     // MARK: - Private Helpers
     
-    private func addGlow(radius: CGFloat, color: SKColor) {
-        let glowNode = GlowEffectFactory.makeCircularGlow(radius: radius,
+    private func addGlow(type: PowerUpType, radius: CGFloat, color: SKColor) {
+        let glowNode: SKEffectNode
+        switch type {
+        case .slowMotion:
+            glowNode = GlowEffectFactory.makeCircularGlow(radius: radius,
                                                           color: color,
                                                           blurRadius: 20,
                                                           alpha: 0.85,
                                                           scale: 1.35)
+        case .invincibility:
+            let sideLength = radius * 2
+            glowNode = GlowEffectFactory.makeRoundedRectangleGlow(size: CGSize(width: sideLength, height: sideLength),
+                                                                  cornerRadius: 4,
+                                                                  color: color,
+                                                                  blurRadius: 20,
+                                                                  alpha: 0.85,
+                                                                  scale: 1.35)
+        case .attackMode:
+            let sideLength = radius * 2.2
+            glowNode = GlowEffectFactory.makeTriangleGlow(sideLength: sideLength,
+                                                          color: color,
+                                                          blurRadius: 20,
+                                                          alpha: 0.85,
+                                                          scale: 1.35)
+        }
         glowNode.zPosition = -1
         addChild(glowNode)
     }
     
-    private func configurePhysicsBody(radius: CGFloat) {
-        let body = SKPhysicsBody(circleOfRadius: radius)
+    private func configurePhysicsBody(type: PowerUpType, radius: CGFloat) {
+        let body: SKPhysicsBody
+        switch type {
+        case .slowMotion:
+            body = SKPhysicsBody(circleOfRadius: radius)
+        case .invincibility:
+            let sideLength = radius * 2
+            body = SKPhysicsBody(rectangleOf: CGSize(width: sideLength, height: sideLength))
+        case .attackMode:
+            let sideLength = radius * 2.2
+            let trianglePath = GlowEffectFactory.trianglePath(sideLength: sideLength)
+            body = SKPhysicsBody(polygonFrom: trianglePath)
+        }
+        
         body.isDynamic = true
         body.allowsRotation = false
         body.affectedByGravity = false
@@ -119,5 +177,3 @@ final class PowerUpNode: SKNode {
         ringNode.run(SKAction.repeatForever(pulseSequence), withKey: pulseKey)
     }
 }
-
-

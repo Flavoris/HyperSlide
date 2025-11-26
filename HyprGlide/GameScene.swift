@@ -141,6 +141,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private let slowMotionOverlayFadeInRate: CGFloat = 12.0
     private let slowMotionOverlayFadeOutRate: CGFloat = 4.0
     
+    // Power-up expiry warning settings
+    private let powerUpWarningThreshold: TimeInterval = 1.5  // Start warning at 1.5 seconds remaining
+    private var powerUpPulsePhase: CGFloat = 0  // Tracks pulse animation phase
+
+    private var invincibilityEffect = InvincibilityEffect(duration: 3.0,
+                                                          maxStackDuration: 6.0)
+    private var invincibilityOverlay: SKShapeNode?
+
+    private var attackModeEffect = AttackModeEffect(duration: 3.0,
+                                                    maxStackDuration: 6.0)
+    private var attackModeOverlay: SKShapeNode?
+    private let attackModeDestroyPoints: Double = 25  // Points for destroying an obstacle
+    
     // MARK: - Scene Lifecycle
     
     override func sceneDidLoad() {
@@ -735,8 +748,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     private func updatePowerUps(deltaTime: TimeInterval) {
+        // Update pulse phase for expiry warning animation
+        updatePowerUpPulsePhase(deltaTime: deltaTime)
+        
         slowMotionEffect.update(deltaTime: deltaTime)
         updateSlowMotionOverlay(deltaTime: deltaTime)
+        
+        invincibilityEffect.update(deltaTime: deltaTime)
+        updateInvincibilityOverlay(deltaTime: deltaTime)
+        
+        attackModeEffect.update(deltaTime: deltaTime)
+        updateAttackModeOverlay(deltaTime: deltaTime)
         
         guard let state = gameState,
               state.hasStarted,
@@ -760,6 +782,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     private func spawnPowerUpIfNeeded(deltaTime: TimeInterval, difficulty: Double) {
+        // Do not spawn if any power-up is currently active
+        guard !slowMotionEffect.isActive, !invincibilityEffect.isActive, !attackModeEffect.isActive else {
+            powerUpSpawnTimer = 0
+            return
+        }
+        
         guard difficulty >= powerUpDifficultyThreshold else {
             // Hold timer at zero until the game ramps up enough.
             powerUpSpawnTimer = 0
@@ -790,9 +818,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let positionX = CGFloat.random(in: minX...maxX)
         let positionY = size.height + radius * 2
         
-        let colors = powerUpThemeColors()
+        let typeRoll = Int.random(in: 0...2)
+        let type: PowerUpType
+        switch typeRoll {
+        case 0: type = .slowMotion
+        case 1: type = .invincibility
+        default: type = .attackMode
+        }
+        let colors = powerUpThemeColors(for: type)
         
-        let powerUp = PowerUpNode(radius: radius,
+        let powerUp = PowerUpNode(type: type,
+                                  radius: radius,
                                   ringWidth: 8,
                                   speedY: speedY,
                                   coreColor: colors.ring,
@@ -807,9 +843,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         nextPowerUpSpawnInterval = Double.random(in: powerUpSpawnIntervalRange)
     }
     
-    private func powerUpThemeColors() -> (ring: SKColor, glow: SKColor) {
-        let themeColors = settings?.colorTheme.powerUpColor ??
-                          (ring: (0.1, 1.0, 0.8), glow: (0.3, 1.0, 0.85))
+    private func powerUpThemeColors(for type: PowerUpType) -> (ring: SKColor, glow: SKColor) {
+        let theme = settings?.colorTheme
+        let themeColors: (ring: (CGFloat, CGFloat, CGFloat), glow: (CGFloat, CGFloat, CGFloat))
+        
+        switch type {
+        case .slowMotion:
+            themeColors = theme?.powerUpColor ?? (ring: (0.1, 1.0, 0.8), glow: (0.3, 1.0, 0.85))
+        case .invincibility:
+            themeColors = theme?.invincibilityColor ?? (ring: (1.0, 0.95, 0.8), glow: (1.0, 1.0, 0.9))
+        case .attackMode:
+            themeColors = theme?.attackModeColor ?? (ring: (1.0, 0.4, 0.1), glow: (1.0, 0.5, 0.2))
+        }
+
         let ringColor = SKColor(red: themeColors.ring.0,
                                 green: themeColors.ring.1,
                                 blue: themeColors.ring.2,
@@ -827,9 +873,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if slowMotionEffect.isActive {
             let overlay = ensureSlowMotionOverlay()
             updateSlowMotionOverlayGeometry()
-            overlay.strokeColor = powerUpThemeColors().glow
-            overlay.alpha = min(slowMotionOverlayMaxAlpha,
-                                overlay.alpha + slowMotionOverlayFadeInRate * dt)
+            overlay.strokeColor = powerUpThemeColors(for: .slowMotion).glow
+            
+            // Apply warning pulse if about to expire
+            let targetAlpha = calculateOverlayAlpha(remaining: slowMotionEffect.remaining)
+            overlay.alpha = min(targetAlpha, overlay.alpha + slowMotionOverlayFadeInRate * dt)
         } else if let overlay = slowMotionOverlay {
             overlay.alpha = max(0, overlay.alpha - slowMotionOverlayFadeOutRate * dt)
             if overlay.alpha <= 0.01 {
@@ -840,7 +888,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     private func activateSlowMotionOverlayImmediately() {
         let overlay = ensureSlowMotionOverlay()
-        overlay.strokeColor = powerUpThemeColors().glow
+        overlay.strokeColor = powerUpThemeColors(for: .slowMotion).glow
         updateSlowMotionOverlayGeometry()
         overlay.alpha = slowMotionOverlayMaxAlpha
     }
@@ -886,6 +934,169 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         slowMotionOverlay?.removeFromParent()
         slowMotionOverlay = nil
     }
+
+    private func updateInvincibilityOverlay(deltaTime: TimeInterval) {
+        let dt = CGFloat(max(0, min(deltaTime, 1)))
+        
+        if invincibilityEffect.isActive {
+            let overlay = ensureInvincibilityOverlay()
+            updateInvincibilityOverlayGeometry()
+            overlay.strokeColor = powerUpThemeColors(for: .invincibility).glow
+            
+            // Apply warning pulse if about to expire
+            let targetAlpha = calculateOverlayAlpha(remaining: invincibilityEffect.remaining)
+            overlay.alpha = min(targetAlpha, overlay.alpha + slowMotionOverlayFadeInRate * dt)
+        } else if let overlay = invincibilityOverlay {
+            overlay.alpha = max(0, overlay.alpha - slowMotionOverlayFadeOutRate * dt)
+            if overlay.alpha <= 0.01 {
+                clearInvincibilityOverlay()
+            }
+        }
+    }
+    
+    private func activateInvincibilityOverlayImmediately() {
+        let overlay = ensureInvincibilityOverlay()
+        overlay.strokeColor = powerUpThemeColors(for: .invincibility).glow
+        updateInvincibilityOverlayGeometry()
+        overlay.alpha = slowMotionOverlayMaxAlpha
+    }
+    
+    private func ensureInvincibilityOverlay() -> SKShapeNode {
+        if let overlay = invincibilityOverlay {
+            return overlay
+        }
+        
+        let overlay = SKShapeNode()
+        overlay.fillColor = .clear
+        overlay.lineWidth = 8
+        overlay.glowWidth = 28
+        overlay.alpha = 0
+        overlay.blendMode = .add
+        overlay.zPosition = 500
+        overlay.isUserInteractionEnabled = false
+        addChild(overlay)
+        invincibilityOverlay = overlay
+        return overlay
+    }
+    
+    private func updateInvincibilityOverlayGeometry() {
+        guard let overlay = invincibilityOverlay,
+              size.width.isFinite,
+              size.height.isFinite else { return }
+        
+        let inset: CGFloat = 14
+        let width = max(0, size.width - inset * 2)
+        let height = max(0, size.height - inset * 2)
+        let rect = CGRect(x: -width / 2,
+                          y: -height / 2,
+                          width: width,
+                          height: height)
+        // Use same corner radius as slow motion overlay for consistency
+        overlay.path = CGPath(roundedRect: rect,
+                              cornerWidth: 42,
+                              cornerHeight: 42,
+                              transform: nil)
+        overlay.position = CGPoint(x: size.width / 2, y: size.height / 2)
+    }
+    
+    private func clearInvincibilityOverlay() {
+        invincibilityOverlay?.removeFromParent()
+        invincibilityOverlay = nil
+    }
+
+    private func updateAttackModeOverlay(deltaTime: TimeInterval) {
+        let dt = CGFloat(max(0, min(deltaTime, 1)))
+        
+        if attackModeEffect.isActive {
+            let overlay = ensureAttackModeOverlay()
+            updateAttackModeOverlayGeometry()
+            overlay.strokeColor = powerUpThemeColors(for: .attackMode).glow
+            
+            // Apply warning pulse if about to expire
+            let targetAlpha = calculateOverlayAlpha(remaining: attackModeEffect.remaining)
+            overlay.alpha = min(targetAlpha, overlay.alpha + slowMotionOverlayFadeInRate * dt)
+        } else if let overlay = attackModeOverlay {
+            overlay.alpha = max(0, overlay.alpha - slowMotionOverlayFadeOutRate * dt)
+            if overlay.alpha <= 0.01 {
+                clearAttackModeOverlay()
+            }
+        }
+    }
+    
+    private func activateAttackModeOverlayImmediately() {
+        let overlay = ensureAttackModeOverlay()
+        overlay.strokeColor = powerUpThemeColors(for: .attackMode).glow
+        updateAttackModeOverlayGeometry()
+        overlay.alpha = slowMotionOverlayMaxAlpha
+    }
+    
+    private func ensureAttackModeOverlay() -> SKShapeNode {
+        if let overlay = attackModeOverlay {
+            return overlay
+        }
+        
+        let overlay = SKShapeNode()
+        overlay.fillColor = .clear
+        overlay.lineWidth = 8
+        overlay.glowWidth = 28
+        overlay.alpha = 0
+        overlay.blendMode = .add
+        overlay.zPosition = 500
+        overlay.isUserInteractionEnabled = false
+        addChild(overlay)
+        attackModeOverlay = overlay
+        return overlay
+    }
+    
+    private func updateAttackModeOverlayGeometry() {
+        guard let overlay = attackModeOverlay,
+              size.width.isFinite,
+              size.height.isFinite else { return }
+        
+        let inset: CGFloat = 14
+        let width = max(0, size.width - inset * 2)
+        let height = max(0, size.height - inset * 2)
+        let rect = CGRect(x: -width / 2,
+                          y: -height / 2,
+                          width: width,
+                          height: height)
+        overlay.path = CGPath(roundedRect: rect,
+                              cornerWidth: 42,
+                              cornerHeight: 42,
+                              transform: nil)
+        overlay.position = CGPoint(x: size.width / 2, y: size.height / 2)
+    }
+    
+    private func clearAttackModeOverlay() {
+        attackModeOverlay?.removeFromParent()
+        attackModeOverlay = nil
+    }
+    
+    /// Calculates overlay alpha with pulsing effect when power-up is about to expire.
+    private func calculateOverlayAlpha(remaining: TimeInterval) -> CGFloat {
+        guard remaining <= powerUpWarningThreshold else {
+            return slowMotionOverlayMaxAlpha
+        }
+        
+        // Pulse faster as time runs out (3Hz to 6Hz)
+        let urgency = 1.0 - (remaining / powerUpWarningThreshold)
+        let pulseSpeed: CGFloat = 3.0 + CGFloat(urgency) * 3.0
+        
+        // Use sine wave for smooth pulsing between 0.4 and max alpha
+        let pulseValue = sin(powerUpPulsePhase * pulseSpeed * 2 * .pi)
+        let minAlpha: CGFloat = 0.4
+        let alphaRange = slowMotionOverlayMaxAlpha - minAlpha
+        
+        return minAlpha + alphaRange * ((pulseValue + 1.0) / 2.0)
+    }
+    
+    private func updatePowerUpPulsePhase(deltaTime: TimeInterval) {
+        // Advance pulse phase (wraps around every second)
+        powerUpPulsePhase += CGFloat(deltaTime)
+        if powerUpPulsePhase > 1.0 {
+            powerUpPulsePhase -= 1.0
+        }
+    }
     
     // MARK: - Collision Handling
     
@@ -894,7 +1105,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let collision = contact.bodyA.categoryBitMask | contact.bodyB.categoryBitMask
         
         if collision == PhysicsCategory.player | PhysicsCategory.obstacle {
-            handleCollision()
+            let obstacleNode = (contact.bodyA.node as? ObstacleNode) ?? (contact.bodyB.node as? ObstacleNode)
+            handleCollision(with: obstacleNode)
         } else if collision == PhysicsCategory.player | PhysicsCategory.powerUp {
             if let node = (contact.bodyA.node as? PowerUpNode) ?? (contact.bodyB.node as? PowerUpNode) {
                 handlePowerUpCollection(node)
@@ -902,16 +1114,54 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    private func handleCollision() {
+    private func handleCollision(with obstacle: ObstacleNode?) {
         // Prevent multiple collision triggers
         guard let state = gameState, !state.isGameOver else { return }
+        
+        // If invincible, ignore collision
+        if invincibilityEffect.isActive {
+            return
+        }
+        
+        // If attack mode is active, destroy the obstacle and award points
+        if attackModeEffect.isActive, let obstacle = obstacle {
+            destroyObstacle(obstacle)
+            state.addDodge(points: attackModeDestroyPoints)
+            return
+        }
         
         // Trigger game over
         state.isGameOver = true
         state.recordBest()
         slowMotionEffect.reset()
+        invincibilityEffect.reset()
+        attackModeEffect.reset()
         clearSlowMotionOverlay()
+        clearInvincibilityOverlay()
+        clearAttackModeOverlay()
         performCollisionFeedback()
+    }
+    
+    private func destroyObstacle(_ obstacle: ObstacleNode) {
+        guard let index = obstacles.firstIndex(where: { $0 === obstacle }) else { return }
+        obstacles.remove(at: index)
+        
+        // Play destruction animation
+        obstacle.physicsBody = nil
+        let scale = SKAction.scale(to: 1.3, duration: 0.12)
+        scale.timingMode = .easeOut
+        let fade = SKAction.fadeOut(withDuration: 0.1)
+        fade.timingMode = .easeIn
+        let cleanup = SKAction.run { [weak obstacle] in
+            obstacle?.removeFromParent()
+        }
+        obstacle.run(SKAction.sequence([
+            SKAction.group([scale, fade]),
+            cleanup
+        ]))
+        
+        // Feedback
+        Haptics.playNearMissImpact(intensity: 0.7)
     }
     
     private func performCollisionFeedback() {
@@ -929,13 +1179,88 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         guard let index = powerUps.firstIndex(where: { $0 === powerUp }) else { return }
         powerUps.remove(at: index)
         
-        slowMotionEffect.trigger()
-        activateSlowMotionOverlayImmediately()
+        switch powerUp.type {
+        case .slowMotion:
+            slowMotionEffect.trigger()
+            activateSlowMotionOverlayImmediately()
+            showPowerUpLabel("Slow-Motion", type: .slowMotion)
+        case .invincibility:
+            invincibilityEffect.trigger()
+            activateInvincibilityOverlayImmediately()
+            showPowerUpLabel("Invincibility", type: .invincibility)
+        case .attackMode:
+            attackModeEffect.trigger()
+            activateAttackModeOverlayImmediately()
+            showPowerUpLabel("Attack", type: .attackMode)
+        }
+        
         Haptics.playNearMissImpact(intensity: 0.9)
         
         powerUp.playCollectionAnimation { [weak powerUp] in
             powerUp?.removeFromParent()
         }
+    }
+    
+    // MARK: - Power-Up Label
+    
+    private func showPowerUpLabel(_ text: String, type: PowerUpType) {
+        guard let player = player else { return }
+        
+        // Remove any existing power-up label
+        childNode(withName: "powerUpLabel")?.removeFromParent()
+        
+        // Get the color for this power-up type
+        let colors = powerUpThemeColors(for: type)
+        
+        // Create the label
+        let label = SKLabelNode(text: text)
+        label.name = "powerUpLabel"
+        label.fontName = "AvenirNext-Bold"
+        label.fontSize = 24
+        label.fontColor = colors.glow
+        label.horizontalAlignmentMode = .center
+        label.verticalAlignmentMode = .center
+        label.zPosition = 600
+        
+        // Position above the player
+        let labelY = player.position.y + playerRadius + 50
+        label.position = CGPoint(x: player.position.x, y: labelY)
+        
+        // Start invisible and scaled down
+        label.alpha = 0
+        label.setScale(0.5)
+        
+        addChild(label)
+        
+        // Animate in: scale up and fade in
+        let scaleUp = SKAction.scale(to: 1.0, duration: 0.2)
+        scaleUp.timingMode = .easeOut
+        let fadeIn = SKAction.fadeIn(withDuration: 0.15)
+        let appearGroup = SKAction.group([scaleUp, fadeIn])
+        
+        // Float upward slightly while visible
+        let floatUp = SKAction.moveBy(x: 0, y: 20, duration: 1.8)
+        floatUp.timingMode = .easeOut
+        
+        // Hold visible
+        let hold = SKAction.wait(forDuration: 1.5)
+        
+        // Fade out
+        let fadeOut = SKAction.fadeOut(withDuration: 0.4)
+        fadeOut.timingMode = .easeIn
+        
+        // Clean up
+        let remove = SKAction.removeFromParent()
+        
+        // Run the sequence
+        let sequence = SKAction.sequence([
+            appearGroup,
+            SKAction.group([hold, floatUp]),
+            fadeOut,
+            remove
+        ])
+        
+        label.run(sequence)
     }
     
     private func startCameraShake(duration: TimeInterval = 0.18,
@@ -1049,6 +1374,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let bounceDirection: CGFloat = lastEdgeHitSide == .left ? 1.0 : -1.0
             edgeBounceVelocity = impactVelocity * edgeBounceStrength * bounceDirection
             edgeBounceActive = true
+            
+            // Haptic feedback: lighter impact for wall hits, scaled by velocity
+            // Range: 0.6 (gentle bump) to 1.0 (hard slam)
+            let hapticIntensity = 0.6 + (normalizedImpact * 0.4)
+            Haptics.playNearMissImpact(intensity: hapticIntensity)
         }
         
         // Apply bounce-back movement
@@ -1309,7 +1639,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         powerUpSpawnTimer = 0
         scheduleNextPowerUpSpawn()
         slowMotionEffect.reset()
+        invincibilityEffect.reset()
+        attackModeEffect.reset()
         clearSlowMotionOverlay()
+        clearInvincibilityOverlay()
+        clearAttackModeOverlay()
         
         // Reset spawn timer
         spawnTimer = 0

@@ -300,7 +300,7 @@ enum ColorTheme: String, CaseIterable {
         }
     }
     
-    /// Power-up color palette (ring + glow) to keep collectibles on-theme.
+    /// Power-up color palette (ring + glow) for Slow Motion.
     var powerUpColor: (ring: (CGFloat, CGFloat, CGFloat),
                        glow: (CGFloat, CGFloat, CGFloat)) {
         switch self {
@@ -310,6 +310,38 @@ enum ColorTheme: String, CaseIterable {
             return (ring: (0.2, 0.95, 1.0), glow: (0.4, 1.0, 1.0))
         case .synthwave:
             return (ring: (1.0, 0.85, 0.25), glow: (1.0, 0.7, 0.2))
+        }
+    }
+    
+    /// Power-up color palette (ring + glow) for Invincibility.
+    var invincibilityColor: (ring: (CGFloat, CGFloat, CGFloat),
+                             glow: (CGFloat, CGFloat, CGFloat)) {
+        switch self {
+        case .neonBlue:
+            // White/Gold
+            return (ring: (1.0, 0.95, 0.8), glow: (1.0, 1.0, 0.9))
+        case .neonPurple:
+            // Bright Lime Green
+            return (ring: (0.4, 1.0, 0.2), glow: (0.5, 1.0, 0.3))
+        case .synthwave:
+            // Electric Blue/White
+            return (ring: (0.8, 0.9, 1.0), glow: (0.9, 0.95, 1.0))
+        }
+    }
+    
+    /// Power-up color palette (ring + glow) for Attack Mode.
+    var attackModeColor: (ring: (CGFloat, CGFloat, CGFloat),
+                          glow: (CGFloat, CGFloat, CGFloat)) {
+        switch self {
+        case .neonBlue:
+            // Fiery Orange/Red
+            return (ring: (1.0, 0.4, 0.1), glow: (1.0, 0.5, 0.2))
+        case .neonPurple:
+            // Hot Pink/Magenta
+            return (ring: (1.0, 0.2, 0.6), glow: (1.0, 0.35, 0.7))
+        case .synthwave:
+            // Bright Green/Lime
+            return (ring: (0.3, 1.0, 0.3), glow: (0.4, 1.0, 0.4))
         }
     }
 }

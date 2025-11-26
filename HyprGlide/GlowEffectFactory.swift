@@ -60,6 +60,45 @@ enum GlowEffectFactory {
         return makeEffectNode(with: glowShape, blurRadius: blurRadius)
     }
     
+    /// Builds a triangle neon glow using an effect node with gaussian blur.
+    /// - Parameters:
+    ///   - sideLength: Length of each side of the equilateral triangle.
+    ///   - color: Color of the glow core.
+    ///   - blurRadius: Blur radius applied by the gaussian filter.
+    ///   - alpha: Alpha applied to the glow shape before blurring.
+    ///   - scale: Optional scale to enlarge the glow relative to the base size.
+    static func makeTriangleGlow(sideLength: CGFloat,
+                                 color: SKColor,
+                                 blurRadius: CGFloat,
+                                 alpha: CGFloat = 0.85,
+                                 scale: CGFloat = 1.35) -> SKEffectNode {
+        let path = trianglePath(sideLength: sideLength)
+        let glowShape = SKShapeNode(path: path)
+        glowShape.fillColor = color
+        glowShape.strokeColor = .clear
+        glowShape.lineWidth = 0
+        glowShape.alpha = alpha
+        glowShape.isAntialiased = true
+        glowShape.blendMode = .add
+        glowShape.setScale(scale)
+        
+        return makeEffectNode(with: glowShape, blurRadius: blurRadius)
+    }
+    
+    /// Creates a CGPath for an equilateral triangle centered at origin.
+    static func trianglePath(sideLength: CGFloat) -> CGPath {
+        let height = sideLength * sqrt(3) / 2
+        let path = CGMutablePath()
+        // Top vertex
+        path.move(to: CGPoint(x: 0, y: height * 2 / 3))
+        // Bottom-right vertex
+        path.addLine(to: CGPoint(x: sideLength / 2, y: -height / 3))
+        // Bottom-left vertex
+        path.addLine(to: CGPoint(x: -sideLength / 2, y: -height / 3))
+        path.closeSubpath()
+        return path
+    }
+    
     /// Private helper that wraps the supplied shape in an effect node.
     private static func makeEffectNode(with shape: SKShapeNode,
                                        blurRadius: CGFloat) -> SKEffectNode {
