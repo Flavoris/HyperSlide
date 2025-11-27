@@ -1,0 +1,156 @@
+{
+  "" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/HyprGlide-primary.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/HyprGlide-primary.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/HyprGlide-primary.dia",
+    "emit-module-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/HyprGlide-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/HyprGlide-primary-emit-module.dia",
+    "pch" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/HyprGlide-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/HyprGlide-primary.swiftdeps"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/ArenaRandomizer.swift" : {
+    "index-unit-output-path" : "/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/ArenaRandomizer.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/ArenaRandomizer.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/ArenaRandomizer.o"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/AttackModeEffect.swift" : {
+    "index-unit-output-path" : "/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/AttackModeEffect.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/AttackModeEffect.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/AttackModeEffect.o"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/BackgroundMusicAssetEngine.swift" : {
+    "index-unit-output-path" : "/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/BackgroundMusicAssetEngine.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/BackgroundMusicAssetEngine.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/BackgroundMusicAssetEngine.o"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/ContentView.swift" : {
+    "index-unit-output-path" : "/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/ContentView.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/ContentView.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/ContentView.o"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/DefaultsGuard.swift" : {
+    "index-unit-output-path" : "/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/DefaultsGuard.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/DefaultsGuard.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/DefaultsGuard.o"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/FriendsLeaderboardView.swift" : {
+    "index-unit-output-path" : "/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/FriendsLeaderboardView.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/FriendsLeaderboardView.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/FriendsLeaderboardView.o"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/GameCenterManager.swift" : {
+    "index-unit-output-path" : "/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/GameCenterManager.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/GameCenterManager.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/GameCenterManager.o"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/GameScene.swift" : {
+    "index-unit-output-path" : "/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/GameScene.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/GameScene.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/GameScene.o"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/GameSceneMultiplayer.swift" : {
+    "index-unit-output-path" : "/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/GameSceneMultiplayer.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/GameSceneMultiplayer.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/GameSceneMultiplayer.o"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/GameState.swift" : {
+    "index-unit-output-path" : "/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/GameState.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/GameState.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/GameState.o"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/GlowEffectFactory.swift" : {
+    "index-unit-output-path" : "/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/GlowEffectFactory.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/GlowEffectFactory.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/GlowEffectFactory.o"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/HUDView.swift" : {
+    "index-unit-output-path" : "/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/HUDView.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/HUDView.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/HUDView.o"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/Haptics.swift" : {
+    "index-unit-output-path" : "/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/Haptics.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/Haptics.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/Haptics.o"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/HyprGlideApp.swift" : {
+    "index-unit-output-path" : "/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/HyprGlideApp.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/HyprGlideApp.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/HyprGlideApp.o"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/InvincibilityEffect.swift" : {
+    "index-unit-output-path" : "/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/InvincibilityEffect.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/InvincibilityEffect.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/InvincibilityEffect.o"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/MultiplayerGameOverView.swift" : {
+    "index-unit-output-path" : "/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerGameOverView.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerGameOverView.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerGameOverView.o"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/MultiplayerManager.swift" : {
+    "index-unit-output-path" : "/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerManager.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerManager.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerManager.o"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/MultiplayerModels.swift" : {
+    "index-unit-output-path" : "/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerModels.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerModels.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerModels.o"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/MultiplayerStatusView.swift" : {
+    "index-unit-output-path" : "/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerStatusView.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerStatusView.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerStatusView.o"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/NearMissEmitterFactory.swift" : {
+    "index-unit-output-path" : "/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/NearMissEmitterFactory.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/NearMissEmitterFactory.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/NearMissEmitterFactory.o"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/Obstacle.swift" : {
+    "index-unit-output-path" : "/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/Obstacle.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/Obstacle.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/Obstacle.o"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/PerformanceGovernor.swift" : {
+    "index-unit-output-path" : "/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/PerformanceGovernor.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/PerformanceGovernor.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/PerformanceGovernor.o"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/PowerUpNode.swift" : {
+    "index-unit-output-path" : "/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/PowerUpNode.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/PowerUpNode.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/PowerUpNode.o"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/Settings.swift" : {
+    "index-unit-output-path" : "/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/Settings.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/Settings.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/Settings.o"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/SettingsView.swift" : {
+    "index-unit-output-path" : "/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/SettingsView.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/SettingsView.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/SettingsView.o"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/SlowMotionEffect.swift" : {
+    "index-unit-output-path" : "/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/SlowMotionEffect.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/SlowMotionEffect.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/SlowMotionEffect.o"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/SoundManager.swift" : {
+    "index-unit-output-path" : "/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/SoundManager.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/SoundManager.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/SoundManager.o"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/SpawnEventHelpers.swift" : {
+    "index-unit-output-path" : "/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/SpawnEventHelpers.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/SpawnEventHelpers.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/SpawnEventHelpers.o"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "index-unit-output-path" : "/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/GeneratedAssetSymbols.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/GeneratedAssetSymbols.o"
+  }
+}

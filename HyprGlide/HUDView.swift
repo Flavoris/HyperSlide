@@ -10,22 +10,48 @@ import SwiftUI
 struct HUDView: View {
     @ObservedObject var gameState: GameState
     @ObservedObject var settings: Settings
+    @ObservedObject var multiplayerState: MultiplayerState
+    @ObservedObject var multiplayerManager: MultiplayerManager
     var onRestart: () -> Void
+    var onExitToMainMenu: () -> Void
     
     /// Accent color for the Game Over title and button, using a deeper neon red for better contrast.
     private let gameOverAccentColor = Color(red: 0.78, green: 0.02, blue: 0.12)
     
+    /// Accent color for the Multiplayer button — a vibrant cyan/teal to differentiate from primary neon.
+    private let multiplayerButtonColor = Color(red: 0.0, green: 0.85, blue: 0.85)
+    
     @State private var showSettings = false
     @State private var showMovementHint = false
     @State private var hintDismissTask: Task<Void, Never>?
+    @State private var showFriendsLeaderboard = false
+    @State private var showMultiplayerMenu = false
     
     var body: some View {
         ZStack {
             VStack {
                 // Top: Score display (only during gameplay)
                 if gameState.hasStarted && !gameState.isGameOver {
-                    scoreDisplay
+                    if gameState.mode.isMultiplayer && multiplayerState.isMatchActive {
+                        // Multiplayer: score on left, status on right
+                        HStack(alignment: .top) {
+                            scoreDisplay
+                            
+                            Spacer()
+                            
+                            MultiplayerStatusView(
+                                multiplayerState: multiplayerState,
+                                gameState: gameState,
+                                accentColor: multiplayerButtonColor
+                            )
+                        }
                         .padding(.top, 40)
+                    } else {
+                        // Single player: centered score
+                        scoreDisplay
+                            .frame(maxWidth: .infinity)
+                            .padding(.top, 40)
+                    }
                 }
                 
                 Spacer()
@@ -34,7 +60,18 @@ struct HUDView: View {
                 if !gameState.hasStarted {
                     startMenuOverlay
                 } else if gameState.isGameOver {
-                    gameOverOverlay
+                    // Show multiplayer or single-player game over based on mode
+                    if gameState.mode.isMultiplayer {
+                        MultiplayerGameOverView(
+                            multiplayerState: multiplayerState,
+                            gameState: gameState,
+                            accentColor: multiplayerButtonColor,
+                            onRestart: { restartGame() },
+                            onMainMenu: { returnToMainMenu() }
+                        )
+                    } else {
+                        gameOverOverlay
+                    }
                 } else if gameState.isPaused {
                     pausedOverlay
                 }
@@ -46,6 +83,16 @@ struct HUDView: View {
                     .padding(.bottom, 20)
             }
             .padding(.horizontal)
+        }
+        .overlay(alignment: .top) {
+            if let lobby = multiplayerState.lobbyState,
+               gameState.mode.isMultiplayer,
+               gameState.hasStarted,
+               !gameState.isGameOver {
+                lobbyStatusBanner(lobby: lobby)
+                    .padding(.top, 30)
+                    .padding(.horizontal, 20)
+            }
         }
         .overlay(alignment: .bottom) {
             if showMovementHint {
@@ -101,7 +148,11 @@ struct HUDView: View {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 40)
             
-            // START Button
+            if multiplayerState.isSearching || multiplayerManager.isMatchmaking {
+                matchmakingStatusCard
+            }
+            
+            // START Button (Single Player)
             Button {
                 startGame()
             } label: {
@@ -116,10 +167,156 @@ struct HUDView: View {
                         .strokeBorder(settings.colorTheme.primaryColor, lineWidth: 3)
                 )
             }
-            .accessibilityLabel("Start game")
+            .accessibilityLabel("Start single-player game")
+            
+            // MULTIPLAYER Button
+            Button {
+                showMultiplayerMenu = true
+            } label: {
+                Text("MULTIPLAYER")
+                .font(.system(size: 20, weight: .heavy, design: .rounded))
+                .foregroundStyle(multiplayerButtonColor)
+                .tracking(2)
+                .padding(.horizontal, 40)
+                .padding(.vertical, 16)
+                .background(
+                    RoundedRectangle(cornerRadius: 50)
+                        .strokeBorder(multiplayerButtonColor, lineWidth: 2)
+                )
+            }
+            .accessibilityLabel("Start multiplayer game")
+            .disabled(multiplayerManager.isMatchmaking)
+            .opacity(multiplayerManager.isMatchmaking ? 0.6 : 1)
+            
+            // FRIENDS SCORES Button
+            Button {
+                showFriendsLeaderboard = true
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: "trophy.fill")
+                        .font(.system(size: 16, weight: .semibold))
+                    
+                    Text("FRIENDS SCORES")
+                        .font(.system(size: 16, weight: .bold, design: .rounded))
+                        .tracking(1)
+                }
+                .foregroundStyle(.white.opacity(0.75))
+                .padding(.horizontal, 28)
+                .padding(.vertical, 12)
+                .background(
+                    Capsule()
+                        .fill(Color.white.opacity(0.08))
+                        .overlay(
+                            Capsule()
+                                .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                        )
+                )
+            }
+            .accessibilityLabel("View friends leaderboard")
             
             Spacer()
         }
+        .sheet(isPresented: $showFriendsLeaderboard) {
+            FriendsLeaderboardView(accentColor: settings.colorTheme.primaryColor)
+        }
+        .sheet(isPresented: $showMultiplayerMenu) {
+            MultiplayerModeSheet(
+                accentColor: multiplayerButtonColor,
+                startQuickMatch: {
+                    guard !multiplayerManager.isMatchmaking else { return }
+                    showMultiplayerMenu = false
+                    multiplayerManager.startQuickMatch()
+                },
+                startFriendsMatch: {
+                    guard !multiplayerManager.isMatchmaking else { return }
+                    showMultiplayerMenu = false
+                    multiplayerManager.startFriendsMatch()
+                }
+            )
+        }
+    }
+    
+    private var matchmakingStatusCard: some View {
+        let queueName = multiplayerState.currentQueue?.displayName ?? "Multiplayer"
+        return VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text("Searching for \(queueName)")
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .foregroundStyle(.white)
+                Spacer()
+                ProgressView()
+                    .tint(multiplayerButtonColor)
+            }
+            
+            Text("Looking for 2-4 players via Game Center.")
+                .font(.system(size: 13, weight: .medium, design: .rounded))
+                .foregroundStyle(.white.opacity(0.85))
+            
+            Button {
+                multiplayerManager.cancelMatchmaking()
+            } label: {
+                Text("Cancel Search")
+                    .font(.system(size: 14, weight: .semibold, design: .rounded))
+                    .foregroundStyle(multiplayerButtonColor)
+                    .padding(.vertical, 8)
+                    .frame(maxWidth: .infinity)
+                    .background(
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .stroke(multiplayerButtonColor.opacity(0.7), lineWidth: 1)
+                    )
+            }
+        }
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Color.black.opacity(0.55))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .stroke(multiplayerButtonColor.opacity(0.35), lineWidth: 1)
+                )
+        )
+    }
+    
+    private func lobbyStatusBanner(lobby: MultiplayerLobbyState) -> some View {
+        let playerCount = multiplayerState.players.count
+        let remaining = Int(ceil(max(0, lobby.remaining)))
+        let queueLabel = multiplayerState.currentQueue?.displayName ?? "Lobby"
+        
+        return VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text("\(queueLabel) Lobby")
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .foregroundStyle(.white)
+                
+                Spacer()
+                
+                Text("Starts in \(remaining)s")
+                    .font(.system(size: 14, weight: .semibold, design: .rounded))
+                    .foregroundStyle(multiplayerButtonColor)
+            }
+            
+            HStack(spacing: 8) {
+                Image(systemName: "person.2.fill")
+                    .foregroundStyle(.white.opacity(0.85))
+                Text("\(max(playerCount, lobby.minPlayers)) / \(lobby.maxPlayers) players")
+                    .font(.system(size: 14, weight: .medium, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.9))
+            }
+            
+            Text("Move around while you wait. Game starts when lobby fills or timer hits zero (min \(lobby.minPlayers) players).")
+                .font(.system(size: 13, weight: .regular, design: .rounded))
+                .foregroundStyle(.white.opacity(0.8))
+        }
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Color.black.opacity(0.6))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .stroke(multiplayerButtonColor.opacity(0.5), lineWidth: 1.5)
+                )
+        )
+        .shadow(color: multiplayerButtonColor.opacity(0.35), radius: 18, x: 0, y: 10)
     }
     
     private var gameOverOverlay: some View {
@@ -163,6 +360,7 @@ struct HUDView: View {
     // MARK: - Helper Methods
     
     private func startGame() {
+        gameState.mode = .singlePlayer
         gameState.startGame()
     }
     
@@ -170,6 +368,12 @@ struct HUDView: View {
         // Delegate to the restart handler in ContentView
         // which coordinates scene reset and best score recording
         onRestart()
+    }
+    
+    /// Returns to the main menu (start screen) from multiplayer game over.
+    private func returnToMainMenu() {
+        // Delegate to ContentView which coordinates scene reset
+        onExitToMainMenu()
     }
     
     private var pausedOverlay: some View {
@@ -194,7 +398,30 @@ struct HUDView: View {
                 )
             }
             .accessibilityLabel("Resume game")
+            
+            // Main Menu / Exit button
+            Button {
+                exitToMainMenu()
+            } label: {
+                Text(gameState.mode.isMultiplayer ? "EXIT MATCH" : "MAIN MENU")
+                .font(.system(size: 18, weight: .bold, design: .rounded))
+                .foregroundStyle(.white.opacity(0.7))
+                .tracking(2)
+                .padding(.horizontal, 36)
+                .padding(.vertical, 14)
+                .background(
+                    RoundedRectangle(cornerRadius: 50)
+                        .strokeBorder(Color.white.opacity(0.3), lineWidth: 2)
+                )
+            }
+            .accessibilityLabel(gameState.mode.isMultiplayer ? "Exit multiplayer match" : "Return to main menu")
         }
+    }
+    
+    /// Exits the current game and returns to the main menu.
+    private func exitToMainMenu() {
+        // Delegate to ContentView which coordinates scene reset
+        onExitToMainMenu()
     }
     
     // MARK: - Movement Hint
@@ -310,11 +537,106 @@ struct HUDView: View {
         
         HUDView(gameState: GameState(),
                 settings: Settings(),
-                onRestart: {})
+                multiplayerState: MultiplayerState(),
+                multiplayerManager: MultiplayerManager(),
+                onRestart: {},
+                onExitToMainMenu: {})
     }
 }
 
-// MARK: - Neon Glow Effect
+// MARK: - Multiplayer Mode Sheet
+
+private struct MultiplayerModeSheet: View {
+    let accentColor: Color
+    let startQuickMatch: () -> Void
+    let startFriendsMatch: () -> Void
+    @Environment(\.dismiss) private var dismiss
+    
+    var body: some View {
+        VStack(spacing: 18) {
+            Capsule()
+                .fill(Color.white.opacity(0.25))
+                .frame(width: 44, height: 5)
+                .padding(.top, 10)
+            
+            Text("Choose Multiplayer")
+                .font(.system(size: 22, weight: .heavy, design: .rounded))
+                .foregroundStyle(.white)
+                .padding(.top, 4)
+            
+            Text("Play with friends or jump into a quick match. Lobbies support 2-4 players.")
+                .font(.system(size: 14, weight: .medium, design: .rounded))
+                .foregroundStyle(.white.opacity(0.75))
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 12)
+            
+            VStack(spacing: 12) {
+                Button {
+                    startFriendsMatch()
+                } label: {
+                    HStack {
+                        Image(systemName: "person.crop.circle.badge.plus")
+                            .font(.system(size: 18, weight: .semibold))
+                        Text("Play with Friends")
+                            .font(.system(size: 17, weight: .bold, design: .rounded))
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 14, weight: .semibold))
+                    }
+                    .foregroundStyle(.white)
+                    .padding()
+                    .background(
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .fill(Color.white.opacity(0.08))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                    .stroke(accentColor.opacity(0.6), lineWidth: 1.2)
+                            )
+                    )
+                }
+                
+                Button {
+                    startQuickMatch()
+                } label: {
+                    HStack {
+                        Image(systemName: "bolt.fill")
+                            .font(.system(size: 18, weight: .semibold))
+                        Text("Find Random Match")
+                            .font(.system(size: 17, weight: .bold, design: .rounded))
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 14, weight: .semibold))
+                    }
+                    .foregroundStyle(accentColor)
+                    .padding()
+                    .background(
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .stroke(accentColor.opacity(0.6), lineWidth: 1.2)
+                    )
+                }
+            }
+            
+            Button {
+                dismiss()
+            } label: {
+                Text("Close")
+                    .font(.system(size: 15, weight: .semibold, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.8))
+                    .padding(.vertical, 8)
+                    .padding(.horizontal, 16)
+            }
+            .padding(.top, 8)
+            
+            Spacer()
+        }
+        .padding(.horizontal, 20)
+        .padding(.bottom, 20)
+        .background(
+            Color.black.opacity(0.9)
+                .ignoresSafeArea()
+        )
+    }
+}
 
 private struct MovementHintChip: View {
     let accentColor: Color
@@ -342,6 +664,8 @@ private struct MovementHintChip: View {
         .accessibilityLabel("Hint: Drag or tilt to move")
     }
 }
+
+// MARK: - Neon Glow Effect
 
 private struct NeonGlowModifier: ViewModifier {
     let color: Color

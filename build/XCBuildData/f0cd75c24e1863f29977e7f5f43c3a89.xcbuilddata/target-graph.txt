@@ -1,0 +1,4 @@
+Target dependency graph (2 targets)
+Target 'HyprGlideTests' in project 'HyprGlide'
+➜ Explicit dependency on target 'HyprGlide' in project 'HyprGlide'
+Target 'HyprGlide' in project 'HyprGlide' (no dependencies)

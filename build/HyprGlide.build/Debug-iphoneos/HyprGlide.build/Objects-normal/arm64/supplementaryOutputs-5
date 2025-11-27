@@ -1,0 +1,23 @@
+{
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/FriendsLeaderboardView.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/FriendsLeaderboardView.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/FriendsLeaderboardView.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/FriendsLeaderboardView.dia",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/FriendsLeaderboardView.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/FriendsLeaderboardView.swiftdeps"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/GameState.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameState.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameState.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameState.dia",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameState.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameState.swiftdeps"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/MultiplayerGameOverView.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerGameOverView.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerGameOverView.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerGameOverView.dia",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerGameOverView.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerGameOverView.swiftdeps"
+  }
+}

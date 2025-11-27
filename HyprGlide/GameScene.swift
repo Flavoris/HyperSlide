@@ -11,7 +11,7 @@ import SwiftUI
 import CoreMotion
 import Foundation
 
-class GameScene: SKScene, SKPhysicsContactDelegate {
+class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
     private static let offscreenRenderer: SKView = {
         let renderer = SKView(frame: CGRect(origin: .zero,
                                             size: CGSize(width: 64, height: 64)))
@@ -27,6 +27,41 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // Shared sound manager supplied by SwiftUI host.
     var soundManager: SoundManager?
+    
+    // MARK: - Multiplayer Properties
+    
+    /// Reference to the multiplayer manager (nil in single-player mode).
+    weak var multiplayerManager: MultiplayerManager?
+    
+    /// Observable multiplayer state for lobby/countdown awareness.
+    weak var multiplayerState: MultiplayerState?
+    
+    /// Dictionary of all players in a multiplayer match, keyed by player ID.
+    /// In single-player mode, this is empty. The `player` property is used directly.
+    private(set) var playerNodes: [String: PlayerNodeContext] = [:]
+    
+    /// The local player's ID in multiplayer mode.
+    private var localPlayerId: String?
+    
+    /// Match start time for multiplayer synchronization.
+    private var matchStartTime: TimeInterval?
+    
+    /// Tracks multiplayer slow-motion where the collector moves at normal speed.
+    private var multiplayerSlowMotion = MultiplayerSlowMotionTracker()
+    
+    /// Tracks power-up instances for multiplayer exclusivity.
+    private var powerUpTracker = PowerUpTracker()
+    
+    /// Whether we're currently in multiplayer mode.
+    var isMultiplayerMode: Bool {
+        gameState?.mode.isMultiplayer ?? false
+    }
+    
+    /// Frame counter for throttled state broadcasts.
+    private var multiplayerFrameCounter: Int = 0
+    
+    /// How often to send position updates (every N frames).
+    private let positionUpdateFrameInterval: Int = 3
     
     // Track time for delta calculations
     private var lastUpdateTime: TimeInterval = 0
@@ -110,17 +145,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private var obstacles: [ObstacleNode] = []
     private let obstaclePool = ObstaclePool(maximumCapacity: 32)
     
-    // Obstacle spawning
-    private var spawnTimer: TimeInterval = 0
-    private var nextSpawnInterval: TimeInterval = 1.0
+    // Obstacle configuration
     private var obstacleConfig = ObstacleConfig.default
     
-    // Edge-riding prevention
-    private var edgeLingerTime: TimeInterval = 0
-    private let edgeZoneWidth: CGFloat = 80  // Width of the "edge zone"
-    private let edgeLingerThreshold: TimeInterval = 1.5  // Time before punishing edge riding
-    private let edgeFlushSpawnChance: Double = 0.7  // 70% chance to spawn edge-flush when lingering
-    private var lastEdgeSide: EdgeSide = .none
+    // MARK: - Deterministic Spawning
+    
+    /// Arena randomizer for deterministic spawn generation.
+    /// In single-player, uses a random seed. In multiplayer, uses a shared seed.
+    private var arenaRandomizer: ArenaRandomizer = ArenaRandomizer.singlePlayer()
+    
+    /// Tracks spawn timers, edge-riding, and intervals.
+    private let spawnState = SpawnStateTracker()
+    
+    /// Optional external event stream for multiplayer synchronized spawning.
+    /// When set, the scene replays events from the stream instead of generating locally.
+    private var externalEventStream: ArenaEventStream?
+    
+    /// Configuration for multiplayer power-up behavior.
+    private var multiplayerConfig: ArenaMultiplayerConfig?
     
     private enum EdgeSide {
         case none, left, right
@@ -129,10 +171,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // MARK: - Power-Up Properties
     
     private var powerUps: [PowerUpNode] = []
-    private var powerUpSpawnTimer: TimeInterval = 0
-    private var nextPowerUpSpawnInterval: TimeInterval = 12
-    private let powerUpSpawnIntervalRange: ClosedRange<TimeInterval> = 12...18
-    private let powerUpDifficultyThreshold: Double = 0.25
     private var slowMotionEffect = SlowMotionEffect(duration: 3.0,
                                                    speedScale: 0.4,
                                                    maxStackDuration: 6.0) // 3 second slow to 40%, stackable to 6s
@@ -192,8 +230,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         fullyWarmEmitterPipeline()
-        powerUpSpawnTimer = 0
-        scheduleNextPowerUpSpawn()
+        spawnState.reset()
+        spawnState.scheduleNextPowerUpSpawn()
         updateSlowMotionOverlayGeometry()
         registerLifecycleNotifications()
     }
@@ -444,25 +482,64 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             applyCurrentPerformanceMode()
         }
         
-        // Update game state time and difficulty
-        gameState?.updateTime(delta: deltaTime)
+        guard let state = gameState else { return }
+        let isLobby = lobbyWarmupActive()
+        
+        // Update game state time unless we're idling in a multiplayer lobby.
+        if state.hasStarted && !state.isPaused && !state.isGameOver {
+            if !isLobby {
+                state.updateTime(delta: deltaTime)
+            } else {
+                multiplayerState?.updateLobbyCountdown()
+            }
+        }
         
         // Skip update if game hasn't started, is paused, or is over
-        guard let state = gameState,
-              state.hasStarted,
+        guard state.hasStarted,
               !state.isPaused,
               !state.isGameOver else {
             return
         }
         
-        // Game logic updates will be added here
-        updateGameLogic(deltaTime: deltaTime)
+        updateGameLogic(deltaTime: deltaTime, isLobby: isLobby)
     }
     
     // MARK: - Game Logic
     
-    private func updateGameLogic(deltaTime: TimeInterval) {
+    /// Returns true when we're idling in a multiplayer lobby prior to the official start time.
+    private func lobbyWarmupActive() -> Bool {
+        guard let state = gameState,
+              state.mode.isMultiplayer,
+              let startTime = matchStartTime,
+              multiplayerState?.lobbyState != nil else {
+            return false
+        }
+        
+        let now = Date().timeIntervalSince1970
+        if now >= startTime {
+            multiplayerState?.clearLobby()
+            return false
+        }
+        
+        multiplayerState?.updateLobbyCountdown(now: now)
+        return true
+    }
+    
+    private func updateGameLogic(deltaTime: TimeInterval, isLobby: Bool) {
         updatePlayerMovement(deltaTime: deltaTime)
+        
+        // Update multiplayer-specific logic
+        if isMultiplayerMode {
+            updateRemotePlayers(deltaTime: deltaTime)
+            multiplayerSlowMotion.update(deltaTime: deltaTime)
+            broadcastLocalPlayerState()
+        }
+        
+        // While in the lobby, allow free movement but skip spawning/scoring.
+        if isLobby {
+            return
+        }
+        
         updateObstacles(deltaTime: deltaTime)
         detectNearMisses()
         spawnObstacles(deltaTime: deltaTime)
@@ -479,7 +556,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         guard let player = player else { return }
         
         let currentX = player.position.x
-        let dt = max(CGFloat(deltaTime), 0.0001)
+        var dt = max(CGFloat(deltaTime), 0.0001)
+        
+        // In multiplayer, apply slow-motion to the local player if they're NOT the collector
+        if isMultiplayerMode && multiplayerSlowMotion.isActive {
+            if let localId = localPlayerId {
+                let speedMult = multiplayerSlowMotion.speedMultiplier(for: localId)
+                if speedMult < 1.0 {
+                    // Slow down the player's effective movement speed (not time, but responsiveness)
+                    // This makes the slowed player feel sluggish compared to the collector
+                    dt *= speedMult
+                }
+            }
+        }
         
         if dragInputActive {
             let diff = targetX - currentX
@@ -545,7 +634,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Update each obstacle's position (freeze or reduce speed when game over)
         let gameOver = gameState?.isGameOver ?? false
         let baseMultiplier: Double = gameOver ? 0.05 : 1.0  // Slow to 5% when game over
-        let slowMultiplier = Double(slowMotionEffect.speedMultiplier)
+        
+        // In multiplayer, obstacles slow down when any player has slow-motion active
+        // In single-player, use the local slow-motion effect
+        let slowMultiplier: Double
+        if isMultiplayerMode && multiplayerSlowMotion.isActive {
+            // Obstacles always slow down during multiplayer slow-motion
+            slowMultiplier = Double(multiplayerSlowMotion.slowSpeedScale)
+        } else {
+            slowMultiplier = Double(slowMotionEffect.speedMultiplier)
+        }
         let speedMultiplier = baseMultiplier * slowMultiplier
         
         for obstacle in obstacles {
@@ -578,74 +676,67 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         updateEdgeLingerTracking(deltaTime: deltaTime)
         
         // Increment spawn timer
-        spawnTimer += deltaTime
+        spawnState.obstacleSpawnTimer += deltaTime
         
         // Check if it's time to spawn a new obstacle
-        guard spawnTimer >= nextSpawnInterval else { return }
+        guard spawnState.obstacleSpawnTimer >= spawnState.nextObstacleSpawnInterval else { return }
         
         // Reset timer
-        spawnTimer = 0
+        spawnState.obstacleSpawnTimer = 0
         
         // Get difficulty (0.0 to 1.0) and apply difficulty ramp multiplier
         let baseDifficulty = gameState?.difficulty ?? 0.0
         let difficultyMultiplier = settings?.difficultyMultiplier ?? 1.0
         let difficulty = CGFloat(min(1.0, baseDifficulty * difficultyMultiplier))
+        let currentTime = gameState?.elapsed ?? 0
         
-        // Calculate spawn interval using lerp: 1.0 -> 0.3 based on difficulty
-        let spawnInterval = lerp(1.0, 0.3, difficulty)
-        let intervalWithGovernor = spawnInterval * CGFloat(performanceGovernor.spawnIntervalMultiplier)
-        nextSpawnInterval = TimeInterval(intervalWithGovernor)
-        
-        // Calculate base obstacle speed using lerp: 240 -> 700 based on difficulty
-        let baseSpeedY = lerp(240, 700, difficulty)
+        // Update next spawn interval using randomizer
+        let baseInterval = arenaRandomizer.nextObstacleSpawnInterval(difficulty: difficulty)
+        let intervalWithGovernor = baseInterval * performanceGovernor.spawnIntervalMultiplier
+        spawnState.nextObstacleSpawnInterval = intervalWithGovernor
         
         // Determine if we should spawn an edge-punishing obstacle
-        let shouldPunishEdge = edgeLingerTime >= edgeLingerThreshold && 
-                               lastEdgeSide != .none &&
-                               Double.random(in: 0...1) < edgeFlushSpawnChance
+        var tempRng = arenaRandomizer.isMultiplayer 
+            ? SeededRandomNumberGenerator(seed: UInt64(currentTime * 1000))
+            : SeededRandomNumberGenerator(seed: UInt64.random(in: 0...UInt64.max))
+        let shouldPunishEdge = spawnState.shouldSpawnEdgePunish(using: &tempRng)
         
+        // Generate spawn event using ArenaRandomizer
+        let event: ObstacleSpawnEvent
         if shouldPunishEdge {
-            spawnEdgeFlushObstacle(edgeSide: lastEdgeSide, baseSpeedY: baseSpeedY, difficulty: difficulty)
-            edgeLingerTime = 0  // Reset after punishing
-            return
-        }
-        
-        // Determine obstacle variant with probability weighted by difficulty
-        // At d=0: mostly wide slow (70% wide, 30% narrow)
-        // At d=1: mostly narrow fast (30% wide, 70% narrow)
-        let narrowProbability = Double(difficulty * 0.4 + 0.3) // 0.3 to 0.7
-        let isNarrowVariant = Double.random(in: 0...1) < narrowProbability
-        
-        // Set width and speed based on variant
-        let width: CGFloat
-        let speedY: CGFloat
-        
-        if isNarrowVariant {
-            // Narrow fast: 50-80 pixels wide, +20% speed
-            width = CGFloat.random(in: 50...80)
-            speedY = baseSpeedY * 1.2
+            event = arenaRandomizer.nextObstacleEvent(
+                currentTime: currentTime,
+                difficulty: difficulty,
+                isEdgePunish: true,
+                edgeSide: spawnState.lastEdgeSide.toEventEdgeSide
+            )
         } else {
-            // Wide slow: 100-150 pixels wide, -10% speed
-            width = CGFloat.random(in: 100...150)
-            speedY = baseSpeedY * 0.9
+            event = arenaRandomizer.nextObstacleEvent(
+                currentTime: currentTime,
+                difficulty: difficulty
+            )
         }
         
+        // Spawn the obstacle from the event
+        spawnObstacleFromEvent(event)
+    }
+    
+    /// Spawns an obstacle from a spawn event (used for both local and multiplayer sync).
+    private func spawnObstacleFromEvent(_ event: ObstacleSpawnEvent) {
         let height = obstacleConfig.height
-        
-        // Calculate spawn position - bias toward player's position or edges
-        let positionX = calculateObstacleSpawnX(width: width, difficulty: difficulty)
         
         // Get theme colors for obstacles, default to hot pink
         let obstacleColors = settings?.colorTheme.obstacleColor ?? 
                             (core: (1.0, 0.1, 0.6), glow: (1.0, 0.35, 0.75))
         
-        // Create and position obstacle with theme colors
-        let obstacle = obstaclePool.dequeue(width: width,
-                                            height: height,
-                                            speedY: speedY,
-                                            coreColor: obstacleColors.core,
-                                            glowColor: obstacleColors.glow)
-        obstacle.position = CGPoint(x: positionX, y: size.height + height)
+        let obstacle = event.spawnObstacle(
+            pool: obstaclePool,
+            sceneSize: size,
+            margin: 20.0,
+            height: height,
+            coreColor: obstacleColors.core,
+            glowColor: obstacleColors.glow
+        )
         
         // Add to scene and tracking array
         if obstacle.parent !== self {
@@ -658,94 +749,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     private func updateEdgeLingerTracking(deltaTime: TimeInterval) {
         guard let player = player else {
-            edgeLingerTime = 0
-            lastEdgeSide = .none
+            spawnState.edgeLingerTime = 0
+            spawnState.lastEdgeSide = .none
             return
         }
         
-        let playerX = player.position.x
-        let leftEdgeBoundary = movementHorizontalMargin + edgeZoneWidth
-        let rightEdgeBoundary = size.width - movementHorizontalMargin - edgeZoneWidth
-        
-        let currentEdge: EdgeSide
-        if playerX <= leftEdgeBoundary {
-            currentEdge = .left
-        } else if playerX >= rightEdgeBoundary {
-            currentEdge = .right
-        } else {
-            currentEdge = .none
-        }
-        
-        if currentEdge == lastEdgeSide && currentEdge != .none {
-            // Continue accumulating edge linger time
-            edgeLingerTime += deltaTime
-        } else {
-            // Reset when switching sides or moving to center
-            edgeLingerTime = 0
-            lastEdgeSide = currentEdge
-        }
+        spawnState.updateEdgeTracking(
+            playerX: player.position.x,
+            margin: movementHorizontalMargin,
+            sceneWidth: size.width,
+            deltaTime: deltaTime
+        )
     }
     
-    private func spawnEdgeFlushObstacle(edgeSide: EdgeSide, baseSpeedY: CGFloat, difficulty: CGFloat) {
-        let height = obstacleConfig.height
-        
-        // Create a wide obstacle that covers the edge zone and extends inward
-        // This forces the player to move toward the center
-        let edgeCoverageWidth = edgeZoneWidth + movementHorizontalMargin + 40  // Extra coverage
-        let speedY = baseSpeedY * 1.1  // Slightly faster than normal
-        
-        let positionX: CGFloat
-        switch edgeSide {
-        case .left:
-            positionX = edgeCoverageWidth / 2
-        case .right:
-            positionX = size.width - edgeCoverageWidth / 2
-        case .none:
-            return
-        }
-        
-        let obstacleColors = settings?.colorTheme.obstacleColor ?? 
-                            (core: (1.0, 0.1, 0.6), glow: (1.0, 0.35, 0.75))
-        
-        let obstacle = obstaclePool.dequeue(width: edgeCoverageWidth,
-                                            height: height,
-                                            speedY: speedY,
-                                            coreColor: obstacleColors.core,
-                                            glowColor: obstacleColors.glow)
-        obstacle.position = CGPoint(x: positionX, y: size.height + height)
-        
-        if obstacle.parent !== self {
-            addChild(obstacle)
-        }
-        obstacles.append(obstacle)
-    }
-    
-    private func calculateObstacleSpawnX(width: CGFloat, difficulty: CGFloat) -> CGFloat {
-        let margin: CGFloat = 20.0  // Reduced margin to allow obstacles closer to edges
-        let minX = margin + width / 2
-        let maxX = size.width - margin - width / 2
-        
-        guard maxX > minX else {
-            return size.width / 2
-        }
-        
-        // As difficulty increases, obstacles have a higher chance to spawn near edges
-        // This prevents edges from being safe zones even without prolonged camping
-        let edgeSpawnChance = Double(difficulty * 0.3 + 0.15)  // 15% to 45% chance
-        
-        if Double.random(in: 0...1) < edgeSpawnChance {
-            // Spawn obstacle flush to left or right edge
-            let spawnOnLeft = Bool.random()
-            if spawnOnLeft {
-                return minX
-            } else {
-                return maxX
-            }
-        }
-        
-        // Normal random spawn across the full width
-        return CGFloat.random(in: minX...maxX)
-    }
     
     private func updatePowerUps(deltaTime: TimeInterval) {
         // Update pulse phase for expiry warning animation
@@ -782,65 +798,67 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     private func spawnPowerUpIfNeeded(deltaTime: TimeInterval, difficulty: Double) {
-        // Do not spawn if any power-up is currently active
-        guard !slowMotionEffect.isActive, !invincibilityEffect.isActive, !attackModeEffect.isActive else {
-            powerUpSpawnTimer = 0
-            return
+        let isMultiplayer = arenaRandomizer.isMultiplayer
+        
+        // Build active power-up counter
+        let activePowerUpCount = ActivePowerUpCounter(
+            slowMotionActive: slowMotionEffect.isActive,
+            invincibilityActive: invincibilityEffect.isActive,
+            attackModeActive: attackModeEffect.isActive
+        )
+        
+        // In single-player: don't spawn if any power-up is active
+        // In multiplayer: allow stacking up to the configured limit
+        if !isMultiplayer {
+            guard !activePowerUpCount.anyActive else {
+                spawnState.powerUpSpawnTimer = 0
+                return
+            }
         }
         
-        guard difficulty >= powerUpDifficultyThreshold else {
+        guard difficulty >= spawnState.powerUpDifficultyThreshold else {
             // Hold timer at zero until the game ramps up enough.
-            powerUpSpawnTimer = 0
+            spawnState.powerUpSpawnTimer = 0
             return
         }
         
         guard powerUps.isEmpty else { return }
         
-        powerUpSpawnTimer += deltaTime
-        guard powerUpSpawnTimer >= nextPowerUpSpawnInterval else { return }
+        spawnState.powerUpSpawnTimer += deltaTime
+        guard spawnState.powerUpSpawnTimer >= spawnState.nextPowerUpSpawnInterval else { return }
         
-        powerUpSpawnTimer = 0
-        scheduleNextPowerUpSpawn()
-        spawnPowerUp(difficulty: difficulty)
+        // Check if we can spawn using the randomizer
+        let currentTime = gameState?.elapsed ?? 0
+        guard let event = arenaRandomizer.nextPowerUpEventIfNeeded(
+            currentTime: currentTime,
+            difficulty: difficulty,
+            activePowerUpCount: activePowerUpCount.count,
+            anyPowerUpActive: activePowerUpCount.anyActive
+        ) else {
+            return
+        }
+        
+        spawnState.powerUpSpawnTimer = 0
+        spawnState.scheduleNextPowerUpSpawn()
+        spawnPowerUpFromEvent(event)
     }
     
-    private func spawnPowerUp(difficulty: Double) {
+    /// Spawns a power-up from a spawn event (used for both local and multiplayer sync).
+    private func spawnPowerUpFromEvent(_ event: PowerUpSpawnEvent) {
         guard size.width.isFinite, size.height.isFinite else { return }
         
-        let t = CGFloat(min(max(difficulty, 0), 1))
-        let radius = lerp(26, 32, t)
-        let speedY = lerp(180, 260, t)
-        let horizontalMargin = max(movementHorizontalMargin, radius + 24)
-        let minX = horizontalMargin
-        let maxX = max(horizontalMargin, size.width - horizontalMargin)
-        guard maxX > minX else { return }
+        let horizontalMargin = max(movementHorizontalMargin, event.radius + 24)
+        let colors = powerUpThemeColors(for: event.type.toPowerUpType)
         
-        let positionX = CGFloat.random(in: minX...maxX)
-        let positionY = size.height + radius * 2
-        
-        let typeRoll = Int.random(in: 0...2)
-        let type: PowerUpType
-        switch typeRoll {
-        case 0: type = .slowMotion
-        case 1: type = .invincibility
-        default: type = .attackMode
-        }
-        let colors = powerUpThemeColors(for: type)
-        
-        let powerUp = PowerUpNode(type: type,
-                                  radius: radius,
-                                  ringWidth: 8,
-                                  speedY: speedY,
-                                  coreColor: colors.ring,
-                                  glowColor: colors.glow)
-        powerUp.position = CGPoint(x: positionX, y: positionY)
+        let powerUp = event.spawnPowerUp(
+            sceneSize: size,
+            margin: horizontalMargin,
+            ringColor: colors.ring,
+            glowColor: colors.glow
+        )
         
         addChild(powerUp)
         powerUps.append(powerUp)
-    }
-    
-    private func scheduleNextPowerUpSpawn() {
-        nextPowerUpSpawnInterval = Double.random(in: powerUpSpawnIntervalRange)
     }
     
     private func powerUpThemeColors(for type: PowerUpType) -> (ring: SKColor, glow: SKColor) {
@@ -1136,10 +1154,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         slowMotionEffect.reset()
         invincibilityEffect.reset()
         attackModeEffect.reset()
+        multiplayerSlowMotion.reset()
         clearSlowMotionOverlay()
         clearInvincibilityOverlay()
         clearAttackModeOverlay()
         performCollisionFeedback()
+        
+        // Notify MultiplayerManager if in multiplayer mode
+        if isMultiplayerMode {
+            let eliminationTime = state.elapsed
+            multiplayerManager?.localPlayerDied(
+                finalScore: state.score,
+                eliminationTime: eliminationTime
+            )
+        }
     }
     
     private func destroyObstacle(_ obstacle: ObstacleNode) {
@@ -1177,17 +1205,57 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
               !state.isGameOver else { return }
         
         guard let index = powerUps.firstIndex(where: { $0 === powerUp }) else { return }
+        
+        // In multiplayer, check for exclusivity before collecting
+        if isMultiplayerMode {
+            // Find the power-up ID from our tracker
+            let powerUpId = findPowerUpId(for: powerUp)
+            
+            // Check if already collected by another player
+            if let id = powerUpId, powerUpTracker.isCollected(id: id) {
+                // Already collected by someone else - don't process
+                return
+            }
+            
+            // Try to claim the power-up
+            if let id = powerUpId,
+               let manager = multiplayerManager,
+               !manager.tryCollectPowerUp(powerUpId: id, type: powerUp.type) {
+                // Someone else got it first - don't process
+                return
+            }
+            
+            // Mark as collected in our tracker
+            if let id = powerUpId {
+                _ = powerUpTracker.markCollected(id: id)
+            }
+        }
+        
         powerUps.remove(at: index)
         
         switch powerUp.type {
         case .slowMotion:
-            slowMotionEffect.trigger()
+            if isMultiplayerMode {
+                // In multiplayer, use multiplayer slow-motion where collector keeps normal speed
+                if let localId = localPlayerId {
+                    multiplayerSlowMotion.activate(collectorId: localId, duration: slowMotionEffect.remaining > 0 ? slowMotionEffect.remaining + 3.0 : 3.0)
+                    // Notify other players
+                    multiplayerManager?.localPlayerActivatedSlowMotion(
+                        duration: 3.0,
+                        stackedDuration: multiplayerSlowMotion.remaining
+                    )
+                }
+            } else {
+                slowMotionEffect.trigger()
+            }
             activateSlowMotionOverlayImmediately()
             showPowerUpLabel("Slow-Motion", type: .slowMotion)
+            
         case .invincibility:
             invincibilityEffect.trigger()
             activateInvincibilityOverlayImmediately()
             showPowerUpLabel("Invincibility", type: .invincibility)
+            
         case .attackMode:
             attackModeEffect.trigger()
             activateAttackModeOverlayImmediately()
@@ -1199,6 +1267,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         powerUp.playCollectionAnimation { [weak powerUp] in
             powerUp?.removeFromParent()
         }
+    }
+    
+    /// Finds the power-up ID for a given node by checking registered power-ups.
+    private func findPowerUpId(for powerUp: PowerUpNode) -> String? {
+        // Use the tracker's reverse lookup
+        if let id = powerUpTracker.findId(for: powerUp) {
+            return id
+        }
+        // Fallback: generate an ID based on position and type
+        // This ensures single-player mode still works
+        return "powerup_\(Int(powerUp.position.x))_\(Int(powerUp.position.y))_\(powerUp.type)"
     }
     
     // MARK: - Power-Up Label
@@ -1560,6 +1639,377 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // MARK: - Public Methods
     
+    // MARK: Multiplayer Spawning Configuration
+    
+    /// Configures the scene for multiplayer with a shared seed.
+    /// - Parameters:
+    ///   - seed: The shared RNG seed for deterministic spawning.
+    ///   - config: The multiplayer power-up configuration.
+    func configureForMultiplayer(seed: UInt64, config: ArenaMultiplayerConfig = .default) {
+        arenaRandomizer = ArenaRandomizer.multiplayer(seed: seed, config: config)
+        multiplayerConfig = config
+        externalEventStream = nil
+    }
+    
+    /// Configures the scene to replay events from an external stream (client mode).
+    /// - Parameter stream: The event stream provided by the host.
+    func configureWithEventStream(_ stream: ArenaEventStream) {
+        externalEventStream = stream
+        arenaRandomizer = ArenaRandomizer.multiplayer(seed: stream.seed)
+    }
+    
+    /// Resets the scene to single-player mode with a new random seed.
+    func configureForSinglePlayer() {
+        arenaRandomizer = ArenaRandomizer.singlePlayer()
+        multiplayerConfig = nil
+        externalEventStream = nil
+    }
+    
+    /// Processes an externally received obstacle spawn event (for multiplayer clients).
+    /// - Parameter event: The obstacle event to process.
+    func processExternalObstacleEvent(_ event: ObstacleSpawnEvent) {
+        spawnObstacleFromEvent(event)
+    }
+    
+    /// Processes an externally received power-up spawn event (for multiplayer clients).
+    /// - Parameter event: The power-up event to process.
+    func processExternalPowerUpEvent(_ event: PowerUpSpawnEvent) {
+        spawnPowerUpFromEvent(event)
+    }
+    
+    /// Returns the current arena randomizer's seed (for host to broadcast).
+    var currentArenaSeed: UInt64 {
+        arenaRandomizer.seed
+    }
+    
+    // MARK: - Multiplayer Arena Configuration
+    
+    /// Configures the scene for a multiplayer match with multiple players.
+    /// Creates player nodes for all participants and initializes the deterministic arena.
+    ///
+    /// - Parameters:
+    ///   - players: Summary of all players in the match.
+    ///   - localPlayerId: The local player's unique identifier.
+    ///   - seed: Shared RNG seed for deterministic spawning.
+    ///   - startTime: Match start time for synchronization.
+    ///   - manager: The multiplayer manager for communication.
+    func configureMultiplayerArena(
+        players: [MultiplayerPlayerSummary],
+        localPlayerId: String,
+        seed: UInt64,
+        startTime: TimeInterval,
+        manager: MultiplayerManager
+    ) {
+        guard !players.isEmpty else { return }
+        
+        self.localPlayerId = localPlayerId
+        self.matchStartTime = startTime
+        self.multiplayerManager = manager
+        
+        // Configure deterministic arena with shared seed
+        configureForMultiplayer(seed: seed)
+        
+        // Clear any existing multiplayer player nodes
+        for (_, context) in playerNodes {
+            if !context.isLocal {
+                context.node.removeFromParent()
+            }
+        }
+        playerNodes.removeAll()
+        
+        // Reset multiplayer state
+        multiplayerSlowMotion.reset()
+        powerUpTracker.reset()
+        multiplayerFrameCounter = 0
+        
+        // Calculate starting positions - spread players horizontally
+        let playerCount = players.count
+        let usableWidth = size.width - (movementHorizontalMargin * 2)
+        let spacing = usableWidth / CGFloat(playerCount + 1)
+        let playerY = size.height * playerVerticalPositionRatio
+        
+        // Create nodes for all players
+        for (index, playerSummary) in players.enumerated() {
+            let isLocal = playerSummary.id == localPlayerId
+            let startX = movementHorizontalMargin + spacing * CGFloat(index + 1)
+            let colors = MultiplayerPlayerColors.colorsForPlayer(index: index)
+            
+            let playerNode: SKShapeNode
+            if isLocal {
+                // Use the existing player node for the local player
+                if let existingPlayer = player {
+                    playerNode = existingPlayer
+                    // Update colors to match multiplayer scheme
+                    updatePlayerNodeColors(playerNode, colors: colors)
+                } else {
+                    playerNode = createPlayerNode(colors: colors)
+                    player = playerNode
+                    addChild(playerNode)
+                }
+                playerNode.position = CGPoint(x: startX, y: playerY)
+                targetX = startX
+            } else {
+                // Create a new node for remote players
+                playerNode = createRemotePlayerNode(colors: colors)
+                playerNode.position = CGPoint(x: startX, y: playerY)
+                addChild(playerNode)
+            }
+            
+            let context = PlayerNodeContext(
+                id: playerSummary.id,
+                isLocal: isLocal,
+                node: playerNode,
+                displayName: playerSummary.displayName,
+                colorHueOffset: CGFloat(index) / CGFloat(playerCount)
+            )
+            playerNodes[playerSummary.id] = context
+        }
+    }
+    
+    /// Creates a player node with the specified colors.
+    private func createPlayerNode(colors: (core: (CGFloat, CGFloat, CGFloat), glow: (CGFloat, CGFloat, CGFloat))) -> SKShapeNode {
+        let node = SKShapeNode(circleOfRadius: playerRadius)
+        
+        let coreColor = SKColor(red: colors.core.0, green: colors.core.1, blue: colors.core.2, alpha: 1.0)
+        node.strokeColor = .clear
+        node.fillColor = coreColor
+        node.lineWidth = 0
+        
+        let glowColor = SKColor(red: colors.glow.0, green: colors.glow.1, blue: colors.glow.2, alpha: 1.0)
+        let glowNode = GlowEffectFactory.makeCircularGlow(
+            radius: playerRadius,
+            color: glowColor,
+            blurRadius: 18,
+            alpha: 0.9,
+            scale: 1.45
+        )
+        glowNode.zPosition = -1
+        node.addChild(glowNode)
+        
+        let innerBloom = GlowEffectFactory.makeCircularGlow(
+            radius: playerRadius * 0.55,
+            color: coreColor,
+            blurRadius: 8,
+            alpha: 0.75,
+            scale: 1.12
+        )
+        innerBloom.zPosition = -0.5
+        node.addChild(innerBloom)
+        
+        setupPlayerPhysics(radius: playerRadius)
+        return node
+    }
+    
+    /// Creates a remote player node (slightly transparent to distinguish from local).
+    private func createRemotePlayerNode(colors: (core: (CGFloat, CGFloat, CGFloat), glow: (CGFloat, CGFloat, CGFloat))) -> SKShapeNode {
+        let node = SKShapeNode(circleOfRadius: playerRadius)
+        
+        let coreColor = SKColor(red: colors.core.0, green: colors.core.1, blue: colors.core.2, alpha: 0.85)
+        node.strokeColor = .clear
+        node.fillColor = coreColor
+        node.lineWidth = 0
+        node.alpha = 0.8 // Slightly transparent for remote players
+        node.zPosition = 90 // Behind local player
+        
+        let glowColor = SKColor(red: colors.glow.0, green: colors.glow.1, blue: colors.glow.2, alpha: 1.0)
+        let glowNode = GlowEffectFactory.makeCircularGlow(
+            radius: playerRadius,
+            color: glowColor,
+            blurRadius: 14,
+            alpha: 0.7,
+            scale: 1.35
+        )
+        glowNode.zPosition = -1
+        node.addChild(glowNode)
+        
+        // No physics body for remote players - they're just visual representations
+        return node
+    }
+    
+    /// Updates an existing player node's colors.
+    private func updatePlayerNodeColors(_ node: SKShapeNode, colors: (core: (CGFloat, CGFloat, CGFloat), glow: (CGFloat, CGFloat, CGFloat))) {
+        let coreColor = SKColor(red: colors.core.0, green: colors.core.1, blue: colors.core.2, alpha: 1.0)
+        node.fillColor = coreColor
+        
+        // Remove old glow children and recreate
+        for child in node.children {
+            if child is SKEffectNode {
+                child.removeFromParent()
+            }
+        }
+        
+        let glowColor = SKColor(red: colors.glow.0, green: colors.glow.1, blue: colors.glow.2, alpha: 1.0)
+        let glowNode = GlowEffectFactory.makeCircularGlow(
+            radius: playerRadius,
+            color: glowColor,
+            blurRadius: 18,
+            alpha: 0.9,
+            scale: 1.45
+        )
+        glowNode.zPosition = -1
+        node.addChild(glowNode)
+        
+        let innerBloom = GlowEffectFactory.makeCircularGlow(
+            radius: playerRadius * 0.55,
+            color: coreColor,
+            blurRadius: 8,
+            alpha: 0.75,
+            scale: 1.12
+        )
+        innerBloom.zPosition = -0.5
+        node.addChild(innerBloom)
+    }
+    
+    // MARK: - MultiplayerSceneDelegate Implementation
+    
+    /// Configure scene for multiplayer with shared seed.
+    func configureForMultiplayer(seed: UInt64, startTime: TimeInterval) {
+        matchStartTime = startTime
+        configureForMultiplayer(seed: seed)
+    }
+    
+    /// Update a remote player's position with smooth interpolation.
+    func updateRemotePlayerPosition(playerId: String, x: CGFloat, velocityX: CGFloat) {
+        guard var context = playerNodes[playerId], !context.isLocal else { return }
+        context.targetX = x
+        context.velocityX = velocityX
+        playerNodes[playerId] = context
+    }
+    
+    /// Mark a power-up as collected and remove it from the scene.
+    func markPowerUpCollected(powerUpId: String) {
+        if let powerUpNode = powerUpTracker.markCollected(id: powerUpId) {
+            // Remove from our tracking array
+            if let index = powerUps.firstIndex(where: { $0 === powerUpNode }) {
+                powerUps.remove(at: index)
+            }
+            // Animate removal
+            powerUpNode.playCollectionAnimation { [weak powerUpNode] in
+                powerUpNode?.removeFromParent()
+            }
+        }
+    }
+    
+    /// Apply multiplayer slow-motion where the collector keeps normal speed.
+    func applyMultiplayerSlowMotion(collectorId: String, duration: TimeInterval, isLocalPlayerCollector: Bool) {
+        multiplayerSlowMotion.activate(collectorId: collectorId, duration: duration)
+        
+        // If local player is the collector, they see the standard slow-mo overlay
+        // If not, show a different visual indicator that someone else got it
+        if isLocalPlayerCollector {
+            activateSlowMotionOverlayImmediately()
+        }
+    }
+    
+    /// Process an external power-up spawn event with tracking ID.
+    func processExternalPowerUpEvent(_ event: PowerUpSpawnEvent, powerUpId: String) {
+        spawnPowerUpFromEvent(event)
+        
+        // Register the newly spawned power-up with its ID for exclusivity tracking
+        if let lastPowerUp = powerUps.last {
+            powerUpTracker.register(powerUp: lastPowerUp, id: powerUpId)
+        }
+    }
+    
+    /// The local player's current X position for state updates.
+    var localPlayerPositionX: CGFloat {
+        player?.position.x ?? size.width / 2
+    }
+    
+    /// The local player's current X velocity for state updates.
+    var localPlayerVelocityX: CGFloat {
+        velocityX
+    }
+    
+    // MARK: - Multiplayer Update Helpers
+    
+    /// Updates remote player positions with interpolation.
+    /// Called each frame during multiplayer gameplay.
+    func updateRemotePlayers(deltaTime: TimeInterval) {
+        guard isMultiplayerMode else { return }
+        
+        let dt = CGFloat(deltaTime)
+        
+        for (playerId, context) in playerNodes {
+            guard !context.isLocal, context.isAlive else { continue }
+            
+            let node = context.node
+            let currentX = node.position.x
+            let targetX = context.targetX
+            let diff = targetX - currentX
+            
+            // Check if we should snap or interpolate
+            if abs(diff) > RemotePlayerInterpolation.snapThreshold {
+                // Snap to target position (large discrepancy)
+                node.position.x = targetX
+            } else {
+                // Smooth interpolation
+                let lerpFactor = min(1.0, RemotePlayerInterpolation.lerpRate * dt)
+                node.position.x = currentX + diff * lerpFactor
+            }
+            
+            // Note: We don't need to update playerNodes here since context is read-only
+            // and the node position update is done directly on the SKShapeNode reference.
+            // The context.targetX/velocityX are updated by updateRemotePlayerPosition().
+            _ = playerId // Silence unused variable warning (kept for clarity)
+        }
+    }
+    
+    /// Broadcasts the local player's state to other players.
+    /// Called periodically during multiplayer gameplay.
+    func broadcastLocalPlayerState() {
+        guard isMultiplayerMode,
+              multiplayerManager != nil,
+              let state = gameState,
+              !state.isGameOver else { return }
+        
+        multiplayerFrameCounter += 1
+        guard multiplayerFrameCounter >= positionUpdateFrameInterval else { return }
+        multiplayerFrameCounter = 0
+        
+        // The manager handles the actual broadcast via its state update timer
+        // This is here as a hook if we need frame-synchronized updates
+    }
+    
+    /// Marks a remote player as dead with a visual effect.
+    func markRemotePlayerDead(playerId: String) {
+        guard var context = playerNodes[playerId], !context.isLocal else { return }
+        context.isAlive = false
+        playerNodes[playerId] = context
+        
+        // Visual death effect: fade out and tint red
+        let node = context.node
+        let tintRed = SKAction.colorize(with: .red, colorBlendFactor: 0.8, duration: 0.2)
+        let fadeOut = SKAction.fadeAlpha(to: 0.3, duration: 0.5)
+        let scaleDown = SKAction.scale(to: 0.7, duration: 0.5)
+        
+        node.run(SKAction.group([tintRed, fadeOut, scaleDown]))
+    }
+    
+    /// Cleans up multiplayer state when leaving a match.
+    func cleanupMultiplayerArena() {
+        // Remove remote player nodes
+        for (_, context) in playerNodes {
+            if !context.isLocal {
+                context.node.removeFromParent()
+            }
+        }
+        playerNodes.removeAll()
+        
+        // Reset multiplayer state
+        localPlayerId = nil
+        matchStartTime = nil
+        multiplayerManager = nil
+        multiplayerSlowMotion.reset()
+        powerUpTracker.reset()
+        multiplayerFrameCounter = 0
+        
+        // Restore single-player arena
+        configureForSinglePlayer()
+    }
+    
+    // MARK: Theme Updates
+    
     /// Update player colors based on current theme
     func updatePlayerColors() {
         guard let player = player else { return }
@@ -1636,8 +2086,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             powerUp.removeFromParent()
         }
         powerUps.removeAll()
-        powerUpSpawnTimer = 0
-        scheduleNextPowerUpSpawn()
         slowMotionEffect.reset()
         invincibilityEffect.reset()
         attackModeEffect.reset()
@@ -1645,13 +2093,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         clearInvincibilityOverlay()
         clearAttackModeOverlay()
         
-        // Reset spawn timer
-        spawnTimer = 0
-        nextSpawnInterval = 1.0
+        // Reset multiplayer state if applicable
+        multiplayerSlowMotion.reset()
+        powerUpTracker.reset()
+        multiplayerFrameCounter = 0
         
-        // Reset edge-riding tracking
-        edgeLingerTime = 0
-        lastEdgeSide = .none
+        // Reset remote player nodes (keep them but reset state)
+        for (playerId, var context) in playerNodes {
+            if !context.isLocal {
+                context.isAlive = true
+                context.node.alpha = 0.8
+                context.node.xScale = 1.0
+                context.node.yScale = 1.0
+                context.node.removeAllActions()
+                // Reset position to starting position
+                let playerY = size.height * playerVerticalPositionRatio
+                context.node.position.y = playerY
+                playerNodes[playerId] = context
+            }
+        }
+        
+        // Reset spawn state and randomizer
+        spawnState.reset()
+        arenaRandomizer.reset()
         
         // Reset game state
         state.resetGame()
@@ -1700,5 +2164,3 @@ struct TiltInputMapper {
         return normalized * maxSpeed * direction
     }
 }
-
-

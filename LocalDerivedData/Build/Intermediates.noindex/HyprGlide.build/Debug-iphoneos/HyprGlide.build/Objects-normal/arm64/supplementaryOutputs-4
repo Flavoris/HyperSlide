@@ -1,0 +1,23 @@
+{
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/GameState.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/LocalDerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameState.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/LocalDerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameState.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/LocalDerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameState.dia",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/LocalDerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameState.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/LocalDerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameState.swiftdeps"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/HUDView.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/LocalDerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/HUDView.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/LocalDerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/HUDView.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/LocalDerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/HUDView.dia",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/LocalDerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/HUDView.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/LocalDerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/HUDView.swiftdeps"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/Settings.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/LocalDerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/Settings.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/LocalDerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/Settings.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/LocalDerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/Settings.dia",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/LocalDerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/Settings.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/LocalDerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/Settings.swiftdeps"
+  }
+}

@@ -12,6 +12,8 @@ struct ContentView: View {
     @StateObject private var gameState = GameState()
     @StateObject private var settings = Settings()
     @StateObject private var soundManager = SoundManager()
+    @StateObject private var multiplayerState = MultiplayerState()
+    @StateObject private var multiplayerManager = MultiplayerManager()
     @State private var gameScene: GameScene = {
         let scene = GameScene()
         scene.size = UIScreen.main.bounds.size
@@ -28,7 +30,10 @@ struct ContentView: View {
             // SwiftUI HUD Overlay
             HUDView(gameState: gameState,
                     settings: settings,
-                    onRestart: handleRestart)
+                    multiplayerState: multiplayerState,
+                    multiplayerManager: multiplayerManager,
+                    onRestart: handleRestart,
+                    onExitToMainMenu: handleExitToMainMenu)
         }
         .preferredColorScheme(.dark)
         .onAppear {
@@ -40,6 +45,12 @@ struct ContentView: View {
             soundManager.setMusicVolume(Float(settings.musicVolume))
             soundManager.setSFXVolume(Float(settings.sfxVolume))
             gameScene.updateTiltControlPreference(isEnabled: settings.tiltControlEnabled)
+            gameScene.multiplayerManager = multiplayerManager
+            gameScene.multiplayerState = multiplayerState
+            multiplayerManager.gameState = gameState
+            multiplayerManager.multiplayerState = multiplayerState
+            multiplayerManager.sceneDelegate = gameScene
+            GameCenterManager.shared.authenticateIfNeeded()
         }
         .onChange(of: settings.colorTheme) { _ in
             // Update player colors when theme changes
@@ -68,6 +79,27 @@ struct ContentView: View {
         
         // Immediately start the game again (don't show start menu)
         gameState.startGame()
+    }
+    
+    /// Handle exit to main menu by resetting scene and returning to start screen
+    private func handleExitToMainMenu() {
+        // Record best score before resetting
+        gameState.recordBest()
+        
+        // Reset multiplayer state if in multiplayer mode
+        if gameState.mode.isMultiplayer {
+            multiplayerManager.disconnect()
+            multiplayerState.reset()
+        }
+        
+        // Reset the scene (clears obstacles, resets player position, etc.)
+        gameScene.resetGame(state: gameState)
+        
+        // Reset game state to show start menu (don't start the game)
+        gameState.resetGame()
+        
+        // Set mode back to single player
+        gameState.mode = .singlePlayer
     }
 }
 

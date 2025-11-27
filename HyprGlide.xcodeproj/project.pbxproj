@@ -31,9 +31,36 @@
 		G1000002 /* PerformanceGovernor.swift in Sources */ = {isa = PBXBuildFile; fileRef = G2000002 /* PerformanceGovernor.swift */; };
 		H1000001 /* BackgroundMusicAssetEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = H2000001 /* BackgroundMusicAssetEngine.swift */; };
 		H1000003 /* HyprGlide Music.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = H2000003 /* HyprGlide Music.mp3 */; };
+		J1000001 /* GameCenterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = J2000001 /* GameCenterManager.swift */; };
+		K1000001 /* MultiplayerModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = K2000001 /* MultiplayerModels.swift */; };
+		L1000001 /* ArenaRandomizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = L2000001 /* ArenaRandomizer.swift */; };
+		L1000002 /* SpawnEventHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = L2000002 /* SpawnEventHelpers.swift */; };
+		M1000001 /* MultiplayerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = M2000001 /* MultiplayerManager.swift */; };
+		N1000001 /* GameSceneMultiplayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = N2000001 /* GameSceneMultiplayer.swift */; };
+		O1000001 /* MultiplayerStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = O2000001 /* MultiplayerStatusView.swift */; };
+		O1000002 /* MultiplayerGameOverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = O2000002 /* MultiplayerGameOverView.swift */; };
+		O1000003 /* FriendsLeaderboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = O2000003 /* FriendsLeaderboardView.swift */; };
+		T1000001 /* ArenaRandomizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T2000001 /* ArenaRandomizerTests.swift */; };
+		T1000002 /* MultiplayerMessageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T2000002 /* MultiplayerMessageTests.swift */; };
+		T1000003 /* GameFeelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T2000003 /* GameFeelTests.swift */; };
+		T1000004 /* LifecyclePersistenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T2000004 /* LifecyclePersistenceTests.swift */; };
+		T1000005 /* PerformanceGovernorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T2000005 /* PerformanceGovernorTests.swift */; };
+		T1000006 /* SlowMotionEffectTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T2000006 /* SlowMotionEffectTests.swift */; };
+		T1000007 /* SoundManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T2000007 /* SoundManagerTests.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		T9000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A9000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A5000001;
+			remoteInfo = HyprGlide;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		590B62C62ED814780004DDF2 /* HyprGlide.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HyprGlide.entitlements; sourceTree = "<group>"; };
 		591680A02EC58DB600078791 /* Ethnocentric-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Ethnocentric-Regular.otf"; sourceTree = "<group>"; };
 		59BFBE242EC587A800EA9135 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		A0000001 /* HyprGlide.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HyprGlide.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -60,10 +87,34 @@
 		G2000002 /* PerformanceGovernor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerformanceGovernor.swift; sourceTree = "<group>"; };
 		H2000001 /* BackgroundMusicAssetEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundMusicAssetEngine.swift; sourceTree = "<group>"; };
 		H2000003 /* HyprGlide Music.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "HyprGlide Music.mp3"; sourceTree = "<group>"; };
+		J2000001 /* GameCenterManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCenterManager.swift; sourceTree = "<group>"; };
+		K2000001 /* MultiplayerModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiplayerModels.swift; sourceTree = "<group>"; };
+		L2000001 /* ArenaRandomizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArenaRandomizer.swift; sourceTree = "<group>"; };
+		L2000002 /* SpawnEventHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpawnEventHelpers.swift; sourceTree = "<group>"; };
+		M2000001 /* MultiplayerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiplayerManager.swift; sourceTree = "<group>"; };
+		N2000001 /* GameSceneMultiplayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSceneMultiplayer.swift; sourceTree = "<group>"; };
+		O2000001 /* MultiplayerStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiplayerStatusView.swift; sourceTree = "<group>"; };
+		O2000002 /* MultiplayerGameOverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiplayerGameOverView.swift; sourceTree = "<group>"; };
+		O2000003 /* FriendsLeaderboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsLeaderboardView.swift; sourceTree = "<group>"; };
+		T0000001 /* HyprGlideTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HyprGlideTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		T2000001 /* ArenaRandomizerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArenaRandomizerTests.swift; sourceTree = "<group>"; };
+		T2000002 /* MultiplayerMessageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiplayerMessageTests.swift; sourceTree = "<group>"; };
+		T2000003 /* GameFeelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameFeelTests.swift; sourceTree = "<group>"; };
+		T2000004 /* LifecyclePersistenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifecyclePersistenceTests.swift; sourceTree = "<group>"; };
+		T2000005 /* PerformanceGovernorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerformanceGovernorTests.swift; sourceTree = "<group>"; };
+		T2000006 /* SlowMotionEffectTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlowMotionEffectTests.swift; sourceTree = "<group>"; };
+		T2000007 /* SoundManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundManagerTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		A3000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		T3000001 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -77,6 +128,7 @@
 			isa = PBXGroup;
 			children = (
 				A4000002 /* HyprGlide */,
+				T4000001 /* HyprSlideTests */,
 				A4000003 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -84,9 +136,19 @@
 		A4000002 /* HyprGlide */ = {
 			isa = PBXGroup;
 			children = (
+				590B62C62ED814780004DDF2 /* HyprGlide.entitlements */,
 				59BFBE242EC587A800EA9135 /* Info.plist */,
 				G2000001 /* DefaultsGuard.swift */,
 				G2000002 /* PerformanceGovernor.swift */,
+				J2000001 /* GameCenterManager.swift */,
+				K2000001 /* MultiplayerModels.swift */,
+				L2000001 /* ArenaRandomizer.swift */,
+				L2000002 /* SpawnEventHelpers.swift */,
+				M2000001 /* MultiplayerManager.swift */,
+				N2000001 /* GameSceneMultiplayer.swift */,
+				O2000001 /* MultiplayerStatusView.swift */,
+				O2000002 /* MultiplayerGameOverView.swift */,
+				O2000003 /* FriendsLeaderboardView.swift */,
 				A2000001 /* HyprGlideApp.swift */,
 				A2000002 /* ContentView.swift */,
 				A2000003 /* GameScene.swift */,
@@ -117,8 +179,23 @@
 			isa = PBXGroup;
 			children = (
 				A0000001 /* HyprGlide.app */,
+				T0000001 /* HyprGlideTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		T4000001 /* HyprSlideTests */ = {
+			isa = PBXGroup;
+			children = (
+				T2000001 /* ArenaRandomizerTests.swift */,
+				T2000002 /* MultiplayerMessageTests.swift */,
+				T2000003 /* GameFeelTests.swift */,
+				T2000004 /* LifecyclePersistenceTests.swift */,
+				T2000005 /* PerformanceGovernorTests.swift */,
+				T2000006 /* SlowMotionEffectTests.swift */,
+				T2000007 /* SoundManagerTests.swift */,
+			);
+			path = HyprSlideTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -140,6 +217,23 @@
 			productName = HyprGlide;
 			productReference = A0000001 /* HyprGlide.app */;
 			productType = "com.apple.product-type.application";
+		};
+		T5000001 /* HyprGlideTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = T6000001 /* Build configuration list for PBXNativeTarget "HyprGlideTests" */;
+			buildPhases = (
+				T7000001 /* Sources */,
+				T3000001 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				T9000002 /* PBXTargetDependency */,
+			);
+			name = HyprGlideTests;
+			productName = HyprGlideTests;
+			productReference = T0000001 /* HyprGlideTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
@@ -170,6 +264,7 @@
 			projectRoot = "";
 			targets = (
 				A5000001 /* HyprGlide */,
+				T5000001 /* HyprGlideTests */,
 			);
 		};
 /* End PBXProject section */
@@ -199,6 +294,15 @@
 				A1000003 /* GameScene.swift in Sources */,
 				G1000001 /* DefaultsGuard.swift in Sources */,
 				G1000002 /* PerformanceGovernor.swift in Sources */,
+				J1000001 /* GameCenterManager.swift in Sources */,
+				K1000001 /* MultiplayerModels.swift in Sources */,
+				L1000001 /* ArenaRandomizer.swift in Sources */,
+				L1000002 /* SpawnEventHelpers.swift in Sources */,
+				M1000001 /* MultiplayerManager.swift in Sources */,
+				N1000001 /* GameSceneMultiplayer.swift in Sources */,
+				O1000001 /* MultiplayerStatusView.swift in Sources */,
+				O1000002 /* MultiplayerGameOverView.swift in Sources */,
+				O1000003 /* FriendsLeaderboardView.swift in Sources */,
 				A1000004 /* GameState.swift in Sources */,
 				E1000001 /* Settings.swift in Sources */,
 				A1000005 /* HUDView.swift in Sources */,
@@ -216,7 +320,29 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		T7000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				T1000001 /* ArenaRandomizerTests.swift in Sources */,
+				T1000002 /* MultiplayerMessageTests.swift in Sources */,
+				T1000003 /* GameFeelTests.swift in Sources */,
+				T1000004 /* LifecyclePersistenceTests.swift in Sources */,
+				T1000005 /* PerformanceGovernorTests.swift in Sources */,
+				T1000006 /* SlowMotionEffectTests.swift in Sources */,
+				T1000007 /* SoundManagerTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		T9000002 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A5000001 /* HyprGlide */;
+			targetProxy = T9000001 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		A6000003 /* Debug */ = {
@@ -345,6 +471,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "";
+				CODE_SIGN_ENTITLEMENTS = HyprGlide/HyprGlide.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = D8KQ63QMS2;
@@ -377,6 +504,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "";
+				CODE_SIGN_ENTITLEMENTS = HyprGlide/HyprGlide.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = D8KQ63QMS2;
@@ -404,6 +532,44 @@
 			};
 			name = Release;
 		};
+		T6000002 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = D8KQ63QMS2;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hyprglide.app.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HyprGlide.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/HyprGlide";
+			};
+			name = Debug;
+		};
+		T6000003 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = D8KQ63QMS2;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hyprglide.app.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HyprGlide.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/HyprGlide";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -421,6 +587,15 @@
 			buildConfigurations = (
 				A6000003 /* Debug */,
 				A6000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		T6000001 /* Build configuration list for PBXNativeTarget "HyprGlideTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				T6000002 /* Debug */,
+				T6000003 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

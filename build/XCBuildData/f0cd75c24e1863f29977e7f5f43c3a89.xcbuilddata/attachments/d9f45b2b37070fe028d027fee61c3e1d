@@ -1,0 +1,299 @@
+{
+  "" : {
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/HyprGlide-primary.dia",
+    "emit-module-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/HyprGlide-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/HyprGlide-primary-emit-module.dia",
+    "pch" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/HyprGlide-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/HyprGlide-primary.swiftdeps"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/ArenaRandomizer.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/ArenaRandomizer.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/ArenaRandomizer.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/ArenaRandomizer.dia",
+    "index-unit-output-path" : "/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/ArenaRandomizer.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/ArenaRandomizer.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/ArenaRandomizer.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/ArenaRandomizer.swiftdeps",
+    "swiftmodule" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/ArenaRandomizer~partial.swiftmodule"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/AttackModeEffect.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/AttackModeEffect.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/AttackModeEffect.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/AttackModeEffect.dia",
+    "index-unit-output-path" : "/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/AttackModeEffect.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/AttackModeEffect.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/AttackModeEffect.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/AttackModeEffect.swiftdeps",
+    "swiftmodule" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/AttackModeEffect~partial.swiftmodule"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/BackgroundMusicAssetEngine.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/BackgroundMusicAssetEngine.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/BackgroundMusicAssetEngine.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/BackgroundMusicAssetEngine.dia",
+    "index-unit-output-path" : "/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/BackgroundMusicAssetEngine.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/BackgroundMusicAssetEngine.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/BackgroundMusicAssetEngine.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/BackgroundMusicAssetEngine.swiftdeps",
+    "swiftmodule" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/BackgroundMusicAssetEngine~partial.swiftmodule"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/ContentView.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/ContentView.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/ContentView.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/ContentView.dia",
+    "index-unit-output-path" : "/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/ContentView.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/ContentView.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/ContentView.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/ContentView.swiftdeps",
+    "swiftmodule" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/ContentView~partial.swiftmodule"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/DefaultsGuard.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/DefaultsGuard.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/DefaultsGuard.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/DefaultsGuard.dia",
+    "index-unit-output-path" : "/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/DefaultsGuard.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/DefaultsGuard.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/DefaultsGuard.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/DefaultsGuard.swiftdeps",
+    "swiftmodule" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/DefaultsGuard~partial.swiftmodule"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/FriendsLeaderboardView.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/FriendsLeaderboardView.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/FriendsLeaderboardView.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/FriendsLeaderboardView.dia",
+    "index-unit-output-path" : "/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/FriendsLeaderboardView.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/FriendsLeaderboardView.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/FriendsLeaderboardView.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/FriendsLeaderboardView.swiftdeps",
+    "swiftmodule" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/FriendsLeaderboardView~partial.swiftmodule"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/GameCenterManager.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameCenterManager.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameCenterManager.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameCenterManager.dia",
+    "index-unit-output-path" : "/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameCenterManager.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameCenterManager.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameCenterManager.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameCenterManager.swiftdeps",
+    "swiftmodule" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameCenterManager~partial.swiftmodule"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/GameScene.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameScene.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameScene.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameScene.dia",
+    "index-unit-output-path" : "/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameScene.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameScene.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameScene.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameScene.swiftdeps",
+    "swiftmodule" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameScene~partial.swiftmodule"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/GameSceneMultiplayer.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameSceneMultiplayer.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameSceneMultiplayer.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameSceneMultiplayer.dia",
+    "index-unit-output-path" : "/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameSceneMultiplayer.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameSceneMultiplayer.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameSceneMultiplayer.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameSceneMultiplayer.swiftdeps",
+    "swiftmodule" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameSceneMultiplayer~partial.swiftmodule"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/GameState.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameState.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameState.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameState.dia",
+    "index-unit-output-path" : "/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameState.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameState.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameState.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameState.swiftdeps",
+    "swiftmodule" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameState~partial.swiftmodule"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/GlowEffectFactory.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GlowEffectFactory.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GlowEffectFactory.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GlowEffectFactory.dia",
+    "index-unit-output-path" : "/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GlowEffectFactory.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GlowEffectFactory.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GlowEffectFactory.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GlowEffectFactory.swiftdeps",
+    "swiftmodule" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GlowEffectFactory~partial.swiftmodule"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/HUDView.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/HUDView.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/HUDView.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/HUDView.dia",
+    "index-unit-output-path" : "/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/HUDView.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/HUDView.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/HUDView.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/HUDView.swiftdeps",
+    "swiftmodule" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/HUDView~partial.swiftmodule"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/Haptics.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/Haptics.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/Haptics.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/Haptics.dia",
+    "index-unit-output-path" : "/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/Haptics.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/Haptics.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/Haptics.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/Haptics.swiftdeps",
+    "swiftmodule" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/Haptics~partial.swiftmodule"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/HyprGlideApp.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/HyprGlideApp.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/HyprGlideApp.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/HyprGlideApp.dia",
+    "index-unit-output-path" : "/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/HyprGlideApp.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/HyprGlideApp.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/HyprGlideApp.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/HyprGlideApp.swiftdeps",
+    "swiftmodule" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/HyprGlideApp~partial.swiftmodule"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/InvincibilityEffect.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/InvincibilityEffect.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/InvincibilityEffect.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/InvincibilityEffect.dia",
+    "index-unit-output-path" : "/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/InvincibilityEffect.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/InvincibilityEffect.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/InvincibilityEffect.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/InvincibilityEffect.swiftdeps",
+    "swiftmodule" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/InvincibilityEffect~partial.swiftmodule"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/MultiplayerGameOverView.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerGameOverView.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerGameOverView.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerGameOverView.dia",
+    "index-unit-output-path" : "/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerGameOverView.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerGameOverView.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerGameOverView.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerGameOverView.swiftdeps",
+    "swiftmodule" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerGameOverView~partial.swiftmodule"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/MultiplayerManager.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerManager.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerManager.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerManager.dia",
+    "index-unit-output-path" : "/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerManager.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerManager.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerManager.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerManager.swiftdeps",
+    "swiftmodule" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerManager~partial.swiftmodule"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/MultiplayerModels.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerModels.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerModels.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerModels.dia",
+    "index-unit-output-path" : "/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerModels.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerModels.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerModels.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerModels.swiftdeps",
+    "swiftmodule" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerModels~partial.swiftmodule"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/MultiplayerStatusView.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerStatusView.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerStatusView.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerStatusView.dia",
+    "index-unit-output-path" : "/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerStatusView.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerStatusView.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerStatusView.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerStatusView.swiftdeps",
+    "swiftmodule" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerStatusView~partial.swiftmodule"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/NearMissEmitterFactory.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/NearMissEmitterFactory.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/NearMissEmitterFactory.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/NearMissEmitterFactory.dia",
+    "index-unit-output-path" : "/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/NearMissEmitterFactory.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/NearMissEmitterFactory.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/NearMissEmitterFactory.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/NearMissEmitterFactory.swiftdeps",
+    "swiftmodule" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/NearMissEmitterFactory~partial.swiftmodule"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/Obstacle.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/Obstacle.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/Obstacle.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/Obstacle.dia",
+    "index-unit-output-path" : "/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/Obstacle.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/Obstacle.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/Obstacle.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/Obstacle.swiftdeps",
+    "swiftmodule" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/Obstacle~partial.swiftmodule"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/PerformanceGovernor.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/PerformanceGovernor.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/PerformanceGovernor.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/PerformanceGovernor.dia",
+    "index-unit-output-path" : "/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/PerformanceGovernor.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/PerformanceGovernor.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/PerformanceGovernor.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/PerformanceGovernor.swiftdeps",
+    "swiftmodule" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/PerformanceGovernor~partial.swiftmodule"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/PowerUpNode.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/PowerUpNode.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/PowerUpNode.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/PowerUpNode.dia",
+    "index-unit-output-path" : "/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/PowerUpNode.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/PowerUpNode.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/PowerUpNode.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/PowerUpNode.swiftdeps",
+    "swiftmodule" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/PowerUpNode~partial.swiftmodule"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/Settings.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/Settings.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/Settings.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/Settings.dia",
+    "index-unit-output-path" : "/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/Settings.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/Settings.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/Settings.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/Settings.swiftdeps",
+    "swiftmodule" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/Settings~partial.swiftmodule"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/SettingsView.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SettingsView.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SettingsView.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SettingsView.dia",
+    "index-unit-output-path" : "/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SettingsView.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SettingsView.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SettingsView.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SettingsView.swiftdeps",
+    "swiftmodule" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SettingsView~partial.swiftmodule"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/SlowMotionEffect.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SlowMotionEffect.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SlowMotionEffect.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SlowMotionEffect.dia",
+    "index-unit-output-path" : "/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SlowMotionEffect.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SlowMotionEffect.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SlowMotionEffect.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SlowMotionEffect.swiftdeps",
+    "swiftmodule" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SlowMotionEffect~partial.swiftmodule"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/SoundManager.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SoundManager.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SoundManager.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SoundManager.dia",
+    "index-unit-output-path" : "/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SoundManager.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SoundManager.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SoundManager.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SoundManager.swiftdeps",
+    "swiftmodule" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SoundManager~partial.swiftmodule"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/SpawnEventHelpers.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SpawnEventHelpers.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SpawnEventHelpers.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SpawnEventHelpers.dia",
+    "index-unit-output-path" : "/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SpawnEventHelpers.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SpawnEventHelpers.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SpawnEventHelpers.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SpawnEventHelpers.swiftdeps",
+    "swiftmodule" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SpawnEventHelpers~partial.swiftmodule"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GeneratedAssetSymbols.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GeneratedAssetSymbols.dia",
+    "index-unit-output-path" : "/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GeneratedAssetSymbols.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftdeps",
+    "swiftmodule" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GeneratedAssetSymbols~partial.swiftmodule"
+  }
+}

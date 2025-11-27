@@ -1,9 +1,27 @@
-Prepare for TestFlight/App Store:
+Update README.md to document the new multiplayer features and behaviors.
 
-- Set General > Deployment Target iOS 16.0.
-- Enable “Requires full screen” (landscape not supported in v1).
-- In Info.plist:
-  - NSMotionUsageDescription with friendly text if tilt is used.
-- Add a simple README.md with: features, controls, settings, and known limitations.
-- Ensure no unused capabilities (Game Center, iCloud) are enabled.
-- Product > Archive should succeed with no warnings.
+Constraints:
+- Keep the README concise but informative for new contributors and players.
+- Follow the existing style and structure of README.md as much as possible.
+
+Requirements:
+1. Add a new "Multiplayer" section that covers:
+   - That the game supports Game Center multiplayer with a shared arena (all players see the same obstacles and power-ups).
+   - How to start a multiplayer match from within the app (which menu/button).
+   - The rule that the **match ends when only one player is left alive, but the winner is the player with the highest final score**, not necessarily the last survivor.
+2. Document power-up behavior in multiplayer vs single-player:
+   - Slow-motion power-ups:
+     - In single-player: affect only the local player’s run as currently implemented.
+     - In multiplayer: when any player collects slow-motion:
+       - That player (the **collector**) keeps normal movement speed.
+       - All **other players** are slowed for the effect duration, making it harder for them.
+     - Stacking rules: slow-motion can stack in multiplayer (extending duration and/or effect) but is capped to keep gameplay fair.
+   - Other power-ups:
+     - Note that in multiplayer, power-ups are allowed to spawn even while others are active and can stack, but there is a global cap to prevent excessive stacking.
+     - Clarify that **only one player can collect a specific power-up instance** (“first touch wins”), and the power-up disappears for everyone else immediately after collection.
+3. Briefly describe Game Center dependencies:
+   - Mention that Game Center must be enabled on the device and that the Game Center configuration (leaderboard id, etc.) must match the identifiers used in GameCenterManager.
+4. If present, update any "Features" or "Roadmap" sections to reflect that multiplayer and friends-only high scores are now implemented features rather than planned ones.
+5. Ensure the README remains accurate with respect to:
+   - Single-player behavior.
+   - Multiplayer behavior and edge cases (e.g., what happens if Game Center is unavailable).

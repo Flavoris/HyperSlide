@@ -1,0 +1,192 @@
+{
+  "source": "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/HUDView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 14,
+          "startingLine": 87
+        }
+      },
+      {
+        "comment": "",
+        "key": "Score: %lld",
+        "location": {
+          "startingColumn": 33,
+          "startingLine": 90
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 98
+        }
+      },
+      {
+        "comment": "",
+        "key": "Hypr\nGlide",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 105
+        }
+      },
+      {
+        "comment": "",
+        "key": "Dodge the falling objects",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 114
+        }
+      },
+      {
+        "comment": "",
+        "key": "Start single-player game",
+        "location": {
+          "startingColumn": 33,
+          "startingLine": 135
+        }
+      },
+      {
+        "comment": "",
+        "key": "Start multiplayer game",
+        "location": {
+          "startingColumn": 33,
+          "startingLine": 152
+        }
+      },
+      {
+        "comment": "",
+        "key": "START",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 124
+        }
+      },
+      {
+        "comment": "",
+        "key": "MULTIPLAYER",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 141
+        }
+      },
+      {
+        "comment": "",
+        "key": "GAME OVER",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 161
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 167
+        }
+      },
+      {
+        "comment": "",
+        "key": "Best: %lld",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 172
+        }
+      },
+      {
+        "comment": "",
+        "key": "Restart game",
+        "location": {
+          "startingColumn": 33,
+          "startingLine": 192
+        }
+      },
+      {
+        "comment": "",
+        "key": "RESTART",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 180
+        }
+      },
+      {
+        "comment": "",
+        "key": "PAUSED",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 244
+        }
+      },
+      {
+        "comment": "",
+        "key": "Resume game",
+        "location": {
+          "startingColumn": 33,
+          "startingLine": 263
+        }
+      },
+      {
+        "comment": "",
+        "key": "RESUME",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 252
+        }
+      },
+      {
+        "comment": "",
+        "key": "Resume game",
+        "location": {
+          "startingColumn": 58,
+          "startingLine": 322
+        }
+      },
+      {
+        "comment": "",
+        "key": "Pause game",
+        "location": {
+          "startingColumn": 74,
+          "startingLine": 322
+        }
+      },
+      {
+        "comment": "",
+        "key": "Open settings",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 367
+        }
+      },
+      {
+        "comment": "",
+        "key": "Hint: Drag or tilt to move",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 410
+        }
+      },
+      {
+        "comment": "",
+        "key": "Drag or tilt to move",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 395
+        }
+      },
+      {
+        "comment": "",
+        "key": "(You)",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 505
+        }
+      }
+    ]
+  },
+  "version": 1
+}

@@ -36,6 +36,10 @@ class GameState: ObservableObject {
     @Published var isPaused: Bool = false
     @Published var hasStarted: Bool = false  // Track if game has started from menu
     
+    // Current game mode (singlePlayer or multiplayer).
+    // GameState remains framework-agnostic; GameKit logic lives in GameCenterManager.
+    @Published var mode: GameMode = .singlePlayer
+    
     // Elapsed time in seconds
     @Published var elapsed: TimeInterval = 0
     
@@ -107,10 +111,12 @@ class GameState: ObservableObject {
         score += points
     }
     
-    /// Record the current score as best if it's higher
+    /// Record the current score as best if it's higher, and submit to Game Center.
     func recordBest() {
         if score > bestScore {
             bestScore = score
+            // Submit new high score to Game Center leaderboard (silent no-op if not authenticated).
+            GameCenterManager.shared.submitBestScoreIfGameCenterAvailable(score: score)
         }
     }
     

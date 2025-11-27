@@ -1,0 +1,23 @@
+{
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/ArenaRandomizer.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/ArenaRandomizer.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/ArenaRandomizer.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/ArenaRandomizer.dia",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/ArenaRandomizer.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/ArenaRandomizer.swiftdeps"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/MultiplayerModels.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerModels.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerModels.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerModels.dia",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerModels.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/MultiplayerModels.swiftdeps"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/SpawnEventHelpers.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SpawnEventHelpers.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SpawnEventHelpers.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SpawnEventHelpers.dia",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SpawnEventHelpers.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/SpawnEventHelpers.swiftdeps"
+  }
+}

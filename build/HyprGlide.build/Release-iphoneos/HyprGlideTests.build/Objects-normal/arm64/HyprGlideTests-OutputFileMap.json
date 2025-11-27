@@ -1,0 +1,46 @@
+{
+  "" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlideTests.build/Objects-normal/arm64/HyprGlideTests-primary.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlideTests.build/Objects-normal/arm64/HyprGlideTests-primary.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlideTests.build/Objects-normal/arm64/HyprGlideTests-primary.dia",
+    "emit-module-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlideTests.build/Objects-normal/arm64/HyprGlideTests-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlideTests.build/Objects-normal/arm64/HyprGlideTests-primary-emit-module.dia",
+    "pch" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlideTests.build/Objects-normal/arm64/HyprGlideTests-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlideTests.build/Objects-normal/arm64/HyprGlideTests-primary.swiftdeps"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprSlideTests/ArenaRandomizerTests.swift" : {
+    "index-unit-output-path" : "/HyprGlide.build/Release-iphoneos/HyprGlideTests.build/Objects-normal/arm64/ArenaRandomizerTests.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlideTests.build/Objects-normal/arm64/ArenaRandomizerTests.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlideTests.build/Objects-normal/arm64/ArenaRandomizerTests.o"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprSlideTests/GameFeelTests.swift" : {
+    "index-unit-output-path" : "/HyprGlide.build/Release-iphoneos/HyprGlideTests.build/Objects-normal/arm64/GameFeelTests.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlideTests.build/Objects-normal/arm64/GameFeelTests.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlideTests.build/Objects-normal/arm64/GameFeelTests.o"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprSlideTests/LifecyclePersistenceTests.swift" : {
+    "index-unit-output-path" : "/HyprGlide.build/Release-iphoneos/HyprGlideTests.build/Objects-normal/arm64/LifecyclePersistenceTests.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlideTests.build/Objects-normal/arm64/LifecyclePersistenceTests.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlideTests.build/Objects-normal/arm64/LifecyclePersistenceTests.o"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprSlideTests/MultiplayerMessageTests.swift" : {
+    "index-unit-output-path" : "/HyprGlide.build/Release-iphoneos/HyprGlideTests.build/Objects-normal/arm64/MultiplayerMessageTests.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlideTests.build/Objects-normal/arm64/MultiplayerMessageTests.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlideTests.build/Objects-normal/arm64/MultiplayerMessageTests.o"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprSlideTests/PerformanceGovernorTests.swift" : {
+    "index-unit-output-path" : "/HyprGlide.build/Release-iphoneos/HyprGlideTests.build/Objects-normal/arm64/PerformanceGovernorTests.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlideTests.build/Objects-normal/arm64/PerformanceGovernorTests.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlideTests.build/Objects-normal/arm64/PerformanceGovernorTests.o"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprSlideTests/SlowMotionEffectTests.swift" : {
+    "index-unit-output-path" : "/HyprGlide.build/Release-iphoneos/HyprGlideTests.build/Objects-normal/arm64/SlowMotionEffectTests.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlideTests.build/Objects-normal/arm64/SlowMotionEffectTests.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlideTests.build/Objects-normal/arm64/SlowMotionEffectTests.o"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprSlideTests/SoundManagerTests.swift" : {
+    "index-unit-output-path" : "/HyprGlide.build/Release-iphoneos/HyprGlideTests.build/Objects-normal/arm64/SoundManagerTests.o",
+    "llvm-bc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlideTests.build/Objects-normal/arm64/SoundManagerTests.bc",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlideTests.build/Objects-normal/arm64/SoundManagerTests.o"
+  }
+}

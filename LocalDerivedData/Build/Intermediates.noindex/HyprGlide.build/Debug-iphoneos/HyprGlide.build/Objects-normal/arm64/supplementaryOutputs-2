@@ -1,0 +1,23 @@
+{
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/DefaultsGuard.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/LocalDerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/DefaultsGuard.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/LocalDerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/DefaultsGuard.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/LocalDerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/DefaultsGuard.dia",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/LocalDerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/DefaultsGuard.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/LocalDerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/DefaultsGuard.swiftdeps"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/GameCenterManager.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/LocalDerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameCenterManager.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/LocalDerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameCenterManager.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/LocalDerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameCenterManager.dia",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/LocalDerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameCenterManager.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/LocalDerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/GameCenterManager.swiftdeps"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/PerformanceGovernor.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/LocalDerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/PerformanceGovernor.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/LocalDerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/PerformanceGovernor.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/LocalDerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/PerformanceGovernor.dia",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/LocalDerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/PerformanceGovernor.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/LocalDerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphoneos/HyprGlide.build/Objects-normal/arm64/PerformanceGovernor.swiftdeps"
+  }
+}

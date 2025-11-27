@@ -1,0 +1,12 @@
+{
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/HyprGlideApp.swift" : {
+    "abi-baseline-json" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/HyprGlide.abi.json",
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/HyprGlide-primary.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/HyprGlide-primary.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/HyprGlide-primary.dia",
+    "objc-header" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/HyprGlide-Swift.h",
+    "swiftdoc" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/HyprGlide.swiftdoc",
+    "swiftmodule" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/HyprGlide.swiftmodule",
+    "swiftsourceinfo" : "/Users/flavorisbelue/Desktop/HyprGlide/build/HyprGlide.build/Release-iphoneos/HyprGlide.build/Objects-normal/arm64/HyprGlide.swiftsourceinfo"
+  }
+}
