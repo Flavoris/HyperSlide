@@ -53,7 +53,8 @@ extension ObstacleSpawnEvent {
         margin: CGFloat,
         height: CGFloat,
         coreColor: (CGFloat, CGFloat, CGFloat),
-        glowColor: (CGFloat, CGFloat, CGFloat)
+        glowColor: (CGFloat, CGFloat, CGFloat),
+        glowEnabled: Bool
     ) -> ObstacleNode {
         let positionX = absoluteX(sceneWidth: sceneSize.width, margin: margin)
         let positionY = sceneSize.height + height
@@ -63,7 +64,8 @@ extension ObstacleSpawnEvent {
             height: height,
             speedY: speedY,
             coreColor: coreColor,
-            glowColor: glowColor
+            glowColor: glowColor,
+            glowEnabled: glowEnabled
         )
         obstacle.position = CGPoint(x: positionX, y: positionY)
         
@@ -283,4 +285,3 @@ struct ActivePowerUpCounter {
         slowMotionActive || invincibilityActive || attackModeActive
     }
 }
-

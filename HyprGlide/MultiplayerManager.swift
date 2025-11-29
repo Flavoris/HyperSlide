@@ -141,6 +141,9 @@ protocol MultiplayerSceneDelegate: AnyObject {
     /// Apply slow-motion effect where the collector keeps normal speed, others slow down.
     func applyMultiplayerSlowMotion(collectorId: String, duration: TimeInterval, isLocalPlayerCollector: Bool)
     
+    /// Mark a remote player as eliminated for scene presentation (fade out, etc.).
+    func markRemotePlayerDead(playerId: String)
+    
     /// Get the current player X position for state updates.
     var localPlayerPositionX: CGFloat { get }
     
@@ -419,6 +422,19 @@ final class MultiplayerManager: NSObject, ObservableObject {
         multiplayerState?.activateSlowMotion(isLocalCollector: true, duration: stackedDuration)
         
         sendMessage(type: .slowMotionActivated, payload: payload, mode: .reliable)
+    }
+    
+    /// Immediately send a player state update and ensure the heartbeat timer is running.
+    /// Helps other clients recover quickly after this player pauses/resumes.
+    func sendImmediatePlayerStateUpdate() {
+        guard currentMatch != nil,
+              multiplayerState?.isMatchActive == true else { return }
+        
+        if stateUpdateTimer == nil {
+            startStateUpdateTimer()
+        }
+        
+        sendPlayerStateUpdate()
     }
     
     // MARK: - Public API: Host Spawning
@@ -718,6 +734,11 @@ final class MultiplayerManager: NSObject, ObservableObject {
             eliminationTime: payload.eliminationTime
         )
         
+        // Update scene visuals for eliminated remote players.
+        if payload.playerId != localPlayerId {
+            sceneDelegate?.markRemotePlayerDead(playerId: payload.playerId)
+        }
+        
         // Host tracks alive players.
         if isHost {
             alivePlayerIds.remove(payload.playerId)
@@ -835,6 +856,10 @@ final class MultiplayerManager: NSObject, ObservableObject {
         mpState.isMatchActive = false
         mpState.deactivateSlowMotion()  // Clear any active slow-motion
         connectionStatus = .connected  // Still connected, but match is over.
+        
+        // Stop the local gameplay loop so HUD can surface match results/rematch.
+        gameState?.isGameOver = true
+        gameState?.recordBest()
         
         print("[MultiplayerManager] Match ended. Winner: \(payload.winnerId)")
     }
@@ -976,6 +1001,9 @@ extension MultiplayerManager: GKMatchDelegate {
                 eliminationTime: elapsedMatchTime
             )
         }
+        
+        // Remove their visual representation from the scene.
+        sceneDelegate?.markRemotePlayerDead(playerId: disconnectedId)
         
         // Host tracks alive players.
         if isHost {

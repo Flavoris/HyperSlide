@@ -51,6 +51,7 @@ struct ContentView: View {
             multiplayerManager.multiplayerState = multiplayerState
             multiplayerManager.sceneDelegate = gameScene
             GameCenterManager.shared.authenticateIfNeeded()
+            gameScene.updateGlowPreference(isEnabled: settings.glowEffectsEnabled)
         }
         .onChange(of: settings.colorTheme) { _ in
             // Update player colors when theme changes
@@ -64,6 +65,9 @@ struct ContentView: View {
         }
         .onChange(of: settings.sfxVolume) { newValue in
             soundManager.setSFXVolume(Float(newValue))
+        }
+        .onChange(of: settings.glowEffectsEnabled) { newValue in
+            gameScene.updateGlowPreference(isEnabled: newValue)
         }
     }
     

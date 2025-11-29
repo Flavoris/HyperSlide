@@ -177,6 +177,23 @@ struct SettingsView: View {
                                 Text("Theme changes apply immediately")
                                     .font(.system(size: 13))
                                     .foregroundStyle(.white.opacity(0.6))
+                                
+                                Divider()
+                                    .background(Color.white.opacity(0.1))
+                                    .padding(.top, 6)
+                                
+                                Toggle(isOn: $settings.glowEffectsEnabled) {
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text("Neon Glow")
+                                            .font(.system(size: 17, weight: .semibold))
+                                            .foregroundStyle(.white)
+                                        
+                                        Text("Control glow effect.")
+                                            .font(.system(size: 13))
+                                            .foregroundStyle(.white.opacity(0.6))
+                                    }
+                                }
+                                .tint(settings.colorTheme.primaryColor)
                             }
                         }
                     }
@@ -266,4 +283,3 @@ struct SettingsView: View {
 #Preview {
     SettingsView(settings: Settings())
 }
-

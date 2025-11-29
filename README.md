@@ -63,7 +63,7 @@ Access the settings menu from the main screen or pause menu to configure:
 - **Controls**: Toggle Tilt Control on/off and adjust Tilt Sensitivity.
 - **Difficulty**: Choose between "Normal" and "Fast" difficulty ramps.
 - **Audio**: Adjust Music and Sound Effects volume independently.
-- **Visuals**: Switch between color themes (Neon Blue, Neon Purple, Synthwave).
+- **Visuals**: Switch between color themes (Neon Blue, Neon Purple, Synthwave) and disable the neon glow on the player icon and falling obstacles if it causes eye strain.
 
 ## Multiplayer
 

@@ -37,12 +37,21 @@ struct PlayerNodeContext {
     /// Player color hue offset (0-1) for distinguishing players.
     let colorHueOffset: CGFloat
     
-    init(id: String, isLocal: Bool, node: SKShapeNode, displayName: String, colorHueOffset: CGFloat) {
+    /// Color palette currently applied to this player's node.
+    var colors: (core: (CGFloat, CGFloat, CGFloat), glow: (CGFloat, CGFloat, CGFloat))
+    
+    init(id: String,
+         isLocal: Bool,
+         node: SKShapeNode,
+         displayName: String,
+         colorHueOffset: CGFloat,
+         colors: (core: (CGFloat, CGFloat, CGFloat), glow: (CGFloat, CGFloat, CGFloat))) {
         self.id = id
         self.isLocal = isLocal
         self.node = node
         self.displayName = displayName
         self.colorHueOffset = colorHueOffset
+        self.colors = colors
         self.targetX = node.position.x
     }
 }
@@ -87,7 +96,7 @@ struct MultiplayerSlowMotionTracker {
     let slowSpeedScale: CGFloat = 0.4
     
     /// Maximum stacked duration for multiplayer slow-motion.
-    let maxStackDuration: TimeInterval = 6.0
+    let maxStackDuration: TimeInterval = 12.0
     
     /// Activates or stacks slow-motion for the specified collector.
     mutating func activate(collectorId: String, duration: TimeInterval) {
@@ -245,4 +254,3 @@ struct RemotePlayerInterpolation {
  This approach minimizes latency for the collecting player while maintaining
  consistency across clients within the network round-trip time.
 */
-

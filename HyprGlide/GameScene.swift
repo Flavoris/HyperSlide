@@ -25,6 +25,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
     // Settings reference for difficulty, theme, and controls
     var settings: Settings?
     
+    private let fallbackPlayerColors: (core: (CGFloat, CGFloat, CGFloat), glow: (CGFloat, CGFloat, CGFloat)) =
+        (core: (0.0, 0.82, 1.0), glow: (0.0, 0.95, 1.0))
+    private let fallbackObstacleColors: (core: (CGFloat, CGFloat, CGFloat), glow: (CGFloat, CGFloat, CGFloat)) =
+        (core: (1.0, 0.1, 0.6), glow: (1.0, 0.35, 0.75))
+    
+    private var glowEffectsEnabledCache: Bool = true
+    
     // Shared sound manager supplied by SwiftUI host.
     var soundManager: SoundManager?
     
@@ -80,6 +87,88 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
         return start + (end - start) * t
     }
     
+    private func currentPlayerColors() -> (core: (CGFloat, CGFloat, CGFloat), glow: (CGFloat, CGFloat, CGFloat)) {
+        if isMultiplayerMode,
+           let localId = localPlayerId,
+           let context = playerNodes[localId] {
+            return context.colors
+        }
+        return settings?.colorTheme.playerColor ?? fallbackPlayerColors
+    }
+    
+    private func currentObstacleColors() -> (core: (CGFloat, CGFloat, CGFloat), glow: (CGFloat, CGFloat, CGFloat)) {
+        return settings?.colorTheme.obstacleColor ?? fallbackObstacleColors
+    }
+    
+    private func removeGlowNodes(from node: SKNode) {
+        for child in node.children where child is SKEffectNode {
+            child.removeFromParent()
+        }
+    }
+    
+    private func applyGlowStateToPlayer() {
+        guard let player = player else { return }
+        
+        let colors = currentPlayerColors()
+        let coreColor = SKColor(red: colors.core.0,
+                                green: colors.core.1,
+                                blue: colors.core.2,
+                                alpha: 1.0)
+        player.fillColor = coreColor
+        removeGlowNodes(from: player)
+        guard glowEffectsEnabledCache else { return }
+        
+        let glowColor = SKColor(red: colors.glow.0,
+                                green: colors.glow.1,
+                                blue: colors.glow.2,
+                                alpha: 1.0)
+        
+        let glowNode = GlowEffectFactory.makeCircularGlow(radius: playerRadius,
+                                                          color: glowColor,
+                                                          blurRadius: 18,
+                                                          alpha: 0.9,
+                                                          scale: 1.45)
+        glowNode.zPosition = -1
+        player.addChild(glowNode)
+        
+        let innerBloom = GlowEffectFactory.makeCircularGlow(radius: playerRadius * 0.55,
+                                                            color: coreColor,
+                                                            blurRadius: 8,
+                                                            alpha: 0.75,
+                                                            scale: 1.12)
+        innerBloom.zPosition = -0.5
+        player.addChild(innerBloom)
+    }
+    
+    private func applyGlowStateToRemotePlayers() {
+        guard isMultiplayerMode else { return }
+        for (_, context) in playerNodes where !context.isLocal {
+            removeGlowNodes(from: context.node)
+            guard glowEffectsEnabledCache else { continue }
+            
+            let glowColor = SKColor(red: context.colors.glow.0,
+                                    green: context.colors.glow.1,
+                                    blue: context.colors.glow.2,
+                                    alpha: 1.0)
+            let glowNode = GlowEffectFactory.makeCircularGlow(
+                radius: playerRadius,
+                color: glowColor,
+                blurRadius: 14,
+                alpha: 0.7,
+                scale: 1.35
+            )
+            glowNode.zPosition = -1
+            context.node.addChild(glowNode)
+        }
+    }
+    
+    private func applyGlowStateToObstacles() {
+        let glowColor = currentObstacleColors().glow
+        for obstacle in obstacles {
+            obstacle.updateGlow(enabled: glowEffectsEnabledCache, glowColor: glowColor)
+        }
+    }
+    
     // MARK: - Player Properties
     
     // Player node (glow circle)
@@ -93,7 +182,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
     private let playerRadius: CGFloat = 25.0
     private let playerVerticalPositionRatio: CGFloat = 0.22
     private var dragInputActive = false
+    private var dragMomentumVelocity: CGFloat = 0  // Residual velocity after releasing a drag or tilt
+    private var glidePrimed = false                // Set after first user movement so we keep drifting
+    private let glideMinimumSpeed: CGFloat = 80.0  // Minimum drift once primed
+    private let dragMomentumDecayRate: CGFloat = 2.2  // Higher = quicker slowdown
+    private let dragMomentumStopThreshold: CGFloat = 8.0  // Cutoff to avoid micro-drifting
     private var filteredTiltVelocity: CGFloat = 0
+    private var lastDragTouchX: CGFloat?
+    private var lastDragTouchTime: TimeInterval?
+    private var recentDragVelocity: CGFloat = 0
     
     // Game feel tuning
     private var lastVelocitySign: CGFloat = 0
@@ -171,9 +268,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
     // MARK: - Power-Up Properties
     
     private var powerUps: [PowerUpNode] = []
-    private var slowMotionEffect = SlowMotionEffect(duration: 3.0,
+    private var slowMotionEffect = SlowMotionEffect(duration: 6.0,
                                                    speedScale: 0.4,
-                                                   maxStackDuration: 6.0) // 3 second slow to 40%, stackable to 6s
+                                                   maxStackDuration: 12.0) // 6 second slow to 40%, stackable to 12s
     private var slowMotionOverlay: SKShapeNode?
     private let slowMotionOverlayMaxAlpha: CGFloat = 0.92
     private let slowMotionOverlayFadeInRate: CGFloat = 12.0
@@ -183,12 +280,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
     private let powerUpWarningThreshold: TimeInterval = 1.5  // Start warning at 1.5 seconds remaining
     private var powerUpPulsePhase: CGFloat = 0  // Tracks pulse animation phase
 
-    private var invincibilityEffect = InvincibilityEffect(duration: 3.0,
-                                                          maxStackDuration: 6.0)
+    private var invincibilityEffect = InvincibilityEffect(duration: 6.0,
+                                                          maxStackDuration: 12.0)
     private var invincibilityOverlay: SKShapeNode?
 
-    private var attackModeEffect = AttackModeEffect(duration: 3.0,
-                                                    maxStackDuration: 6.0)
+    private var attackModeEffect = AttackModeEffect(duration: 6.0,
+                                                    maxStackDuration: 12.0)
     private var attackModeOverlay: SKShapeNode?
     private let attackModeDestroyPoints: Double = 25  // Points for destroying an obstacle
     
@@ -261,41 +358,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
     private func setupPlayer() {
         // Create the player shape (glowing circle)
         player = SKShapeNode(circleOfRadius: playerRadius)
-        
-        // Get theme colors from settings, default to neon blue
-        let colors = settings?.colorTheme.playerColor ?? 
-                    (core: (0.0, 0.82, 1.0), glow: (0.0, 0.95, 1.0))
-        
-        // Vibrant core color from theme
-        let coreColor = SKColor(red: colors.core.0, 
-                               green: colors.core.1, 
-                               blue: colors.core.2, 
-                               alpha: 1.0)
         player.strokeColor = .clear
-        player.fillColor = coreColor
         player.lineWidth = 0
-        
-        // Additive blurred glow that mimics the neon reference style
-        let glowColor = SKColor(red: colors.glow.0, 
-                               green: colors.glow.1, 
-                               blue: colors.glow.2, 
-                               alpha: 1.0)
-        let glowNode = GlowEffectFactory.makeCircularGlow(radius: playerRadius,
-                                                          color: glowColor,
-                                                          blurRadius: 18,
-                                                          alpha: 0.9,
-                                                          scale: 1.45)
-        glowNode.zPosition = -1
-        player.addChild(glowNode)
-        
-        // Soft inner bloom keeps the center bright even when the outer glow blurs
-        let innerBloom = GlowEffectFactory.makeCircularGlow(radius: playerRadius * 0.55,
-                                                            color: coreColor,
-                                                            blurRadius: 8,
-                                                            alpha: 0.75,
-                                                            scale: 1.12)
-        innerBloom.zPosition = -0.5
-        player.addChild(innerBloom)
+        applyGlowStateToPlayer()
         
         // Position player slightly above bottom to keep UI visible
         let playerY = size.height * playerVerticalPositionRatio
@@ -462,7 +527,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
             return
         }
         dragInputActive = false
+        glidePrimed = false
+        dragMomentumVelocity = 0
+        lastDragTouchX = nil
+        lastDragTouchTime = nil
         state.pauseGame()
+        
+        // Let peers know our current state before the app fully pauses.
+        multiplayerManager?.sendImmediatePlayerStateUpdate()
     }
     
     // MARK: - Update Loop
@@ -570,24 +642,55 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
             }
         }
         
+        func applyMomentumMovement() -> Bool {
+            guard glidePrimed, dragMomentumVelocity != 0 else { return false }
+            let decay = exp(-dragMomentumDecayRate * dt)
+            let decayedVelocity = dragMomentumVelocity * decay
+            let preservedMagnitude = max(abs(decayedVelocity), glideMinimumSpeed)
+            let direction: CGFloat = decayedVelocity >= 0 ? 1 : -1
+            let preservedVelocity = max(-maxSpeed, min(maxSpeed, preservedMagnitude * direction))
+            dragMomentumVelocity = preservedVelocity
+            velocityX = preservedVelocity
+            handleDirectionChangeIfNeeded()
+            let newX = clampWithinHorizontalBounds(player.position.x + preservedVelocity * dt)
+            player.position.x = newX
+            targetX = newX // Keep drag target aligned when switching back to input
+            return true
+        }
+        
         if dragInputActive {
             let diff = targetX - currentX
             let lerpFactor = min(1.0, moveSpeed * dt)
             velocityX = diff * lerpFactor / dt
             velocityX = max(-maxSpeed, min(maxSpeed, velocityX))
+            // Blend toward the finger's measured velocity so release momentum matches the drag feel.
+            let blendedVelocity = (velocityX * 0.45) + (recentDragVelocity * 0.55)
+            dragMomentumVelocity = max(-maxSpeed, min(maxSpeed, blendedVelocity))
+            glidePrimed = glidePrimed || abs(velocityX) > 0
             handleDirectionChangeIfNeeded()
             let newX = clampWithinHorizontalBounds(currentX + velocityX * dt)
             player.position.x = newX
         } else if settings?.tiltControlEnabled == true {
             let tiltVelocity = resolveTiltVelocity(deltaTime: deltaTime)
-            velocityX = tiltVelocity
-            handleDirectionChangeIfNeeded()
-            let newX = clampWithinHorizontalBounds(currentX + tiltVelocity * dt)
-            player.position.x = newX
-            targetX = newX // Keep drag target aligned when switching back
-        } else {
+            if abs(tiltVelocity) > dragMomentumStopThreshold {
+                velocityX = tiltVelocity
+                dragMomentumVelocity = tiltVelocity
+                glidePrimed = true
+                handleDirectionChangeIfNeeded()
+                let newX = clampWithinHorizontalBounds(currentX + tiltVelocity * dt)
+                player.position.x = newX
+                targetX = newX // Keep drag target aligned when switching back
+            } else if !applyMomentumMovement() {
+                filteredTiltVelocity = 0
+                velocityX = 0
+                dragMomentumVelocity = 0
+                glidePrimed = false
+            }
+        } else if !applyMomentumMovement() {
             filteredTiltVelocity = 0
             velocityX = 0
+            dragMomentumVelocity = 0
+            glidePrimed = false
         }
         
         // Apply edge squish effect when hitting screen bounds
@@ -735,7 +838,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
             margin: 20.0,
             height: height,
             coreColor: obstacleColors.core,
-            glowColor: obstacleColors.glow
+            glowColor: obstacleColors.glow,
+            glowEnabled: glowEffectsEnabledCache
         )
         
         // Add to scene and tracking array
@@ -1238,10 +1342,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
             if isMultiplayerMode {
                 // In multiplayer, use multiplayer slow-motion where collector keeps normal speed
                 if let localId = localPlayerId {
-                    multiplayerSlowMotion.activate(collectorId: localId, duration: slowMotionEffect.remaining > 0 ? slowMotionEffect.remaining + 3.0 : 3.0)
+                    multiplayerSlowMotion.activate(collectorId: localId, duration: slowMotionEffect.remaining > 0 ? slowMotionEffect.remaining + 6.0 : 6.0)
                     // Notify other players
                     multiplayerManager?.localPlayerActivatedSlowMotion(
-                        duration: 3.0,
+                        duration: 6.0,
                         stackedDuration: multiplayerSlowMotion.remaining
                     )
                 }
@@ -1467,6 +1571,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
             let newX = clampWithinHorizontalBounds(player.position.x + bounceMovement)
             player.position.x = newX
             targetX = newX  // Update target so drag doesn't fight the bounce
+            dragMomentumVelocity = edgeBounceVelocity
+            glidePrimed = glidePrimed || abs(edgeBounceVelocity) > 0
             
             // Decay the bounce velocity
             let decayFactor = exp(-edgeBounceDamping * dt)
@@ -1604,6 +1710,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
         
         if let touch = touches.first {
             dragInputActive = true
+            let location = touch.location(in: self)
+            lastDragTouchX = location.x
+            lastDragTouchTime = touch.timestamp
+            recentDragVelocity = 0
             updateDragTarget(with: touch)
         }
     }
@@ -1616,6 +1726,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
         
         if let touch = touches.first {
             dragInputActive = true
+            let location = touch.location(in: self)
+            if let lastX = lastDragTouchX, let lastTime = lastDragTouchTime {
+                let dt = max(touch.timestamp - lastTime, 0.0001)
+                let dx = location.x - lastX
+                recentDragVelocity = dx / CGFloat(dt)
+            }
+            lastDragTouchX = location.x
+            lastDragTouchTime = touch.timestamp
             updateDragTarget(with: touch)
         }
     }
@@ -1629,11 +1747,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
         if let touch = touches.first {
             updateDragTarget(with: touch)
         }
+        // Prefer touch-driven velocity so release feels true to finger speed.
+        let releaseVelocity = abs(recentDragVelocity) > abs(velocityX) ? recentDragVelocity : velocityX
+        dragMomentumVelocity = releaseVelocity
+        glidePrimed = glidePrimed || abs(releaseVelocity) > 0
         dragInputActive = false
+        lastDragTouchX = nil
+        lastDragTouchTime = nil
     }
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         dragInputActive = false
+        glidePrimed = false
+        dragMomentumVelocity = 0
+        lastDragTouchX = nil
+        lastDragTouchTime = nil
         super.touchesCancelled(touches, with: event)
     }
     
@@ -1760,7 +1888,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
                 isLocal: isLocal,
                 node: playerNode,
                 displayName: playerSummary.displayName,
-                colorHueOffset: CGFloat(index) / CGFloat(playerCount)
+                colorHueOffset: CGFloat(index) / CGFloat(playerCount),
+                colors: colors
             )
             playerNodes[playerSummary.id] = context
         }
@@ -1775,26 +1904,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
         node.fillColor = coreColor
         node.lineWidth = 0
         
-        let glowColor = SKColor(red: colors.glow.0, green: colors.glow.1, blue: colors.glow.2, alpha: 1.0)
-        let glowNode = GlowEffectFactory.makeCircularGlow(
-            radius: playerRadius,
-            color: glowColor,
-            blurRadius: 18,
-            alpha: 0.9,
-            scale: 1.45
-        )
-        glowNode.zPosition = -1
-        node.addChild(glowNode)
-        
-        let innerBloom = GlowEffectFactory.makeCircularGlow(
-            radius: playerRadius * 0.55,
-            color: coreColor,
-            blurRadius: 8,
-            alpha: 0.75,
-            scale: 1.12
-        )
-        innerBloom.zPosition = -0.5
-        node.addChild(innerBloom)
+        if glowEffectsEnabledCache {
+            let glowColor = SKColor(red: colors.glow.0, green: colors.glow.1, blue: colors.glow.2, alpha: 1.0)
+            let glowNode = GlowEffectFactory.makeCircularGlow(
+                radius: playerRadius,
+                color: glowColor,
+                blurRadius: 18,
+                alpha: 0.9,
+                scale: 1.45
+            )
+            glowNode.zPosition = -1
+            node.addChild(glowNode)
+            
+            let innerBloom = GlowEffectFactory.makeCircularGlow(
+                radius: playerRadius * 0.55,
+                color: coreColor,
+                blurRadius: 8,
+                alpha: 0.75,
+                scale: 1.12
+            )
+            innerBloom.zPosition = -0.5
+            node.addChild(innerBloom)
+        }
         
         setupPlayerPhysics(radius: playerRadius)
         return node
@@ -1811,16 +1942,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
         node.alpha = 0.8 // Slightly transparent for remote players
         node.zPosition = 90 // Behind local player
         
-        let glowColor = SKColor(red: colors.glow.0, green: colors.glow.1, blue: colors.glow.2, alpha: 1.0)
-        let glowNode = GlowEffectFactory.makeCircularGlow(
-            radius: playerRadius,
-            color: glowColor,
-            blurRadius: 14,
-            alpha: 0.7,
-            scale: 1.35
-        )
-        glowNode.zPosition = -1
-        node.addChild(glowNode)
+        if glowEffectsEnabledCache {
+            let glowColor = SKColor(red: colors.glow.0, green: colors.glow.1, blue: colors.glow.2, alpha: 1.0)
+            let glowNode = GlowEffectFactory.makeCircularGlow(
+                radius: playerRadius,
+                color: glowColor,
+                blurRadius: 14,
+                alpha: 0.7,
+                scale: 1.35
+            )
+            glowNode.zPosition = -1
+            node.addChild(glowNode)
+        }
         
         // No physics body for remote players - they're just visual representations
         return node
@@ -1831,12 +1964,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
         let coreColor = SKColor(red: colors.core.0, green: colors.core.1, blue: colors.core.2, alpha: 1.0)
         node.fillColor = coreColor
         
-        // Remove old glow children and recreate
-        for child in node.children {
-            if child is SKEffectNode {
-                child.removeFromParent()
-            }
-        }
+        removeGlowNodes(from: node)
+        guard glowEffectsEnabledCache else { return }
         
         let glowColor = SKColor(red: colors.glow.0, green: colors.glow.1, blue: colors.glow.2, alpha: 1.0)
         let glowNode = GlowEffectFactory.makeCircularGlow(
@@ -2010,13 +2139,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
     
     // MARK: Theme Updates
     
+    /// Update glow nodes after the accessibility toggle changes.
+    func updateGlowPreference(isEnabled: Bool) {
+        guard glowEffectsEnabledCache != isEnabled else { return }
+        glowEffectsEnabledCache = isEnabled
+        applyGlowStateToPlayer()
+        applyGlowStateToRemotePlayers()
+        applyGlowStateToObstacles()
+    }
+    
     /// Update player colors based on current theme
     func updatePlayerColors() {
         guard let player = player else { return }
         
         // Get theme colors from settings, default to neon blue
-        let colors = settings?.colorTheme.playerColor ?? 
-                    (core: (0.0, 0.82, 1.0), glow: (0.0, 0.95, 1.0))
+        let colors = settings?.colorTheme.playerColor ?? fallbackPlayerColors
         
         // Update core color
         let coreColor = SKColor(red: colors.core.0, 
@@ -2031,13 +2168,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
                                blue: colors.glow.2, 
                                alpha: 1.0)
         
-        // Update all glow effect children
-        for child in player.children {
-            if let effectNode = child as? SKEffectNode {
-                // Update the glow filter color if possible
-                effectNode.removeFromParent()
-            }
-        }
+        removeGlowNodes(from: player)
+        guard glowEffectsEnabledCache else { return }
         
         // Re-add glow nodes with new colors
         let glowNode = GlowEffectFactory.makeCircularGlow(radius: playerRadius,
@@ -2066,6 +2198,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
             targetX = player.position.x
             velocityX = 0
             filteredTiltVelocity = 0
+            dragMomentumVelocity = 0
+            glidePrimed = false
             currentEdgeSquish = 0
             edgeBounceVelocity = 0
             edgeBounceActive = false

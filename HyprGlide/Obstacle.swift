@@ -77,9 +77,15 @@ class ObstacleNode: SKShapeNode {
                      height: CGFloat, 
                      speedY: CGFloat,
                      coreColor: (CGFloat, CGFloat, CGFloat) = (1.0, 0.1, 0.6),
-                     glowColor: (CGFloat, CGFloat, CGFloat) = (1.0, 0.35, 0.75)) {
+                     glowColor: (CGFloat, CGFloat, CGFloat) = (1.0, 0.35, 0.75),
+                     glowEnabled: Bool = true) {
         self.init()
-        configure(width: width, height: height, speedY: speedY, coreColor: coreColor, glowColor: glowColor)
+        configure(width: width,
+                  height: height,
+                  speedY: speedY,
+                  coreColor: coreColor,
+                  glowColor: glowColor,
+                  glowEnabled: glowEnabled)
     }
     
     /// Reconfigures the node so pooled instances can be reused without reallocation.
@@ -87,7 +93,8 @@ class ObstacleNode: SKShapeNode {
                    height: CGFloat,
                    speedY: CGFloat,
                    coreColor: (CGFloat, CGFloat, CGFloat),
-                   glowColor: (CGFloat, CGFloat, CGFloat)) {
+                   glowColor: (CGFloat, CGFloat, CGFloat),
+                   glowEnabled: Bool = true) {
         self.speedY = speedY
         hitboxSize = CGSize(width: width, height: height)
         hasTriggeredNearMiss = false
@@ -102,8 +109,17 @@ class ObstacleNode: SKShapeNode {
                             alpha: 1.0)
         lineWidth = 0
         
+        updateGlow(enabled: glowEnabled, glowColor: glowColor)
+        
+        setupPhysics(size: hitboxSize)
+    }
+    
+    /// Adds or removes the neon glow node based on the current accessibility setting.
+    func updateGlow(enabled: Bool, glowColor: (CGFloat, CGFloat, CGFloat)) {
         childNode(withName: Self.glowNodeName)?.removeFromParent()
-        let glowNode = GlowEffectFactory.makeRoundedRectangleGlow(size: CGSize(width: width, height: height),
+        guard enabled else { return }
+        
+        let glowNode = GlowEffectFactory.makeRoundedRectangleGlow(size: hitboxSize,
                                                                   cornerRadius: 8,
                                                                   color: SKColor(red: glowColor.0,
                                                                                  green: glowColor.1,
@@ -115,8 +131,6 @@ class ObstacleNode: SKShapeNode {
         glowNode.name = Self.glowNodeName
         glowNode.zPosition = -1
         addChild(glowNode)
-        
-        setupPhysics(size: hitboxSize)
     }
     
     /// Prepares a recycled node for the next use.
@@ -175,7 +189,8 @@ final class ObstaclePool {
                  height: CGFloat,
                  speedY: CGFloat,
                  coreColor: (CGFloat, CGFloat, CGFloat),
-                 glowColor: (CGFloat, CGFloat, CGFloat)) -> ObstacleNode {
+                 glowColor: (CGFloat, CGFloat, CGFloat),
+                 glowEnabled: Bool) -> ObstacleNode {
         let obstacle: ObstacleNode
         if let reused = storage.popLast() {
             obstacle = reused
@@ -187,7 +202,8 @@ final class ObstaclePool {
                            height: height,
                            speedY: speedY,
                            coreColor: coreColor,
-                           glowColor: glowColor)
+                           glowColor: glowColor,
+                           glowEnabled: glowEnabled)
         return obstacle
     }
     
@@ -203,5 +219,4 @@ final class ObstaclePool {
         storage.removeAll()
     }
 }
-
 

@@ -17,6 +17,7 @@ class Settings: ObservableObject {
     private static let colorThemeKey = "HyprGlide.ColorTheme"
     private static let musicVolumeKey = "HyprGlide.MusicVolume"
     private static let sfxVolumeKey = "HyprGlide.SFXVolume"
+    private static let glowEffectsEnabledKey = "HyprGlide.GlowEffectsEnabled"
     
     static let tiltSensitivityRange: ClosedRange<Double> = 0.6...1.4
     static let audioVolumeRange: ClosedRange<Double> = 0.0...1.0
@@ -96,6 +97,16 @@ class Settings: ObservableObject {
             guard sfxVolume != oldValue else { return }
             DefaultsGuard.write(on: defaults) { store in
                 store.set(sfxVolume, forKey: Settings.sfxVolumeKey)
+            }
+        }
+    }
+    
+    /// Whether neon glow effects are shown on the player orb and obstacles.
+    @Published var glowEffectsEnabled: Bool {
+        didSet {
+            guard glowEffectsEnabled != oldValue else { return }
+            DefaultsGuard.write(on: defaults) { store in
+                store.set(glowEffectsEnabled, forKey: Settings.glowEffectsEnabledKey)
             }
         }
     }
@@ -192,6 +203,18 @@ class Settings: ObservableObject {
                 store.double(forKey: Settings.sfxVolumeKey)
             } ?? 1.0
             self.sfxVolume = Settings.clampAudioVolume(storedValue)
+        }
+        
+        // Glow Effects
+        if defaults.object(forKey: Settings.glowEffectsEnabledKey) == nil {
+            self.glowEffectsEnabled = true
+            DefaultsGuard.write(on: defaults) { store in
+                store.set(true, forKey: Settings.glowEffectsEnabledKey)
+            }
+        } else {
+            self.glowEffectsEnabled = DefaultsGuard.read(from: defaults) { store in
+                store.bool(forKey: Settings.glowEffectsEnabledKey)
+            } ?? true
         }
     }
     

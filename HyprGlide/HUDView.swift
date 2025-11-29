@@ -25,7 +25,6 @@ struct HUDView: View {
     @State private var showMovementHint = false
     @State private var hintDismissTask: Task<Void, Never>?
     @State private var showFriendsLeaderboard = false
-    @State private var showMultiplayerMenu = false
     
     var body: some View {
         ZStack {
@@ -110,6 +109,12 @@ struct HUDView: View {
                 hideMovementHint()
             }
         }
+        .onChange(of: gameState.isPaused) { isPaused in
+            guard gameState.mode.isMultiplayer,
+                  multiplayerState.isMatchActive else { return }
+            // Kick a state update so remote clients don't keep a frozen snapshot.
+            multiplayerManager.sendImmediatePlayerStateUpdate()
+        }
     }
     
     // MARK: - Score Display
@@ -171,7 +176,8 @@ struct HUDView: View {
             
             // MULTIPLAYER Button
             Button {
-                showMultiplayerMenu = true
+                guard !multiplayerManager.isMatchmaking else { return }
+                multiplayerManager.startQuickMatch()
             } label: {
                 Text("MULTIPLAYER")
                 .font(.system(size: 20, weight: .heavy, design: .rounded))
@@ -218,21 +224,6 @@ struct HUDView: View {
         }
         .sheet(isPresented: $showFriendsLeaderboard) {
             FriendsLeaderboardView(accentColor: settings.colorTheme.primaryColor)
-        }
-        .sheet(isPresented: $showMultiplayerMenu) {
-            MultiplayerModeSheet(
-                accentColor: multiplayerButtonColor,
-                startQuickMatch: {
-                    guard !multiplayerManager.isMatchmaking else { return }
-                    showMultiplayerMenu = false
-                    multiplayerManager.startQuickMatch()
-                },
-                startFriendsMatch: {
-                    guard !multiplayerManager.isMatchmaking else { return }
-                    showMultiplayerMenu = false
-                    multiplayerManager.startFriendsMatch()
-                }
-            )
         }
     }
     
@@ -541,100 +532,6 @@ struct HUDView: View {
                 multiplayerManager: MultiplayerManager(),
                 onRestart: {},
                 onExitToMainMenu: {})
-    }
-}
-
-// MARK: - Multiplayer Mode Sheet
-
-private struct MultiplayerModeSheet: View {
-    let accentColor: Color
-    let startQuickMatch: () -> Void
-    let startFriendsMatch: () -> Void
-    @Environment(\.dismiss) private var dismiss
-    
-    var body: some View {
-        VStack(spacing: 18) {
-            Capsule()
-                .fill(Color.white.opacity(0.25))
-                .frame(width: 44, height: 5)
-                .padding(.top, 10)
-            
-            Text("Choose Multiplayer")
-                .font(.system(size: 22, weight: .heavy, design: .rounded))
-                .foregroundStyle(.white)
-                .padding(.top, 4)
-            
-            Text("Play with friends or jump into a quick match. Lobbies support 2-4 players.")
-                .font(.system(size: 14, weight: .medium, design: .rounded))
-                .foregroundStyle(.white.opacity(0.75))
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 12)
-            
-            VStack(spacing: 12) {
-                Button {
-                    startFriendsMatch()
-                } label: {
-                    HStack {
-                        Image(systemName: "person.crop.circle.badge.plus")
-                            .font(.system(size: 18, weight: .semibold))
-                        Text("Play with Friends")
-                            .font(.system(size: 17, weight: .bold, design: .rounded))
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 14, weight: .semibold))
-                    }
-                    .foregroundStyle(.white)
-                    .padding()
-                    .background(
-                        RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .fill(Color.white.opacity(0.08))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                    .stroke(accentColor.opacity(0.6), lineWidth: 1.2)
-                            )
-                    )
-                }
-                
-                Button {
-                    startQuickMatch()
-                } label: {
-                    HStack {
-                        Image(systemName: "bolt.fill")
-                            .font(.system(size: 18, weight: .semibold))
-                        Text("Find Random Match")
-                            .font(.system(size: 17, weight: .bold, design: .rounded))
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 14, weight: .semibold))
-                    }
-                    .foregroundStyle(accentColor)
-                    .padding()
-                    .background(
-                        RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .stroke(accentColor.opacity(0.6), lineWidth: 1.2)
-                    )
-                }
-            }
-            
-            Button {
-                dismiss()
-            } label: {
-                Text("Close")
-                    .font(.system(size: 15, weight: .semibold, design: .rounded))
-                    .foregroundStyle(.white.opacity(0.8))
-                    .padding(.vertical, 8)
-                    .padding(.horizontal, 16)
-            }
-            .padding(.top, 8)
-            
-            Spacer()
-        }
-        .padding(.horizontal, 20)
-        .padding(.bottom, 20)
-        .background(
-            Color.black.opacity(0.9)
-                .ignoresSafeArea()
-        )
     }
 }
 
