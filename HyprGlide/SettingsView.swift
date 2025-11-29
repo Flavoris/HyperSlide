@@ -10,6 +10,7 @@ import SwiftUI
 struct SettingsView: View {
     @ObservedObject var settings: Settings
     @Environment(\.dismiss) private var dismiss
+    @State private var showTutorial = false
     
     var body: some View {
         ZStack {
@@ -91,6 +92,37 @@ struct SettingsView: View {
                                 .tint(settings.colorTheme.primaryColor)
                                 
                                 tiltSensitivityControl
+                            }
+                        }
+                        
+                        // Tutorial Section
+                        settingsCard {
+                            VStack(alignment: .leading, spacing: 12) {
+                                Text("How-To-Play")
+                                    .font(.system(size: 20, weight: .bold))
+                                    .foregroundStyle(.white)
+                                
+                                Button {
+                                    showTutorial = true
+                                } label: {
+                                    HStack {
+                                        Text("View How-To-Play")
+                                            .font(.system(size: 16, weight: .semibold))
+                                        
+                                        Spacer()
+                                        
+                                        Image(systemName: "play.rectangle.on.rectangle.fill")
+                                            .font(.system(size: 18, weight: .bold))
+                                    }
+                                    .foregroundStyle(settings.colorTheme.primaryColor)
+                                    .padding(.vertical, 10)
+                                    .padding(.horizontal, 14)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 14)
+                                            .stroke(settings.colorTheme.primaryColor.opacity(0.5), lineWidth: 1.5)
+                                    )
+                                }
+                                .buttonStyle(.plain)
                             }
                         }
                         
@@ -203,6 +235,16 @@ struct SettingsView: View {
             }
         }
         .dynamicTypeSize(...DynamicTypeSize.accessibility1)
+        .sheet(isPresented: $showTutorial,
+               onDismiss: { settings.hasSeenTutorial = true }) {
+            TutorialView(
+                colorTheme: settings.colorTheme,
+                primaryActionTitle: "Close"
+            ) {
+                settings.hasSeenTutorial = true
+                showTutorial = false
+            }
+        }
     }
     
     // Helper to create consistent card styling

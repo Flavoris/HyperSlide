@@ -8,6 +8,11 @@
 import SwiftUI
 
 struct HUDView: View {
+    private enum PendingStartAction {
+        case singlePlayer
+        case multiplayer
+    }
+    
     @ObservedObject var gameState: GameState
     @ObservedObject var settings: Settings
     @ObservedObject var multiplayerState: MultiplayerState
@@ -25,6 +30,8 @@ struct HUDView: View {
     @State private var showMovementHint = false
     @State private var hintDismissTask: Task<Void, Never>?
     @State private var showFriendsLeaderboard = false
+    @State private var showTutorial = false
+    @State private var pendingStartAction: PendingStartAction?
     
     var body: some View {
         ZStack {
@@ -115,6 +122,15 @@ struct HUDView: View {
             // Kick a state update so remote clients don't keep a frozen snapshot.
             multiplayerManager.sendImmediatePlayerStateUpdate()
         }
+        .sheet(isPresented: $showTutorial) {
+            TutorialView(
+                colorTheme: settings.colorTheme,
+                primaryActionTitle: pendingStartAction == nil ? "Close" : "Start Playing"
+            ) {
+                completeTutorialAndResume()
+            }
+            .interactiveDismissDisabled(pendingStartAction != nil)
+        }
     }
     
     // MARK: - Score Display
@@ -159,7 +175,7 @@ struct HUDView: View {
             
             // START Button (Single Player)
             Button {
-                startGame()
+                handleStartTapped()
             } label: {
                 Text("START")
                 .font(.system(size: 26, weight: .heavy, design: .rounded))
@@ -176,8 +192,7 @@ struct HUDView: View {
             
             // MULTIPLAYER Button
             Button {
-                guard !multiplayerManager.isMatchmaking else { return }
-                multiplayerManager.startQuickMatch()
+                handleMultiplayerTapped()
             } label: {
                 Text("MULTIPLAYER")
                 .font(.system(size: 20, weight: .heavy, design: .rounded))
@@ -303,14 +318,73 @@ struct HUDView: View {
             }
             .padding(.top, 10)
             .accessibilityLabel("Restart game")
+            
+            // MAIN MENU Button
+            Button {
+                exitToMainMenu()
+            } label: {
+                Text("MAIN MENU")
+                    .font(.system(size: 18, weight: .bold, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.8))
+                    .tracking(2)
+                    .padding(.horizontal, 36)
+                    .padding(.vertical, 14)
+                    .background(
+                        RoundedRectangle(cornerRadius: 50)
+                            .strokeBorder(Color.white.opacity(0.35), lineWidth: 2)
+                    )
+            }
+            .accessibilityLabel("Return to main menu")
         }
     }
     
     // MARK: - Helper Methods
     
-    private func startGame() {
+    private func handleStartTapped() {
+        if presentTutorialIfNeeded(for: .singlePlayer) { return }
+        beginSinglePlayer()
+    }
+    
+    private func handleMultiplayerTapped() {
+        guard !multiplayerManager.isMatchmaking else { return }
+        if presentTutorialIfNeeded(for: .multiplayer) { return }
+        beginMultiplayer()
+    }
+    
+    private func beginSinglePlayer() {
         gameState.mode = .singlePlayer
         gameState.startGame()
+    }
+    
+    private func beginMultiplayer() {
+        guard !multiplayerManager.isMatchmaking else { return }
+        multiplayerManager.startQuickMatch()
+    }
+    
+    @discardableResult
+    private func presentTutorialIfNeeded(for action: PendingStartAction) -> Bool {
+        guard !settings.hasSeenTutorial else { return false }
+        pendingStartAction = action
+        showTutorial = true
+        return true
+    }
+    
+    private func completeTutorialAndResume() {
+        settings.hasSeenTutorial = true
+        showTutorial = false
+        let action = pendingStartAction
+        pendingStartAction = nil
+        guard let action else { return }
+        performPendingStart(action)
+    }
+    
+    private func performPendingStart(_ action: PendingStartAction) {
+        switch action {
+        case .singlePlayer:
+            beginSinglePlayer()
+        case .multiplayer:
+            beginMultiplayer()
+        }
     }
     
     private func restartGame() {

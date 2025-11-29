@@ -18,6 +18,7 @@ class Settings: ObservableObject {
     private static let musicVolumeKey = "HyprGlide.MusicVolume"
     private static let sfxVolumeKey = "HyprGlide.SFXVolume"
     private static let glowEffectsEnabledKey = "HyprGlide.GlowEffectsEnabled"
+    private static let hasSeenTutorialKey = "HyprGlide.HasSeenTutorial"
     
     static let tiltSensitivityRange: ClosedRange<Double> = 0.6...1.4
     static let audioVolumeRange: ClosedRange<Double> = 0.0...1.0
@@ -107,6 +108,16 @@ class Settings: ObservableObject {
             guard glowEffectsEnabled != oldValue else { return }
             DefaultsGuard.write(on: defaults) { store in
                 store.set(glowEffectsEnabled, forKey: Settings.glowEffectsEnabledKey)
+            }
+        }
+    }
+    
+    /// Tracks if the player has completed the onboarding tutorial.
+    @Published var hasSeenTutorial: Bool {
+        didSet {
+            guard hasSeenTutorial != oldValue else { return }
+            DefaultsGuard.write(on: defaults) { store in
+                store.set(hasSeenTutorial, forKey: Settings.hasSeenTutorialKey)
             }
         }
     }
@@ -215,6 +226,18 @@ class Settings: ObservableObject {
             self.glowEffectsEnabled = DefaultsGuard.read(from: defaults) { store in
                 store.bool(forKey: Settings.glowEffectsEnabledKey)
             } ?? true
+        }
+        
+        // Tutorial completion flag
+        if defaults.object(forKey: Settings.hasSeenTutorialKey) == nil {
+            self.hasSeenTutorial = false
+            DefaultsGuard.write(on: defaults) { store in
+                store.set(false, forKey: Settings.hasSeenTutorialKey)
+            }
+        } else {
+            self.hasSeenTutorial = DefaultsGuard.read(from: defaults) { store in
+                store.bool(forKey: Settings.hasSeenTutorialKey)
+            } ?? false
         }
     }
     

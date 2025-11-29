@@ -40,6 +40,7 @@
 		O1000001 /* MultiplayerStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = O2000001 /* MultiplayerStatusView.swift */; };
 		O1000002 /* MultiplayerGameOverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = O2000002 /* MultiplayerGameOverView.swift */; };
 		O1000003 /* FriendsLeaderboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = O2000003 /* FriendsLeaderboardView.swift */; };
+		P1000001 /* TutorialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = P2000001 /* TutorialView.swift */; };
 		T1000001 /* ArenaRandomizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T2000001 /* ArenaRandomizerTests.swift */; };
 		T1000002 /* MultiplayerMessageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T2000002 /* MultiplayerMessageTests.swift */; };
 		T1000003 /* GameFeelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T2000003 /* GameFeelTests.swift */; };
@@ -79,6 +80,7 @@
 		D2000001 /* NearMissEmitterFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearMissEmitterFactory.swift; sourceTree = "<group>"; };
 		E2000001 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		E2000002 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		P2000001 /* TutorialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialView.swift; sourceTree = "<group>"; };
 		F2000001 /* PowerUpNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PowerUpNode.swift; sourceTree = "<group>"; };
 		F2000002 /* SlowMotionEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlowMotionEffect.swift; sourceTree = "<group>"; };
 		F2000003 /* InvincibilityEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvincibilityEffect.swift; sourceTree = "<group>"; };
@@ -156,6 +158,7 @@
 				E2000001 /* Settings.swift */,
 				A2000005 /* HUDView.swift */,
 				E2000002 /* SettingsView.swift */,
+				P2000001 /* TutorialView.swift */,
 				C2000001 /* SoundManager.swift */,
 				H2000001 /* BackgroundMusicAssetEngine.swift */,
 				H2000003 /* HyprGlide Music.mp3 */,
@@ -307,6 +310,7 @@
 				E1000001 /* Settings.swift in Sources */,
 				A1000005 /* HUDView.swift in Sources */,
 				E1000002 /* SettingsView.swift in Sources */,
+				P1000001 /* TutorialView.swift in Sources */,
 				C1000001 /* SoundManager.swift in Sources */,
 				H1000001 /* BackgroundMusicAssetEngine.swift in Sources */,
 				A1000007 /* Obstacle.swift in Sources */,
