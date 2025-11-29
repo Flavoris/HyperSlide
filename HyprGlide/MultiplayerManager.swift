@@ -144,6 +144,9 @@ protocol MultiplayerSceneDelegate: AnyObject {
     /// Mark a remote player as eliminated for scene presentation (fade out, etc.).
     func markRemotePlayerDead(playerId: String)
     
+    /// Clean up any multiplayer-specific state and visuals when leaving a match.
+    func cleanupMultiplayerArena()
+    
     /// Get the current player X position for state updates.
     var localPlayerPositionX: CGFloat { get }
     
@@ -345,6 +348,12 @@ final class MultiplayerManager: NSObject, ObservableObject {
         stopStateUpdateTimer()
         currentMatch?.disconnect()
         currentMatch = nil
+        
+        // Ensure the scene clears any lingering remote player nodes when leaving a match.
+        DispatchQueue.main.async { [weak self] in
+            self?.sceneDelegate?.cleanupMultiplayerArena()
+        }
+        
         resetMatchState()
         connectionStatus = .disconnected
     }

@@ -96,6 +96,9 @@ struct ContentView: View {
             multiplayerState.reset()
         }
         
+        // Always clear multiplayer visuals so remote orbs don't linger on the menu
+        gameScene.cleanupMultiplayerArena()
+        
         // Reset the scene (clears obstacles, resets player position, etc.)
         gameScene.resetGame(state: gameState)
         

@@ -87,6 +87,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
         return start + (end - start) * t
     }
     
+    /// Determines whether gameplay simulation should be paused.
+    /// In multiplayer, the pause UI should not freeze the arena to avoid desync.
+    private func isSimulationPaused(_ state: GameState) -> Bool {
+        state.isPaused && !state.mode.isMultiplayer
+    }
+    
     private func currentPlayerColors() -> (core: (CGFloat, CGFloat, CGFloat), glow: (CGFloat, CGFloat, CGFloat)) {
         if isMultiplayerMode,
            let localId = localPlayerId,
@@ -186,6 +192,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
     private var glidePrimed = false                // Set after first user movement so we keep drifting
     private let glideMinimumSpeed: CGFloat = 80.0  // Minimum drift once primed
     private let dragMomentumDecayRate: CGFloat = 2.2  // Higher = quicker slowdown
+    private let tiltMomentumDecayMultiplier: CGFloat = 2.0  // Faster decay while in tilt to avoid drift weirdness
+    private let tiltGlideMinimumMultiplier: CGFloat = 0.25  // Reduce minimum drift when using tilt
     private let dragMomentumStopThreshold: CGFloat = 8.0  // Cutoff to avoid micro-drifting
     private var filteredTiltVelocity: CGFloat = 0
     private var lastDragTouchX: CGFloat?
@@ -555,10 +563,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
         }
         
         guard let state = gameState else { return }
+        let simulationPaused = isSimulationPaused(state)
         let isLobby = lobbyWarmupActive()
         
         // Update game state time unless we're idling in a multiplayer lobby.
-        if state.hasStarted && !state.isPaused && !state.isGameOver {
+        if state.hasStarted && !simulationPaused && !state.isGameOver {
             if !isLobby {
                 state.updateTime(delta: deltaTime)
             } else {
@@ -568,7 +577,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
         
         // Skip update if game hasn't started, is paused, or is over
         guard state.hasStarted,
-              !state.isPaused,
+              !simulationPaused,
               !state.isGameOver else {
             return
         }
@@ -642,11 +651,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
             }
         }
         
-        func applyMomentumMovement() -> Bool {
+        func applyMomentumMovement(inTiltContext: Bool = false) -> Bool {
             guard glidePrimed, dragMomentumVelocity != 0 else { return false }
-            let decay = exp(-dragMomentumDecayRate * dt)
+            let decayRate = dragMomentumDecayRate * (inTiltContext ? tiltMomentumDecayMultiplier : 1.0)
+            let decay = exp(-decayRate * dt)
             let decayedVelocity = dragMomentumVelocity * decay
-            let preservedMagnitude = max(abs(decayedVelocity), glideMinimumSpeed)
+            let minSpeed = glideMinimumSpeed * (inTiltContext ? tiltGlideMinimumMultiplier : 1.0)
+            let preservedMagnitude = max(abs(decayedVelocity), minSpeed)
             let direction: CGFloat = decayedVelocity >= 0 ? 1 : -1
             let preservedVelocity = max(-maxSpeed, min(maxSpeed, preservedMagnitude * direction))
             dragMomentumVelocity = preservedVelocity
@@ -680,7 +691,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
                 let newX = clampWithinHorizontalBounds(currentX + tiltVelocity * dt)
                 player.position.x = newX
                 targetX = newX // Keep drag target aligned when switching back
-            } else if !applyMomentumMovement() {
+            } else if !applyMomentumMovement(inTiltContext: true) {
                 filteredTiltVelocity = 0
                 velocityX = 0
                 dragMomentumVelocity = 0

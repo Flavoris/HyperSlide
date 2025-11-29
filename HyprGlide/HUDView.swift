@@ -120,21 +120,25 @@ struct HUDView: View {
     // MARK: - Score Display
     
     private var scoreDisplay: some View {
-        Text("\(Int(gameState.score.rounded()))")
-            .font(.system(size: 72, weight: .heavy, design: .rounded))
-            .foregroundStyle(.white)
-            .accessibilityLabel("Score: \(Int(gameState.score.rounded()))")
+        let roundedScore = Int(gameState.score.rounded())
+        
+        return VStack(spacing: 6) {
+            Text("\(roundedScore)")
+                .font(.system(size: 72, weight: .heavy, design: .rounded))
+                .foregroundStyle(.white)
+            
+            Text("Level \(gameState.level)")
+                .font(.system(size: 22, weight: .semibold, design: .rounded))
+                .foregroundStyle(.white.opacity(0.9))
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Score \(roundedScore), Level \(gameState.level)")
     }
     
     // MARK: - Overlays
     
     private var startMenuOverlay: some View {
         VStack(spacing: 30) {
-            // Score at top (starts at 0)
-            Text("\(Int(gameState.score.rounded()))")
-                .font(.system(size: 60, weight: .bold, design: .rounded))
-                .foregroundStyle(.white)
-            
             Spacer()
             
             // Hypr Glide Title
@@ -152,10 +156,6 @@ struct HUDView: View {
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 40)
-            
-            if multiplayerState.isSearching || multiplayerManager.isMatchmaking {
-                matchmakingStatusCard
-            }
             
             // START Button (Single Player)
             Button {
@@ -226,48 +226,6 @@ struct HUDView: View {
             FriendsLeaderboardView(accentColor: settings.colorTheme.primaryColor)
         }
     }
-    
-    private var matchmakingStatusCard: some View {
-        let queueName = multiplayerState.currentQueue?.displayName ?? "Multiplayer"
-        return VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Text("Searching for \(queueName)")
-                    .font(.system(size: 16, weight: .bold, design: .rounded))
-                    .foregroundStyle(.white)
-                Spacer()
-                ProgressView()
-                    .tint(multiplayerButtonColor)
-            }
-            
-            Text("Looking for 2-4 players via Game Center.")
-                .font(.system(size: 13, weight: .medium, design: .rounded))
-                .foregroundStyle(.white.opacity(0.85))
-            
-            Button {
-                multiplayerManager.cancelMatchmaking()
-            } label: {
-                Text("Cancel Search")
-                    .font(.system(size: 14, weight: .semibold, design: .rounded))
-                    .foregroundStyle(multiplayerButtonColor)
-                    .padding(.vertical, 8)
-                    .frame(maxWidth: .infinity)
-                    .background(
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .stroke(multiplayerButtonColor.opacity(0.7), lineWidth: 1)
-                    )
-            }
-        }
-        .padding(16)
-        .background(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(Color.black.opacity(0.55))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .stroke(multiplayerButtonColor.opacity(0.35), lineWidth: 1)
-                )
-        )
-    }
-    
     private func lobbyStatusBanner(lobby: MultiplayerLobbyState) -> some View {
         let playerCount = multiplayerState.players.count
         let remaining = Int(ceil(max(0, lobby.remaining)))

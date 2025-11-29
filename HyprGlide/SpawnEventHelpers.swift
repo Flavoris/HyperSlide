@@ -162,8 +162,11 @@ final class SpawnStateTracker {
     /// Range for randomizing power-up spawn intervals.
     let powerUpSpawnIntervalRange: ClosedRange<TimeInterval> = 12...18
     
-    /// Difficulty threshold before power-ups can spawn.
-    let powerUpDifficultyThreshold: Double = 0.25
+    /// Difficulty threshold before power-ups can spawn (≈ level 3 on the current ramp).
+    let powerUpDifficultyThreshold: Double = {
+        let unlockLevel = 3.0
+        return (unlockLevel - 1.0) / Double(GameState.maxLevel - 1)
+    }()
     
     // MARK: - Edge-Riding Prevention
     

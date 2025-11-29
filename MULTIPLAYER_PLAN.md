@@ -16,7 +16,7 @@ The main SpriteKit scene handling all game rendering and update logic:
 An `ObservableObject` tracking:
 - `score`, `bestScore` (persisted to UserDefaults)
 - Flags: `isGameOver`, `isPaused`, `hasStarted`
-- `elapsed` time → `difficulty` (0→1 over 90s) and `level` (1–10)
+- `elapsed` time → `difficulty` (0→1 over 300s) and `level` (1–20)
 - Actions: `startGame()`, `resetGame()`, `pauseGame()`, `resumeGame()`, `addDodge()`, `addNearMissBonus()`, etc.
 
 ### `ContentView.swift` (~78 lines)
@@ -260,4 +260,3 @@ In multiplayer mode, the interaction between `MultiplayerManager` and `GameScene
 16. **Local collision (fatal)** → Scene sets `isGameOver`, calls `MultiplayerManager.localPlayerDied(finalScore:eliminationTime:)`
 17. **Remote death received** → Manager calls `MultiplayerState.eliminatePlayer()` and scene's `markRemotePlayerDead(playerId:)`
 18. **Match ends** → Host broadcasts `MatchEnd` with rankings; manager updates state, scene can cleanup via `cleanupMultiplayerArena()`
-

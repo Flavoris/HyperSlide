@@ -11,6 +11,9 @@ import Combine
 class GameState: ObservableObject {
     // UserDefaults key for best score persistence
     private static let bestScoreKey = "HyprGlide.BestScore"
+    // Total seconds for the difficulty ramp to reach max (longer ramp = longer levels)
+    private static let difficultyRampDuration: TimeInterval = 300
+    static let maxLevel = 20
     private let defaults: UserDefaults
     
     // Current game score (time + dodge points)
@@ -44,14 +47,15 @@ class GameState: ObservableObject {
     @Published var elapsed: TimeInterval = 0
     
     // Current difficulty level (0.0 to 1.0, computed from elapsed time)
-    // Scales linearly from 0 to 1 over 90 seconds
+    // Scales linearly from 0 to 1 over 300 seconds (~15 seconds per level across 20 levels)
     var difficulty: Double {
-        min(1.0, elapsed / 90.0)
+        min(1.0, elapsed / GameState.difficultyRampDuration)
     }
     
-    // Current level (1 to 10, derived from difficulty)
+    // Current level (1 to 20, derived from difficulty)
     var level: Int {
-        max(1, min(10, Int((difficulty * 10).rounded()) + 1))
+        let normalizedDifficulty = min(max(difficulty, 0), 1)
+        return Int((normalizedDifficulty * Double(GameState.maxLevel - 1)).rounded()) + 1
     }
     
     // MARK: - Initialization
@@ -95,7 +99,8 @@ class GameState: ObservableObject {
     
     /// Add time-based score increment
     func addTime(delta: Double) {
-        guard !isPaused && !isGameOver else { return }
+        // In multiplayer, keep time/score progression running even if pause UI is shown.
+        guard (!isPaused || mode.isMultiplayer) && !isGameOver else { return }
         score += delta
     }
     
@@ -143,7 +148,8 @@ class GameState: ObservableObject {
     
     /// Update elapsed time (difficulty is computed from elapsed)
     func updateTime(delta: TimeInterval) {
-        guard !isPaused && !isGameOver else { return }
+        // In multiplayer, keep elapsed time moving to avoid desync with peers.
+        guard (!isPaused || mode.isMultiplayer) && !isGameOver else { return }
         elapsed += delta
     }
 }
