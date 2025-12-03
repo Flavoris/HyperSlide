@@ -138,6 +138,10 @@ struct MultiplayerPlayer: Identifiable, Codable, Equatable {
     /// Current horizontal velocity — used for smoothing remote player animations.
     var velocityX: CGFloat
     
+    /// Real-time score reported from the player's device.
+    /// Updated constantly for opponents so HUD reflects live progress.
+    var currentScore: Double
+    
     /// Final score if the player has been eliminated or the match ended.
     var finalScore: Double?
     
@@ -151,6 +155,7 @@ struct MultiplayerPlayer: Identifiable, Codable, Equatable {
         isAlive: Bool = true,
         currentX: CGFloat = 0,
         velocityX: CGFloat = 0,
+        currentScore: Double = 0,
         finalScore: Double? = nil,
         eliminationTime: TimeInterval? = nil
     ) {
@@ -160,6 +165,7 @@ struct MultiplayerPlayer: Identifiable, Codable, Equatable {
         self.isAlive = isAlive
         self.currentX = currentX
         self.velocityX = velocityX
+        self.currentScore = currentScore
         self.finalScore = finalScore
         self.eliminationTime = eliminationTime
     }
@@ -274,11 +280,13 @@ final class MultiplayerState: ObservableObject {
     
     // MARK: - State Updates
     
-    /// Update a specific player's position and velocity (typically from network sync).
-    func updatePlayerPosition(playerId: String, x: CGFloat, velocityX: CGFloat) {
+    /// Update a specific player's position, velocity, live score, and alive status.
+    func updatePlayerState(playerId: String, x: CGFloat, velocityX: CGFloat, score: Double, isAlive: Bool) {
         guard let index = players.firstIndex(where: { $0.id == playerId }) else { return }
         players[index].currentX = x
         players[index].velocityX = velocityX
+        players[index].currentScore = score
+        players[index].isAlive = isAlive
     }
     
     /// Mark a player as eliminated with their final score and elimination time.

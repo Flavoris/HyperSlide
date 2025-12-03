@@ -28,6 +28,7 @@ enum MultiplayerMessageType: Int, Codable {
     case matchEnd = 5
     case powerUpCollected = 6
     case slowMotionActivated = 7
+    case rematchRequest = 8
 }
 
 /// Wrapper for all multiplayer messages. The `type` field determines how to decode `payload`.
@@ -56,6 +57,8 @@ struct MatchSetupPayload: Codable {
     let matchId: String
     let minPlayers: Int
     let maxPlayers: Int
+    /// True when this setup was triggered from a rematch opt-in flow.
+    let isRematch: Bool?
 }
 
 /// Sent frequently by each player to sync position and score.
@@ -116,6 +119,12 @@ struct SlowMotionActivatedPayload: Codable {
     let duration: TimeInterval
     let stackedDuration: TimeInterval  // Total remaining after stacking
     let activationTime: TimeInterval
+}
+
+/// Sent by non-host players to ask the host to start a rematch.
+struct RematchRequestPayload: Codable {
+    let requesterId: String
+    let requestedAt: TimeInterval
 }
 
 // MARK: - Scene Delegate Protocol
@@ -244,6 +253,12 @@ final class MultiplayerManager: NSObject, ObservableObject {
     /// Arena randomizer for host-generated spawn events.
     private var arenaRandomizer: ArenaRandomizer?
     
+    /// Player IDs that have explicitly opted into a rematch after the last round.
+    private var rematchOptInPlayerIds: Set<String> = []
+    
+    /// Whether the local player has opted into the next rematch.
+    private var localRequestedRematch: Bool = false
+    
     // MARK: - Initialization
     
     override init() {
@@ -356,6 +371,32 @@ final class MultiplayerManager: NSObject, ObservableObject {
         
         resetMatchState()
         connectionStatus = .disconnected
+    }
+    
+    // MARK: - Public API: Rematch
+    
+    /// Requests a new match using the existing Game Center connection.
+    /// Hosts immediately schedule a new lobby; non-hosts ask the host to start one.
+    func requestRematch() {
+        guard let match = currentMatch else {
+            lastError = "Rematch unavailable: not connected to a match."
+            return
+        }
+        
+        // Don't interrupt an active round.
+        guard multiplayerState?.isMatchActive == false else { return }
+        
+        localRequestedRematch = true
+        
+        if isHost {
+            recordRematchOptIn(playerId: localPlayerId)
+        } else {
+            let payload = RematchRequestPayload(
+                requesterId: localPlayerId,
+                requestedAt: Date().timeIntervalSince1970
+            )
+            sendMessage(type: .rematchRequest, payload: payload, mode: .reliable)
+        }
     }
     
     // MARK: - Public API: Game Events (called by GameScene)
@@ -499,29 +540,61 @@ final class MultiplayerManager: NSObject, ObservableObject {
         print("[MultiplayerManager] Host elected: \(hostId ?? "none"), isLocal: \(isHost)")
     }
     
+    /// Starts a fresh lobby using the existing connected players who opted in.
+    private func startRematch(match: GKMatch) {
+        // Require the host to opt in.
+        guard rematchOptInPlayerIds.contains(localPlayerId) else {
+            return
+        }
+        
+        // Only include players who opted in and are still part of the match.
+        let participantIds: [String] = rematchOptInPlayerIds.filter { id in
+            id == localPlayerId || match.players.contains(where: { $0.gamePlayerID == id })
+        }.sorted()
+        
+        guard participantIds.count >= minPlayersPerMatch else {
+            lastError = "Need at least \(minPlayersPerMatch) players for a rematch."
+            return
+        }
+        
+        // Clear round-specific state so the new lobby is clean.
+        collectedPowerUpIds.removeAll()
+        multiplayerState?.winner = nil
+        multiplayerState?.setFinalRankings([])
+        multiplayerState?.deactivateSlowMotion()
+        
+        // Build player summaries using the previous state for names where possible.
+        let summaries = buildPlayerSummaries(for: participantIds, match: match)
+        
+        performHostSetup(match: match, playersOverride: summaries, isRematch: true)
+    }
+    
     /// Host generates seed, match start time, and broadcasts MatchSetup to all peers.
-    private func performHostSetup(match: GKMatch) {
+    private func performHostSetup(match: GKMatch,
+                                  playersOverride: [MultiplayerPlayerSummary]? = nil,
+                                  isRematch: Bool = false) {
         // Generate deterministic seed.
         let seed = UInt64.random(in: 0...UInt64.max)
         arenaSeed = seed
         
         // Build player list.
-        var players: [MultiplayerPlayerSummary] = []
-        
-        // Add local player.
-        players.append(MultiplayerPlayerSummary(
-            id: localPlayerId,
-            displayName: GKLocalPlayer.local.displayName,
-            isLocal: true
-        ))
-        
-        // Add remote players.
-        for player in match.players {
+        var players: [MultiplayerPlayerSummary]
+        if let override = playersOverride {
+            players = override
+        } else {
+            players = []
             players.append(MultiplayerPlayerSummary(
-                id: player.gamePlayerID,
-                displayName: player.displayName,
-                isLocal: false
+                id: localPlayerId,
+                displayName: GKLocalPlayer.local.displayName,
+                isLocal: true
             ))
+            for player in match.players {
+                players.append(MultiplayerPlayerSummary(
+                    id: player.gamePlayerID,
+                    displayName: player.displayName,
+                    isLocal: false
+                ))
+            }
         }
         
         // Track alive players.
@@ -541,21 +614,41 @@ final class MultiplayerManager: NSObject, ObservableObject {
             players: players,
             matchId: matchId,
             minPlayers: minPlayersPerMatch,
-            maxPlayers: maxPlayersPerMatch
+            maxPlayers: maxPlayersPerMatch,
+            isRematch: isRematch
         )
         
         sendMessage(type: .matchSetup, payload: payload, mode: .reliable)
         
         // Apply setup locally as well.
         applyMatchSetup(payload)
+        
+        // Reset rematch opt-ins now that the new round is scheduled.
+        rematchOptInPlayerIds.removeAll()
+        localRequestedRematch = false
     }
     
     /// Applies the match setup configuration locally.
     private func applyMatchSetup(_ setup: MatchSetupPayload) {
+        let isRematch = setup.isRematch ?? false
+        // Only auto-join rematches if the local player explicitly opted in.
+        if isRematch && !localRequestedRematch {
+            print("[MultiplayerManager] Ignoring rematch setup because local player did not opt in.")
+            return
+        }
+        
+        // Clear rematch intent once we're committing to the new match.
+        localRequestedRematch = false
+        rematchOptInPlayerIds.removeAll()
+        
         arenaSeed = setup.arenaSeed
         matchStartTime = setup.matchStartTime
         hostId = setup.hostId
         isHost = (setup.hostId == localPlayerId)
+        collectedPowerUpIds.removeAll()
+        multiplayerState?.winner = nil
+        multiplayerState?.setFinalRankings([])
+        multiplayerState?.deactivateSlowMotion()
         
         // Track alive players.
         alivePlayerIds = Set(setup.players.map { $0.id })
@@ -677,6 +770,9 @@ final class MultiplayerManager: NSObject, ObservableObject {
             
         case .slowMotionActivated:
             handleSlowMotionActivatedMessage(message)
+            
+        case .rematchRequest:
+            handleRematchRequestMessage(message)
         }
     }
     
@@ -695,10 +791,12 @@ final class MultiplayerManager: NSObject, ObservableObject {
         }
         
         // Update MultiplayerState.
-        multiplayerState?.updatePlayerPosition(
+        multiplayerState?.updatePlayerState(
             playerId: payload.playerId,
             x: payload.positionX,
-            velocityX: payload.velocityX
+            velocityX: payload.velocityX,
+            score: payload.score,
+            isAlive: payload.isAlive
         )
         
         // Notify scene to update remote player node.
@@ -795,6 +893,60 @@ final class MultiplayerManager: NSObject, ObservableObject {
         )
     }
     
+    private func handleRematchRequestMessage(_ message: MultiplayerMessage) {
+        guard isHost else { return }
+        guard let match = currentMatch else { return }
+        
+        guard let payload = try? JSONDecoder().decode(RematchRequestPayload.self, from: message.payload) else {
+            return
+        }
+        
+        // Only restart after a completed round.
+        guard multiplayerState?.isMatchActive == false else { return }
+        
+        print("[MultiplayerManager] Rematch requested by \(payload.requesterId). Recording opt-in.")
+        recordRematchOptIn(playerId: payload.requesterId)
+    }
+    
+    /// Adds an opt-in to the rematch list and starts a new lobby when conditions are met.
+    private func recordRematchOptIn(playerId: String) {
+        rematchOptInPlayerIds.insert(playerId)
+        
+        guard isHost, let match = currentMatch else { return }
+        guard rematchOptInPlayerIds.contains(localPlayerId) else { return }
+        guard rematchOptInPlayerIds.count >= minPlayersPerMatch else { return }
+        
+        startRematch(match: match)
+    }
+    
+    /// Builds player summaries for a given subset of participant IDs.
+    private func buildPlayerSummaries(for participantIds: [String], match: GKMatch) -> [MultiplayerPlayerSummary] {
+        var nameLookup: [String: String] = [:]
+        if let players = multiplayerState?.players {
+            for player in players {
+                nameLookup[player.id] = player.name
+            }
+        }
+        
+        // Helper to resolve display name with fallbacks.
+        func displayName(for id: String) -> String {
+            if let name = nameLookup[id] { return name }
+            if id == localPlayerId { return GKLocalPlayer.local.displayName }
+            if let matchPlayer = match.players.first(where: { $0.gamePlayerID == id }) {
+                return matchPlayer.displayName
+            }
+            return "Player"
+        }
+        
+        return participantIds.map { id in
+            MultiplayerPlayerSummary(
+                id: id,
+                displayName: displayName(for: id),
+                isLocal: id == localPlayerId
+            )
+        }
+    }
+    
     // MARK: - Private: Match End Logic
     
     /// Host checks if only one player remains alive and ends the match.
@@ -841,6 +993,8 @@ final class MultiplayerManager: NSObject, ObservableObject {
     /// Applies the match end state locally.
     private func applyMatchEnd(_ payload: MatchEndPayload) {
         stopStateUpdateTimer()
+        localRequestedRematch = false
+        rematchOptInPlayerIds.removeAll()
         
         guard let mpState = multiplayerState else { return }
         
@@ -868,7 +1022,7 @@ final class MultiplayerManager: NSObject, ObservableObject {
         
         // Stop the local gameplay loop so HUD can surface match results/rematch.
         gameState?.isGameOver = true
-        gameState?.recordBest()
+        gameState?.recordBest(for: .normal)
         
         print("[MultiplayerManager] Match ended. Winner: \(payload.winnerId)")
     }
@@ -899,6 +1053,8 @@ final class MultiplayerManager: NSObject, ObservableObject {
         collectedPowerUpIds.removeAll()
         alivePlayerIds.removeAll()
         arenaRandomizer = nil
+        rematchOptInPlayerIds.removeAll()
+        localRequestedRematch = false
         
         multiplayerState?.reset()
         gameState?.mode = .singlePlayer

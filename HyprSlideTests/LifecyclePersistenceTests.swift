@@ -24,7 +24,7 @@ final class LifecyclePersistenceTests: XCTestCase {
         state.score = 128.0
         state.recordBest()
         
-        let persisted = defaults.double(forKey: "HyprGlide.BestScore")
+        let persisted = defaults.double(forKey: "HyprGlide.BestScore.normal")
         XCTAssertEqual(persisted, 128.0, accuracy: 0.0001, "Best score should be written to defaults immediately.")
     }
     
@@ -58,5 +58,4 @@ final class LifecyclePersistenceTests: XCTestCase {
         XCTAssertTrue(state.isPaused, "Scene lifecycle transitions must auto-pause the active run.")
     }
 }
-
 

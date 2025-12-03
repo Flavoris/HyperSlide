@@ -297,7 +297,7 @@ struct HUDView: View {
                 .foregroundStyle(.white)
             
             // Best Score
-            Text("Best: \(Int(gameState.bestScore.rounded()))")
+            Text("Best (\(settings.difficultyRamp.displayName)): \(Int(gameState.bestScore.rounded()))")
                 .font(.system(size: 20, weight: .medium))
                 .foregroundStyle(.secondary)
             
@@ -341,14 +341,16 @@ struct HUDView: View {
     // MARK: - Helper Methods
     
     private func handleStartTapped() {
-        if presentTutorialIfNeeded(for: .singlePlayer) { return }
-        beginSinglePlayer()
+        startAfterTutorialIfNeeded(.singlePlayer) {
+            beginSinglePlayer()
+        }
     }
     
     private func handleMultiplayerTapped() {
         guard !multiplayerManager.isMatchmaking else { return }
-        if presentTutorialIfNeeded(for: .multiplayer) { return }
-        beginMultiplayer()
+        startAfterTutorialIfNeeded(.multiplayer) {
+            beginMultiplayer()
+        }
     }
     
     private func beginSinglePlayer() {
@@ -361,12 +363,15 @@ struct HUDView: View {
         multiplayerManager.startQuickMatch()
     }
     
-    @discardableResult
-    private func presentTutorialIfNeeded(for action: PendingStartAction) -> Bool {
-        guard !settings.hasSeenTutorial else { return false }
+    private func startAfterTutorialIfNeeded(_ action: PendingStartAction, start: @escaping () -> Void) {
+        if settings.hasSeenTutorial {
+            start()
+            return
+        }
+        
+        // First-run: show tutorial, then continue the requested action.
         pendingStartAction = action
         showTutorial = true
-        return true
     }
     
     private func completeTutorialAndResume() {

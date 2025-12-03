@@ -64,7 +64,7 @@ struct TutorialView: View {
                                 
                                 powerUpRow(icon: AnyView(Circle().strokeBorder(powerUpColor(colorTheme.powerUpColor.ring), lineWidth: powerUpLineWidth)),
                                            title: "Slow Motion",
-                                           description: nil,
+                                           description: "Slows down opponents in multiplayer.",
                                            color: powerUpColor(colorTheme.powerUpColor.ring))
                                 
                                 Divider().background(Color.white.opacity(0.1))

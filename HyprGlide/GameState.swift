@@ -9,30 +9,23 @@ import Foundation
 import Combine
 
 class GameState: ObservableObject {
-    // UserDefaults key for best score persistence
-    private static let bestScoreKey = "HyprGlide.BestScore"
+    // UserDefaults keys for best score persistence
+    private static let bestScoreLegacyKey = "HyprGlide.BestScore"
+    private static func bestScoreKey(for ramp: DifficultyRamp) -> String {
+        "HyprGlide.BestScore.\(ramp.rawValue)"
+    }
     // Total seconds for the difficulty ramp to reach max (longer ramp = longer levels)
     private static let difficultyRampDuration: TimeInterval = 300
     static let maxLevel = 20
     private let defaults: UserDefaults
+    private var bestScores: [DifficultyRamp: Double] = [:]
+    private var activeDifficultyRamp: DifficultyRamp = .normal
     
     // Current game score (time + dodge points)
     @Published var score: Double = 0
     
     // Best score achieved across all games (persisted)
-    @Published var bestScore: Double {
-        didSet {
-            guard bestScore != oldValue else { return }
-            let sanitizedScore = max(0, bestScore)
-            if sanitizedScore != bestScore {
-                bestScore = sanitizedScore
-                return
-            }
-            DefaultsGuard.write(on: defaults) { store in
-                store.set(sanitizedScore, forKey: GameState.bestScoreKey)
-            }
-        }
-    }
+    @Published private(set) var bestScore: Double = 0
     
     // Game status flags
     @Published var isGameOver: Bool = false
@@ -63,18 +56,7 @@ class GameState: ObservableObject {
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
         // Need to initialize stored properties before 'self' is used
-        let initialBestScore: Double
-        if defaults.object(forKey: GameState.bestScoreKey) == nil {
-            initialBestScore = 0
-            DefaultsGuard.write(on: defaults) { store in
-                store.set(0, forKey: GameState.bestScoreKey)
-            }
-        } else {
-            initialBestScore = DefaultsGuard.read(from: defaults) { store in
-                store.double(forKey: GameState.bestScoreKey)
-            } ?? 0
-        }
-        self.bestScore = initialBestScore
+        loadBestScores()
     }
     
     // MARK: - Game Actions
@@ -116,13 +98,19 @@ class GameState: ObservableObject {
         score += points
     }
     
-    /// Record the current score as best if it's higher, and submit to Game Center.
-    func recordBest() {
-        if score > bestScore {
-            bestScore = score
-            // Submit new high score to Game Center leaderboard (silent no-op if not authenticated).
-            GameCenterManager.shared.submitBestScoreIfGameCenterAvailable(score: score)
+    /// Record the current score as best for the provided difficulty if it's higher, and submit to Game Center.
+    func recordBest(for difficulty: DifficultyRamp? = nil) {
+        let targetDifficulty = difficulty ?? activeDifficultyRamp
+        let sanitizedScore = max(0, score)
+        let storedBest = bestScores[targetDifficulty] ?? 0
+        guard sanitizedScore > storedBest else { return }
+        bestScores[targetDifficulty] = sanitizedScore
+        if targetDifficulty == activeDifficultyRamp {
+            bestScore = sanitizedScore
         }
+        persistBestScore(sanitizedScore, for: targetDifficulty)
+        // Submit new high score to Game Center leaderboard (silent no-op if not authenticated).
+        GameCenterManager.shared.submitBestScoreIfGameCenterAvailable(score: sanitizedScore)
     }
     
     /// Force the game into a paused state if an active run is in progress.
@@ -151,5 +139,64 @@ class GameState: ObservableObject {
         // In multiplayer, keep elapsed time moving to avoid desync with peers.
         guard (!isPaused || mode.isMultiplayer) && !isGameOver else { return }
         elapsed += delta
+    }
+    
+    /// Update which difficulty ramp the UI should consider "active" for displaying best scores.
+    func setActiveDifficultyRamp(_ ramp: DifficultyRamp) {
+        guard activeDifficultyRamp != ramp else { return }
+        activeDifficultyRamp = ramp
+        bestScore = bestScores[ramp] ?? 0
+    }
+    
+    /// Returns the stored best score for a specific difficulty ramp.
+    func bestScore(for ramp: DifficultyRamp) -> Double {
+        bestScores[ramp] ?? 0
+    }
+    
+    // MARK: - Best Score Persistence
+    
+    private func loadBestScores() {
+        var loadedScores: [DifficultyRamp: Double] = [:]
+        for ramp in DifficultyRamp.allCases {
+            let key = GameState.bestScoreKey(for: ramp)
+            if defaults.object(forKey: key) == nil {
+                DefaultsGuard.write(on: defaults) { store in
+                    store.set(0, forKey: key)
+                }
+                loadedScores[ramp] = 0
+            } else {
+                let storedValue = DefaultsGuard.read(from: defaults) { store in
+                    store.double(forKey: key)
+                } ?? 0
+                loadedScores[ramp] = max(0, storedValue)
+            }
+        }
+        
+        migrateLegacyBestScore(into: &loadedScores)
+        
+        bestScores = loadedScores
+        activeDifficultyRamp = .normal
+        bestScore = loadedScores[activeDifficultyRamp] ?? 0
+    }
+    
+    private func migrateLegacyBestScore(into scores: inout [DifficultyRamp: Double]) {
+        guard defaults.object(forKey: GameState.bestScoreLegacyKey) != nil else { return }
+        let legacyValue = DefaultsGuard.read(from: defaults) { store in
+            store.double(forKey: GameState.bestScoreLegacyKey)
+        } ?? 0
+        let sanitizedLegacy = max(0, legacyValue)
+        if sanitizedLegacy > (scores[.normal] ?? 0) {
+            scores[.normal] = sanitizedLegacy
+            persistBestScore(sanitizedLegacy, for: .normal)
+        }
+        DefaultsGuard.write(on: defaults) { store in
+            store.removeObject(forKey: GameState.bestScoreLegacyKey)
+        }
+    }
+    
+    private func persistBestScore(_ value: Double, for ramp: DifficultyRamp) {
+        DefaultsGuard.write(on: defaults) { store in
+            store.set(value, forKey: GameState.bestScoreKey(for: ramp))
+        }
     }
 }

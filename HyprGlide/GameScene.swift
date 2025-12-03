@@ -786,6 +786,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
         // Stop spawning if game is over
         guard !(gameState?.isGameOver ?? true) else { return }
         
+        // In multiplayer, only the host generates obstacle spawns and broadcasts them.
+        if isMultiplayerMode {
+            guard multiplayerManager?.isHost == true else { return }
+        }
+        
         // Track edge-riding behavior
         updateEdgeLingerTracking(deltaTime: deltaTime)
         
@@ -800,7 +805,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
         
         // Get difficulty (0.0 to 1.0) and apply difficulty ramp multiplier
         let baseDifficulty = gameState?.difficulty ?? 0.0
-        let difficultyMultiplier = settings?.difficultyMultiplier ?? 1.0
+        let difficultyMultiplier: Double
+        if gameState?.mode.isMultiplayer == true {
+            difficultyMultiplier = 1.0
+        } else {
+            difficultyMultiplier = settings?.difficultyMultiplier ?? 1.0
+        }
         let difficulty = CGFloat(min(1.0, baseDifficulty * difficultyMultiplier))
         let currentTime = gameState?.elapsed ?? 0
         
@@ -833,6 +843,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
         
         // Spawn the obstacle from the event
         spawnObstacleFromEvent(event)
+        
+        // Broadcast to peers so everyone dodges the same obstacle pattern.
+        if isMultiplayerMode, multiplayerManager?.isHost == true {
+            multiplayerManager?.broadcastObstacleSpawn(
+                event,
+                spawnIndex: arenaRandomizer.obstacleSpawnIndex
+            )
+        }
     }
     
     /// Spawns an obstacle from a spawn event (used for both local and multiplayer sync).
@@ -914,6 +932,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
     
     private func spawnPowerUpIfNeeded(deltaTime: TimeInterval, difficulty: Double) {
         let isMultiplayer = arenaRandomizer.isMultiplayer
+        let isHost = multiplayerManager?.isHost == true
+        
+        // Only the host drives power-up spawns in multiplayer.
+        if isMultiplayer && !isHost {
+            return
+        }
         
         // Build active power-up counter
         let activePowerUpCount = ActivePowerUpCounter(
@@ -955,11 +979,31 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
         
         spawnState.powerUpSpawnTimer = 0
         spawnState.scheduleNextPowerUpSpawn()
-        spawnPowerUpFromEvent(event)
+        
+        // Generate a synchronized ID for multiplayer power-up exclusivity.
+        let powerUpId: String?
+        if isMultiplayer {
+            powerUpId = MultiplayerManager.generatePowerUpId(
+                spawnIndex: arenaRandomizer.powerUpSpawnIndex
+            )
+        } else {
+            powerUpId = nil
+        }
+        
+        spawnPowerUpFromEvent(event, powerUpId: powerUpId)
+        
+        // Broadcast the spawn so all players see the same power-up.
+        if isMultiplayer, let id = powerUpId {
+            multiplayerManager?.broadcastPowerUpSpawn(
+                event,
+                spawnIndex: arenaRandomizer.powerUpSpawnIndex,
+                powerUpId: id
+            )
+        }
     }
     
     /// Spawns a power-up from a spawn event (used for both local and multiplayer sync).
-    private func spawnPowerUpFromEvent(_ event: PowerUpSpawnEvent) {
+    private func spawnPowerUpFromEvent(_ event: PowerUpSpawnEvent, powerUpId: String? = nil) {
         guard size.width.isFinite, size.height.isFinite else { return }
         
         let horizontalMargin = max(movementHorizontalMargin, event.radius + 24)
@@ -974,6 +1018,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
         
         addChild(powerUp)
         powerUps.append(powerUp)
+        
+        if let id = powerUpId {
+            powerUpTracker.register(powerUp: powerUp, id: id)
+        }
     }
     
     private func powerUpThemeColors(for type: PowerUpType) -> (ring: SKColor, glow: SKColor) {
@@ -1265,7 +1313,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
         
         // Trigger game over
         state.isGameOver = true
-        state.recordBest()
+        state.recordBest(for: currentDifficultyRampForScoring())
         slowMotionEffect.reset()
         invincibilityEffect.reset()
         attackModeEffect.reset()
@@ -1283,6 +1331,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
                 eliminationTime: eliminationTime
             )
         }
+    }
+    
+    /// Returns the difficulty ramp that should be used for scoring/high score tracking.
+    private func currentDifficultyRampForScoring() -> DifficultyRamp {
+        if gameState?.mode.isMultiplayer == true {
+            return .normal
+        }
+        return settings?.difficultyRamp ?? .normal
     }
     
     private func destroyObstacle(_ obstacle: ObstacleNode) {
@@ -2043,12 +2099,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
     
     /// Process an external power-up spawn event with tracking ID.
     func processExternalPowerUpEvent(_ event: PowerUpSpawnEvent, powerUpId: String) {
-        spawnPowerUpFromEvent(event)
-        
-        // Register the newly spawned power-up with its ID for exclusivity tracking
-        if let lastPowerUp = powerUps.last {
-            powerUpTracker.register(powerUp: lastPowerUp, id: powerUpId)
-        }
+        spawnPowerUpFromEvent(event, powerUpId: powerUpId)
     }
     
     /// The local player's current X position for state updates.
@@ -2146,6 +2197,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
         
         // Restore single-player arena
         configureForSinglePlayer()
+        
+        // Ensure the local orb returns to the player's selected theme color
+        updatePlayerColors()
     }
     
     // MARK: Theme Updates

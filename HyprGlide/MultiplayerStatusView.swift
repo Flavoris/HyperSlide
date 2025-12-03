@@ -128,8 +128,8 @@ struct PlayerListPanel: View {
             if lhs.isLocal != rhs.isLocal {
                 return lhs.isLocal
             }
-            let scoreL = lhs.finalScore ?? (lhs.isAlive ? 0 : 0)
-            let scoreR = rhs.finalScore ?? (rhs.isAlive ? 0 : 0)
+            let scoreL = scoreValue(for: lhs)
+            let scoreR = scoreValue(for: rhs)
             if scoreL != scoreR {
                 return scoreL > scoreR
             }
@@ -137,14 +137,19 @@ struct PlayerListPanel: View {
         }
     }
     
-    /// Returns the display score for a player.
-    /// For local player: use gameState.score. For others: use finalScore or 0.
-    private func scoreForPlayer(_ player: MultiplayerPlayer) -> Int {
+    /// Returns the numeric score used for sorting and display.
+    private func scoreValue(for player: MultiplayerPlayer) -> Double {
         if player.isLocal {
-            return Int(gameState.score.rounded())
+            return gameState.score
         } else {
-            return Int((player.finalScore ?? 0).rounded())
+            return player.finalScore ?? player.currentScore
         }
+    }
+    
+    /// Returns the display score for a player.
+    /// For local player: use gameState.score. For others: use final/live score.
+    private func scoreForPlayer(_ player: MultiplayerPlayer) -> Int {
+        Int(scoreValue(for: player).rounded())
     }
 }
 
@@ -240,4 +245,3 @@ struct PlayerStatusRow: View {
         .padding()
     }
 }
-

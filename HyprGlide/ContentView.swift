@@ -52,6 +52,10 @@ struct ContentView: View {
             multiplayerManager.sceneDelegate = gameScene
             GameCenterManager.shared.authenticateIfNeeded()
             gameScene.updateGlowPreference(isEnabled: settings.glowEffectsEnabled)
+            gameState.setActiveDifficultyRamp(settings.difficultyRamp)
+        }
+        .onChange(of: settings.difficultyRamp) { newValue in
+            gameState.setActiveDifficultyRamp(newValue)
         }
         .onChange(of: settings.colorTheme) { _ in
             // Update player colors when theme changes
@@ -76,7 +80,12 @@ struct ContentView: View {
     /// Handle game restart by coordinating between HUD and scene
     private func handleRestart() {
         // Record best score before resetting
-        gameState.recordBest()
+        gameState.recordBest(for: difficultyRampForCurrentRun())
+        
+        if gameState.mode.isMultiplayer {
+            multiplayerManager.requestRematch()
+            return
+        }
         
         // Reset the scene (which will also reset game state)
         gameScene.resetGame(state: gameState)
@@ -88,7 +97,7 @@ struct ContentView: View {
     /// Handle exit to main menu by resetting scene and returning to start screen
     private func handleExitToMainMenu() {
         // Record best score before resetting
-        gameState.recordBest()
+        gameState.recordBest(for: difficultyRampForCurrentRun())
         
         // Reset multiplayer state if in multiplayer mode
         if gameState.mode.isMultiplayer {
@@ -107,6 +116,11 @@ struct ContentView: View {
         
         // Set mode back to single player
         gameState.mode = .singlePlayer
+    }
+    
+    /// Determines which difficulty ramp should be used for best score tracking for the current run.
+    private func difficultyRampForCurrentRun() -> DifficultyRamp {
+        gameState.mode.isMultiplayer ? .normal : settings.difficultyRamp
     }
 }
 
