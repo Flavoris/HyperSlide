@@ -387,6 +387,7 @@ final class MultiplayerManager: NSObject, ObservableObject {
         guard multiplayerState?.isMatchActive == false else { return }
         
         localRequestedRematch = true
+        multiplayerState?.beginRematchWait()
         
         if isHost {
             recordRematchOptIn(playerId: localPlayerId)
@@ -640,6 +641,7 @@ final class MultiplayerManager: NSObject, ObservableObject {
         // Clear rematch intent once we're committing to the new match.
         localRequestedRematch = false
         rematchOptInPlayerIds.removeAll()
+        multiplayerState?.clearRematchWait()
         
         arenaSeed = setup.arenaSeed
         matchStartTime = setup.matchStartTime
@@ -995,6 +997,7 @@ final class MultiplayerManager: NSObject, ObservableObject {
         stopStateUpdateTimer()
         localRequestedRematch = false
         rematchOptInPlayerIds.removeAll()
+        multiplayerState?.clearRematchWait()
         
         guard let mpState = multiplayerState else { return }
         
@@ -1055,6 +1058,7 @@ final class MultiplayerManager: NSObject, ObservableObject {
         arenaRandomizer = nil
         rematchOptInPlayerIds.removeAll()
         localRequestedRematch = false
+        multiplayerState?.clearRematchWait()
         
         multiplayerState?.reset()
         gameState?.mode = .singlePlayer

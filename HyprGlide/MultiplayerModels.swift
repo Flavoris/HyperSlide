@@ -182,6 +182,14 @@ final class MultiplayerState: ObservableObject {
     /// Whether a match is currently in progress.
     @Published var isMatchActive: Bool
     
+    enum RematchState: Equatable {
+        case idle
+        case waitingForPlayers
+    }
+    
+    /// Whether the local player has requested a rematch and is waiting for others.
+    @Published var rematchState: RematchState = .idle
+    
     /// The winning player once the match concludes, nil if match is ongoing or no winner yet.
     @Published var winner: MultiplayerPlayer?
     
@@ -315,6 +323,7 @@ final class MultiplayerState: ObservableObject {
         currentQueue = nil
         isSearching = false
         lobbyState = nil
+        rematchState = .idle
     }
     
     /// Sets final rankings after match end.
@@ -352,5 +361,15 @@ final class MultiplayerState: ObservableObject {
     /// Clear lobby state when the live match begins.
     func clearLobby() {
         lobbyState = nil
+    }
+    
+    /// Mark that the local player requested a rematch.
+    func beginRematchWait() {
+        rematchState = .waitingForPlayers
+    }
+    
+    /// Clear any rematch waiting indicator.
+    func clearRematchWait() {
+        rematchState = .idle
     }
 }

@@ -31,6 +31,8 @@ struct MultiplayerGameOverView: View {
     private let bronzeColor = Color(red: 0.8, green: 0.5, blue: 0.2)
     
     var body: some View {
+        let isWaitingForRematch = multiplayerState.rematchState == .waitingForPlayers
+        
         VStack(spacing: 20) {
             // Match Complete Header
             Text("MATCH COMPLETE")
@@ -70,18 +72,25 @@ struct MultiplayerGameOverView: View {
             VStack(spacing: 14) {
                 // Rematch Button
                 Button(action: onRestart) {
-                    Text("REMATCH")
-                        .font(.system(size: 22, weight: .heavy, design: .rounded))
-                        .foregroundStyle(accentColor)
-                        .tracking(2)
-                        .padding(.horizontal, 45)
-                        .padding(.vertical, 16)
-                        .background(
-                            RoundedRectangle(cornerRadius: 50)
-                                .strokeBorder(accentColor, lineWidth: 2.5)
-                        )
+                    HStack(spacing: 10) {
+                        if isWaitingForRematch {
+                            ProgressView()
+                                .tint(accentColor)
+                        }
+                        Text(isWaitingForRematch ? "WAITING..." : "REMATCH")
+                            .font(.system(size: 22, weight: .heavy, design: .rounded))
+                            .foregroundStyle(accentColor)
+                            .tracking(2)
+                    }
+                    .padding(.horizontal, 45)
+                    .padding(.vertical, 16)
+                    .background(
+                        RoundedRectangle(cornerRadius: 50)
+                            .strokeBorder(accentColor, lineWidth: 2.5)
+                    )
                 }
                 .accessibilityLabel("Play another match")
+                .disabled(isWaitingForRematch)
                 
                 // Main Menu Button
                 Button(action: onMainMenu) {
@@ -93,6 +102,17 @@ struct MultiplayerGameOverView: View {
                 .accessibilityLabel("Return to main menu")
             }
             .padding(.top, 10)
+            
+            if isWaitingForRematch {
+                HStack(spacing: 10) {
+                    Image(systemName: "hourglass")
+                        .foregroundStyle(accentColor)
+                    Text("Waiting for other players to confirm rematch...")
+                        .font(.system(size: 14, weight: .semibold, design: .rounded))
+                        .foregroundStyle(.white.opacity(0.85))
+                }
+                .padding(.top, 6)
+            }
         }
         .padding(.horizontal, 24)
         .padding(.vertical, 30)
@@ -360,4 +380,3 @@ struct LocalPlayerResult: View {
         .padding()
     }
 }
-
