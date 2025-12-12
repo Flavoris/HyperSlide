@@ -414,7 +414,7 @@ Requirements:
      - Make it clear that the effect is **benefiting the collector** (e.g. labeling “You’re faster!” for the local collector vs “Slowed” for others).
      - Optionally show stacked intensity or remaining duration in a compact way.
 3. Friends-only leaderboard UI:
-   - Add a button in the start menu overlay labeled FRIENDS SCORES.
+   - Add a button in the start menu overlay labeled HIGH SCORES.
    - Tapping it should:
      - Trigger GameCenterManager.authenticateIfNeeded if not already authenticated.
      - Then present either:
@@ -498,4 +498,3 @@ Requirements:
 ---
 
 You can now work through these prompts one by one in Cursor to gradually implement **Game Center multiplayer with a shared arena and friends-only high scores** while keeping your codebase clean and modular, with the additional multiplayer rules you requested (global slow-motion, stacking power-ups with caps, and score-based winner selection).
-

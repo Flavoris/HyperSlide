@@ -28,6 +28,9 @@ struct FriendsLeaderboardView: View {
     /// Error message if loading fails.
     @State private var errorMessage: String?
     
+    /// Currently selected leaderboard scope (friends/global).
+    @State private var currentScope: LeaderboardScope = .friends
+    
     /// Gold color for 1st place.
     private let goldColor = Color(red: 1.0, green: 0.84, blue: 0.0)
     
@@ -48,7 +51,7 @@ struct FriendsLeaderboardView: View {
                     contentView
                 }
             }
-            .navigationTitle("Friends Scores")
+            .navigationTitle("High Scores")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -72,6 +75,10 @@ struct FriendsLeaderboardView: View {
         .preferredColorScheme(.dark)
         .onAppear {
             authenticateAndLoad()
+        }
+        .onChange(of: currentScope) { _ in
+            guard gameCenterManager.isAuthenticated else { return }
+            loadLeaderboard()
         }
     }
     
@@ -104,7 +111,7 @@ struct FriendsLeaderboardView: View {
                 .scaleEffect(1.2)
                 .tint(accentColor)
             
-            Text("Loading scores...")
+            Text("Loading \(currentScope.displayName.lowercased()) scores...")
                 .font(.system(size: 16, weight: .medium, design: .rounded))
                 .foregroundStyle(.white.opacity(0.7))
         }
@@ -117,15 +124,28 @@ struct FriendsLeaderboardView: View {
                 .font(.system(size: 50))
                 .foregroundStyle(accentColor.opacity(0.5))
             
-            Text("No Friends Found")
+            Text(emptyStateTitle)
                 .font(.system(size: 20, weight: .bold, design: .rounded))
                 .foregroundStyle(.white)
             
-            Text("Add friends on Game Center to see their scores here.")
+            Text(emptyStateMessage)
                 .font(.system(size: 14, weight: .medium, design: .rounded))
                 .foregroundStyle(.white.opacity(0.6))
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 40)
+            
+            if currentScope == .friends {
+                Button("Show Global Scores") {
+                    currentScope = .global
+                }
+                .font(.system(size: 15, weight: .semibold, design: .rounded))
+                .foregroundStyle(.black)
+                .padding(.horizontal, 28)
+                .padding(.vertical, 10)
+                .background(accentColor)
+                .clipShape(Capsule())
+                .padding(.top, 4)
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -168,7 +188,7 @@ struct FriendsLeaderboardView: View {
                 .font(.system(size: 20, weight: .bold, design: .rounded))
                 .foregroundStyle(.white)
             
-            Text("Connect to Game Center to see your friends' scores and compete on the leaderboard.")
+            Text("Connect to Game Center to see high scores and compete on the leaderboard.")
                 .font(.system(size: 14, weight: .medium, design: .rounded))
                 .foregroundStyle(.white.opacity(0.6))
                 .multilineTextAlignment(.center)
@@ -195,20 +215,32 @@ struct FriendsLeaderboardView: View {
     }
     
     private var leaderboardList: some View {
-        ScrollView {
-            LazyVStack(spacing: 8) {
-                ForEach(entries) { entry in
-                    LeaderboardEntryRow(
-                        entry: entry,
-                        medalColor: medalColor(for: entry.rank),
-                        accentColor: accentColor,
-                        isLocalPlayer: entry.id == GKLocalPlayer.local.gamePlayerID
-                    )
+        VStack(spacing: 12) {
+            scopePicker
+            
+            Text("Only Game Center friends who mutually share activity will appear here.")
+                .font(.system(size: 12, weight: .medium, design: .rounded))
+                .foregroundStyle(.white.opacity(0.5))
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 24)
+                .padding(.bottom, 4)
+            
+            ScrollView {
+                LazyVStack(spacing: 8) {
+                    ForEach(entries) { entry in
+                        LeaderboardEntryRow(
+                            entry: entry,
+                            medalColor: medalColor(for: entry.rank),
+                            accentColor: accentColor,
+                            isLocalPlayer: entry.id == GKLocalPlayer.local.gamePlayerID
+                        )
+                    }
                 }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
         }
+        .padding(.top, 4)
     }
     
     // MARK: - Helpers
@@ -239,8 +271,14 @@ struct FriendsLeaderboardView: View {
         
         loadingState = .loading
         errorMessage = nil
+        let scopeAtRequest = currentScope
         
-        gameCenterManager.loadFriendsLeaderboardTop(limit: 25) { result in
+        gameCenterManager.loadLeaderboardTop(
+            playerScope: scopeAtRequest.playerScope,
+            timeScope: scopeAtRequest.timeScope,
+            limit: 25
+        ) { result in
+            guard scopeAtRequest == currentScope else { return }
             switch result {
             case .success(let fetchedEntries):
                 entries = fetchedEntries
@@ -251,6 +289,27 @@ struct FriendsLeaderboardView: View {
                 loadingState = .error
             }
         }
+    }
+    
+    private var emptyStateTitle: String {
+        currentScope == .friends ? "No Friends Found" : "No Scores Yet"
+    }
+    
+    private var emptyStateMessage: String {
+        if currentScope == .friends {
+            return "Add friends on Game Center to see their scores here."
+        }
+        return "Be the first to post a score and climb the global leaderboard."
+    }
+    
+    private var scopePicker: some View {
+        Picker("Scope", selection: $currentScope) {
+            ForEach(LeaderboardScope.allCases) { scope in
+                Text(scope.displayName).tag(scope)
+            }
+        }
+        .pickerStyle(.segmented)
+        .padding(.horizontal, 16)
     }
 }
 
@@ -263,6 +322,34 @@ private extension FriendsLeaderboardView {
         case loaded
         case error
         case notAuthenticated
+    }
+    
+    enum LeaderboardScope: String, CaseIterable, Identifiable {
+        case friends
+        case global
+        
+        var id: String { rawValue }
+        
+        var displayName: String {
+            switch self {
+            case .friends: return "Friends"
+            case .global: return "Global"
+            }
+        }
+        
+        var playerScope: GKLeaderboard.PlayerScope {
+            switch self {
+            case .friends: return .friends
+            case .global: return .global
+            }
+        }
+        
+        var timeScope: GKLeaderboard.TimeScope {
+            switch self {
+            case .friends: return .allTime
+            case .global: return .allTime
+            }
+        }
     }
 }
 
@@ -407,4 +494,3 @@ struct LeaderboardEntryRow: View {
         .padding()
     }
 }
-

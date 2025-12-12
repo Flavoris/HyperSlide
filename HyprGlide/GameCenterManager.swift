@@ -164,8 +164,25 @@ final class GameCenterManager: ObservableObject {
     ///
     /// **Version Considerations:**
     /// - Prior to iOS 14, you would use the deprecated `GKLeaderboard(identifier:)` initializer
-    ///   with `playerScope = .friendsOnly`. This implementation targets iOS 14+.
+    ///   with `playerScope = .friends`. This implementation targets iOS 14+.
     func loadFriendsLeaderboardTop(
+        limit: Int = 25,
+        completion: @escaping (Result<[LeaderboardEntry], Error>) -> Void
+    ) {
+        loadLeaderboardTop(
+            playerScope: .friends,
+            timeScope: .allTime,
+            limit: limit,
+            completion: completion
+        )
+    }
+    
+    /// Loads leaderboard entries for the specified player scope (friends/global).
+    /// GameKit automatically limits the friends scope to bi-directional friends who opted-in,
+    /// so no additional filtering is needed on our side.
+    func loadLeaderboardTop(
+        playerScope: GKLeaderboard.PlayerScope,
+        timeScope: GKLeaderboard.TimeScope = .allTime,
         limit: Int = 25,
         completion: @escaping (Result<[LeaderboardEntry], Error>) -> Void
     ) {
@@ -190,7 +207,13 @@ final class GameCenterManager: ObservableObject {
                 return
             }
             
-            self?.fetchFriendsEntries(from: leaderboard, limit: limit, completion: completion)
+            self?.fetchEntries(
+                from: leaderboard,
+                playerScope: playerScope,
+                timeScope: timeScope,
+                limit: limit,
+                completion: completion
+            )
         }
     }
     
@@ -226,17 +249,19 @@ final class GameCenterManager: ObservableObject {
         }
     }
     
-    /// Fetches friend entries from the given leaderboard.
-    private func fetchFriendsEntries(
+    /// Fetches leaderboard entries from the given leaderboard.
+    private func fetchEntries(
         from leaderboard: GKLeaderboard,
+        playerScope: GKLeaderboard.PlayerScope,
+        timeScope: GKLeaderboard.TimeScope,
         limit: Int,
         completion: @escaping (Result<[LeaderboardEntry], Error>) -> Void
     ) {
-        // Use .friendsOnly scope to restrict to social circle.
+        // Use player scope to restrict results to friends/global.
         // NSRange starts at 1 (1-indexed ranks in GameKit).
         let range = NSRange(location: 1, length: min(limit, 100))
         
-        leaderboard.loadEntries(for: .friendsOnly, timeScope: .allTime, range: range) { localEntry, entries, count, error in
+        leaderboard.loadEntries(for: playerScope, timeScope: timeScope, range: range) { localEntry, entries, count, error in
             DispatchQueue.main.async {
                 if let error = error {
                     completion(.failure(error))
@@ -311,3 +336,10 @@ enum GameCenterError: LocalizedError {
     }
 }
 
+#if !compiler(>=7.0)
+extension GKLeaderboard.PlayerScope {
+    /// Temporary shim so we can call `.friends` while GameKit still exposes `.friendsOnly`.
+    /// Remove once the native Swift API surfaces the `friends` case directly.
+    static var friends: GKLeaderboard.PlayerScope { .friendsOnly }
+}
+#endif

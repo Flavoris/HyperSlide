@@ -104,13 +104,13 @@ Power-ups work differently depending on game mode:
 | **Stacking** | Not applicable. | Effects can stack, but a global cap (default: 2 simultaneous active power-ups) prevents chaos. |
 | **Collection** | Collected by the player on contact. | **First touch wins**—only one player can collect a specific power-up. Once collected, it disappears for everyone else immediately. |
 
-### Friends Leaderboard
+### High Scores
 
-Compare your best scores with Game Center friends:
+View Game Center high scores:
 
-1. From the start menu, tap **FRIENDS SCORES**.
+1. From the start menu, tap **HIGH SCORES**.
 2. If not authenticated, you'll be prompted to sign in to Game Center.
-3. View a ranked list of friends' high scores.
+3. View a ranked list of high scores.
 
 ### Game Center Configuration
 

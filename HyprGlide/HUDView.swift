@@ -142,6 +142,9 @@ struct HUDView: View {
             Text("\(roundedScore)")
                 .font(.system(size: 72, weight: .heavy, design: .rounded))
                 .foregroundStyle(.white)
+                .lineLimit(1)
+                .minimumScaleFactor(0.3)
+                .allowsTightening(true)
             
             Text("Level \(gameState.level)")
                 .font(.system(size: 22, weight: .semibold, design: .rounded))
@@ -209,7 +212,7 @@ struct HUDView: View {
             .disabled(multiplayerManager.isMatchmaking)
             .opacity(multiplayerManager.isMatchmaking ? 0.6 : 1)
             
-            // FRIENDS SCORES Button
+            // HIGH SCORES Button
             Button {
                 showFriendsLeaderboard = true
             } label: {
@@ -217,7 +220,7 @@ struct HUDView: View {
                     Image(systemName: "trophy.fill")
                         .font(.system(size: 16, weight: .semibold))
                     
-                    Text("FRIENDS SCORES")
+                    Text("HIGH SCORES")
                         .font(.system(size: 16, weight: .bold, design: .rounded))
                         .tracking(1)
                 }
@@ -233,7 +236,7 @@ struct HUDView: View {
                         )
                 )
             }
-            .accessibilityLabel("View friends leaderboard")
+            .accessibilityLabel("View high scores")
             
             Spacer()
         }
@@ -267,7 +270,7 @@ struct HUDView: View {
                     .foregroundStyle(.white.opacity(0.9))
             }
             
-            Text("Move around while you wait. Game starts when lobby fills or timer hits zero (min \(lobby.minPlayers) players).")
+            Text("Game will start shortly. Highest score wins, game ends when one player is left standing!")
                 .font(.system(size: 13, weight: .regular, design: .rounded))
                 .foregroundStyle(.white.opacity(0.8))
         }
@@ -351,6 +354,11 @@ struct HUDView: View {
         startAfterTutorialIfNeeded(.multiplayer) {
             beginMultiplayer()
         }
+    }
+    
+    private func handleInviteButtonTapped() {
+        guard !multiplayerManager.isMatchmaking else { return }
+        multiplayerManager.acceptPendingInvite()
     }
     
     private func beginSinglePlayer() {
@@ -508,6 +516,8 @@ struct HUDView: View {
                         )
                 }
                 .accessibilityLabel(gameState.isPaused ? "Resume game" : "Pause game")
+            } else if !gameState.hasStarted {
+                inviteAlertButton
             }
             
             Spacer()
@@ -553,6 +563,70 @@ struct HUDView: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel("Open settings")
+    }
+    
+    private var inviteAlertButton: some View {
+        let hasInvite = multiplayerManager.hasPendingInviteAlert
+        let sender = multiplayerManager.pendingInviteSenderName
+        
+        return Button {
+            handleInviteButtonTapped()
+        } label: {
+            VStack(spacing: 6) {
+                ZStack(alignment: .topTrailing) {
+                    Circle()
+                        .fill(Color.white.opacity(0.12))
+                        .overlay(
+                            Circle()
+                                .stroke(hasInvite ? multiplayerButtonColor : Color.white.opacity(0.24),
+                                        lineWidth: hasInvite ? 2 : 1)
+                        )
+                        .shadow(color: hasInvite ? multiplayerButtonColor.opacity(0.55) : .clear,
+                                radius: hasInvite ? 18 : 0,
+                                x: 0,
+                                y: hasInvite ? 10 : 0)
+                        .frame(width: 54, height: 54)
+                        .overlay {
+                            Image(systemName: hasInvite ? "envelope.badge.fill" : "envelope.open.fill")
+                                .font(.system(size: 20, weight: .semibold))
+                                .foregroundStyle(.white)
+                        }
+                    
+                    if hasInvite {
+                        Circle()
+                            .fill(multiplayerButtonColor)
+                            .frame(width: 14, height: 14)
+                            .overlay(
+                                Circle()
+                                    .stroke(Color.white, lineWidth: 2)
+                            )
+                            .offset(x: 8, y: -8)
+                    }
+                }
+                
+                VStack(spacing: 2) {
+                    Text(hasInvite ? "JOIN INVITE" : "INVITES")
+                        .font(.system(size: 11, weight: .bold, design: .rounded))
+                        .foregroundStyle(.white.opacity(0.9))
+                        .textCase(.uppercase)
+                    if hasInvite, let sender {
+                        Text(sender)
+                            .font(.system(size: 10, weight: .semibold, design: .rounded))
+                            .foregroundStyle(multiplayerButtonColor)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.6)
+                    }
+                }
+                .frame(width: 82)
+            }
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(
+            hasInvite ? "Join invite from \(sender ?? "friend")" : "View or send friend invites"
+        )
+        .accessibilityHint(
+            hasInvite ? "Opens Game Center to join the pending match." : "Opens Game Center friend invites"
+        )
     }
     
 }

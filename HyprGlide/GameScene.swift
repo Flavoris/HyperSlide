@@ -73,6 +73,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
     // Track time for delta calculations
     private var lastUpdateTime: TimeInterval = 0
     private static let maxDeltaTime: TimeInterval = 1.0 / 30.0
+    private static let maxMultiplayerCatchUpTime: TimeInterval = 3.0
     
     // Bounds + safe-area context
     private let minimumMovementMargin: CGFloat = 30.0
@@ -554,7 +555,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
         }
         let rawDeltaTime = max(0, currentTime - lastUpdateTime)
         lastUpdateTime = currentTime
-        let deltaTime = min(rawDeltaTime, GameScene.maxDeltaTime)
         
         refreshSafeAreaInsets()
         
@@ -563,6 +563,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
         }
         
         guard let state = gameState else { return }
+        
+        // In multiplayer, break up large frame stalls (e.g., screenshots) into
+        // smaller slices so obstacle simulation still advances and collisions register.
+        if state.mode.isMultiplayer,
+           state.hasStarted,
+           rawDeltaTime > GameScene.maxDeltaTime {
+            processMultiplayerCatchUp(deltaTime: rawDeltaTime, state: state)
+            return
+        }
+        
+        let deltaTime = min(rawDeltaTime, GameScene.maxDeltaTime)
+        runSimulationStep(deltaTime: deltaTime, state: state)
+    }
+    
+    private func runSimulationStep(deltaTime: TimeInterval, state: GameState) {
         let simulationPaused = isSimulationPaused(state)
         let isLobby = lobbyWarmupActive()
         
@@ -583,6 +598,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate, MultiplayerSceneDelegate {
         }
         
         updateGameLogic(deltaTime: deltaTime, isLobby: isLobby)
+    }
+    
+    private func processMultiplayerCatchUp(deltaTime: TimeInterval, state: GameState) {
+        // Avoid runaway loops if the app was suspended for a long time.
+        let cappedDelta = min(deltaTime, GameScene.maxMultiplayerCatchUpTime)
+        var remaining = cappedDelta
+        
+        while remaining > 0 {
+            let step = min(GameScene.maxDeltaTime, remaining)
+            runSimulationStep(deltaTime: step, state: state)
+            remaining -= step
+        }
     }
     
     // MARK: - Game Logic

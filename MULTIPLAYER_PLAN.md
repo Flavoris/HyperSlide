@@ -107,7 +107,7 @@ SwiftUI overlay presenting:
 | Location | Addition |
 |----------|----------|
 | **Start Menu** | "Multiplayer" button → opens matchmaking sheet |
-| **Start Menu** | "Friends Scores" button → opens `FriendsLeaderboardView` |
+| **Start Menu** | "High Scores" button → opens `FriendsLeaderboardView` |
 | **In-game HUD** | If multiplayer, show mini-indicators for other players (position + alive/dead) |
 | **Game Over** | Show final standings for all players, "Rematch" button |
 | **Settings** | Toggle to enable/disable Game Center, link to leaderboard |
@@ -151,7 +151,7 @@ SwiftUI overlay presenting:
 - [ ] Add authentication call in `HyprGlideApp.swift` on launch
 - [x] Create `FriendsLeaderboardManager.swift` to fetch/expose friends scores *(integrated into `GameCenterManager.swift`)*
 - [x] Create `FriendsLeaderboardView.swift` (SwiftUI list with player avatars, scores)
-- [x] Wire "Friends Scores" button in `HUDView` start menu
+- [x] Wire "High Scores" button in `HUDView` start menu
 
 ### Phase 2 – Leaderboard Submission
 - [x] Extend `GameState.recordBest()` to submit to `GKLeaderboard` when authenticated

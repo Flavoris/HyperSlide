@@ -50,7 +50,6 @@ struct ContentView: View {
             multiplayerManager.gameState = gameState
             multiplayerManager.multiplayerState = multiplayerState
             multiplayerManager.sceneDelegate = gameScene
-            GameCenterManager.shared.authenticateIfNeeded()
             gameScene.updateGlowPreference(isEnabled: settings.glowEffectsEnabled)
             gameState.setActiveDifficultyRamp(settings.difficultyRamp)
         }

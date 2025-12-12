@@ -109,8 +109,11 @@ class GameState: ObservableObject {
             bestScore = sanitizedScore
         }
         persistBestScore(sanitizedScore, for: targetDifficulty)
-        // Submit new high score to Game Center leaderboard (silent no-op if not authenticated).
-        GameCenterManager.shared.submitBestScoreIfGameCenterAvailable(score: sanitizedScore)
+        
+        // Submit leaderboard entry only for eligible runs (single-player + standard difficulty).
+        if shouldSubmitScoreToLeaderboard(for: targetDifficulty) {
+            GameCenterManager.shared.submitBestScoreIfGameCenterAvailable(score: sanitizedScore)
+        }
     }
     
     /// Force the game into a paused state if an active run is in progress.
@@ -198,5 +201,11 @@ class GameState: ObservableObject {
         DefaultsGuard.write(on: defaults) { store in
             store.set(value, forKey: GameState.bestScoreKey(for: ramp))
         }
+    }
+    
+    /// Determines whether the provided difficulty should submit to the Game Center leaderboard.
+    /// Only single-player runs on the default difficulty report scores to avoid unfair comparisons.
+    private func shouldSubmitScoreToLeaderboard(for difficulty: DifficultyRamp) -> Bool {
+        mode == .singlePlayer && difficulty == .normal
     }
 }

@@ -189,6 +189,12 @@ final class MultiplayerManager: NSObject, ObservableObject {
     /// Error message if something went wrong.
     @Published private(set) var lastError: String?
     
+    /// True when Game Center has surfaced an invite that the player can join.
+    @Published private(set) var hasPendingInviteAlert: Bool = false
+    
+    /// Display name for the most recent invite sender (if any).
+    @Published private(set) var pendingInviteSenderName: String?
+    
     /// Status enumeration for connection state.
     enum ConnectionStatus: Equatable {
         case disconnected
@@ -259,10 +265,53 @@ final class MultiplayerManager: NSObject, ObservableObject {
     /// Whether the local player has opted into the next rematch.
     private var localRequestedRematch: Bool = false
     
+    /// Stored Game Center invite waiting for the player to accept.
+    private var pendingInvite: GKInvite?
+    
     // MARK: - Initialization
     
     override init() {
         super.init()
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleAuthenticationChange),
+            name: .GKPlayerAuthenticationDidChangeNotificationName,
+            object: nil
+        )
+        registerInviteListenerIfNeeded()
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+        GKLocalPlayer.local.unregisterListener(self)
+    }
+    
+    @objc private func handleAuthenticationChange() {
+        registerInviteListenerIfNeeded()
+    }
+    
+    /// Registers as a Game Center invite listener once the player signs in.
+    private func registerInviteListenerIfNeeded() {
+        GKLocalPlayer.local.unregisterListener(self)
+        guard GKLocalPlayer.local.isAuthenticated else {
+            clearPendingInviteState()
+            return
+        }
+        GKLocalPlayer.local.register(self)
+    }
+    
+    /// Stores an invite so the UI can surface an alert on the home screen.
+    private func storePendingInvite(_ invite: GKInvite) {
+        pendingInvite = invite
+        pendingInviteSenderName = invite.sender.displayName
+        hasPendingInviteAlert = true
+    }
+    
+    /// Clears any invite alert so the UI can return to idle state.
+    private func clearPendingInviteState() {
+        pendingInvite = nil
+        pendingInviteSenderName = nil
+        hasPendingInviteAlert = false
     }
     
     // MARK: - Public API: Matchmaking
@@ -321,7 +370,7 @@ final class MultiplayerManager: NSObject, ObservableObject {
     }
     
     /// Starts a friends lobby where the user can invite people directly.
-    func startFriendsMatch(from viewController: UIViewController) {
+    func startFriendsMatch(from viewController: UIViewController, preselectedRecipients: [GKPlayer]? = nil) {
         guard GameCenterManager.shared.isAuthenticated else {
             GameCenterManager.shared.authenticateIfNeeded(presentingFrom: viewController)
             lastError = "Please sign in to Game Center first."
@@ -336,6 +385,7 @@ final class MultiplayerManager: NSObject, ObservableObject {
         let request = GKMatchRequest()
         request.minPlayers = minPlayersPerMatch
         request.maxPlayers = maxPlayersPerMatch
+        request.recipients = preselectedRecipients
         request.inviteMessage = "Play HyprGlide with me!"
         
         guard let matchmakerVC = GKMatchmakerViewController(matchRequest: request) else {
@@ -348,6 +398,34 @@ final class MultiplayerManager: NSObject, ObservableObject {
         
         matchmakerVC.matchmakerDelegate = self
         viewController.present(matchmakerVC, animated: true)
+    }
+    
+    /// Accepts the latest Game Center invite (if any) or falls back to the friends lobby flow.
+    func acceptPendingInvite() {
+        guard let invite = pendingInvite else {
+            startFriendsMatch()
+            return
+        }
+        
+        guard let presenter = resolvePresenter() else {
+            lastError = "Unable to present invite: no active window."
+            return
+        }
+        
+        guard let matchmakerVC = GKMatchmakerViewController(invite: invite) else {
+            lastError = "Invite is no longer valid."
+            clearPendingInviteState()
+            return
+        }
+        
+        multiplayerState?.beginSearching(queue: .friends)
+        isMatchmaking = true
+        connectionStatus = .connecting
+        lastError = nil
+        
+        matchmakerVC.matchmakerDelegate = self
+        presenter.present(matchmakerVC, animated: true)
+        clearPendingInviteState()
     }
     
     /// Cancels any in-progress matchmaking.
@@ -378,7 +456,7 @@ final class MultiplayerManager: NSObject, ObservableObject {
     /// Requests a new match using the existing Game Center connection.
     /// Hosts immediately schedule a new lobby; non-hosts ask the host to start one.
     func requestRematch() {
-        guard let match = currentMatch else {
+        guard currentMatch != nil else {
             lastError = "Rematch unavailable: not connected to a match."
             return
         }
@@ -897,7 +975,7 @@ final class MultiplayerManager: NSObject, ObservableObject {
     
     private func handleRematchRequestMessage(_ message: MultiplayerMessage) {
         guard isHost else { return }
-        guard let match = currentMatch else { return }
+        guard currentMatch != nil else { return }
         
         guard let payload = try? JSONDecoder().decode(RematchRequestPayload.self, from: message.payload) else {
             return
@@ -1104,6 +1182,27 @@ extension MultiplayerManager: GKMatchmakerViewControllerDelegate {
     func matchmakerViewController(_ viewController: GKMatchmakerViewController, didFind match: GKMatch) {
         viewController.dismiss(animated: true)
         handleMatchConnected(match)
+    }
+}
+
+// MARK: - GKLocalPlayerListener + GKInviteEventListener
+
+extension MultiplayerManager: GKLocalPlayerListener, GKInviteEventListener {
+    func player(_ player: GKPlayer, didAccept invite: GKInvite) {
+        DispatchQueue.main.async { [weak self] in
+            self?.storePendingInvite(invite)
+        }
+    }
+    
+    func player(_ player: GKPlayer, didRequestMatchWithRecipients recipientPlayers: [GKPlayer]) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            guard let presenter = self.resolvePresenter() else {
+                self.lastError = "Unable to start Game Center match: no active window."
+                return
+            }
+            self.startFriendsMatch(from: presenter, preselectedRecipients: recipientPlayers)
+        }
     }
 }
 
