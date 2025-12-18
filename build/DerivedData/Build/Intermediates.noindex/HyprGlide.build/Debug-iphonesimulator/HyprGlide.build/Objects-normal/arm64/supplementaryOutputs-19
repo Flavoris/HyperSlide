@@ -1,0 +1,23 @@
+{
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/Haptics.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/arm64/Haptics.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/arm64/Haptics.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/arm64/Haptics.dia",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/arm64/Haptics.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/arm64/Haptics.swiftdeps"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/NearMissEmitterFactory.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/arm64/NearMissEmitterFactory.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/arm64/NearMissEmitterFactory.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/arm64/NearMissEmitterFactory.dia",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/arm64/NearMissEmitterFactory.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/arm64/NearMissEmitterFactory.swiftdeps"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/arm64/GeneratedAssetSymbols.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/arm64/GeneratedAssetSymbols.dia",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftdeps"
+  }
+}

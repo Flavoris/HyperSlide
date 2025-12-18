@@ -1,0 +1,200 @@
+{
+  "source": "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/SettingsView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Settings",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 45
+        }
+      },
+      {
+        "comment": "",
+        "key": "Done",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 29
+        }
+      },
+      {
+        "comment": "",
+        "key": "Difficulty",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 57
+        }
+      },
+      {
+        "comment": "",
+        "key": "Fast mode increases difficulty ramp by 50%",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 68
+        }
+      },
+      {
+        "comment": "",
+        "key": "Difficulty Ramp Speed",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 61
+        }
+      },
+      {
+        "comment": "",
+        "key": "Controls",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 77
+        }
+      },
+      {
+        "comment": "",
+        "key": "Tilt Control",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 83
+        }
+      },
+      {
+        "comment": "",
+        "key": "Use device tilt to control player movement",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 87
+        }
+      },
+      {
+        "comment": "",
+        "key": "How-To-Play",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 101
+        }
+      },
+      {
+        "comment": "",
+        "key": "View How-To-Play",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 109
+        }
+      },
+      {
+        "comment": "",
+        "key": "Audio",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 132
+        }
+      },
+      {
+        "comment": "",
+        "key": "Dial in the mix between soundtrack and effects.",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 142
+        }
+      },
+      {
+        "comment": "",
+        "key": "Theme",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 151
+        }
+      },
+      {
+        "comment": "",
+        "key": "Theme changes apply immediately",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 209
+        }
+      },
+      {
+        "comment": "",
+        "key": "Neon Glow",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 219
+        }
+      },
+      {
+        "comment": "",
+        "key": "Control glow effect.",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 223
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld percent",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 287
+        }
+      },
+      {
+        "comment": "",
+        "key": "Tilt Sensitivity",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 269
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld%%",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 275
+        }
+      },
+      {
+        "comment": "",
+        "key": "Tilt sensitivity %lld percent",
+        "location": {
+          "startingColumn": 41,
+          "startingLine": 278
+        }
+      },
+      {
+        "comment": "",
+        "key": "Tilt Sensitivity Slider",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 284
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld percent",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 318
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld%%",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 306
+        }
+      },
+      {
+        "comment": "",
+        "key": "%@ %lld percent",
+        "location": {
+          "startingColumn": 41,
+          "startingLine": 309
+        }
+      }
+    ]
+  },
+  "version": 1
+}

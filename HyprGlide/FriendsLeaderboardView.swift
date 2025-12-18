@@ -76,6 +76,14 @@ struct FriendsLeaderboardView: View {
         .onAppear {
             authenticateAndLoad()
         }
+        .onChange(of: gameCenterManager.isAuthenticated) { isAuthenticated in
+            if isAuthenticated {
+                loadLeaderboard()
+            } else {
+                entries = []
+                loadingState = .notAuthenticated
+            }
+        }
         .onChange(of: currentScope) { _ in
             guard gameCenterManager.isAuthenticated else { return }
             loadLeaderboard()
@@ -196,12 +204,6 @@ struct FriendsLeaderboardView: View {
             
             Button("Sign In") {
                 GameCenterManager.shared.authenticateIfNeeded()
-                // Wait a moment and retry
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                    if gameCenterManager.isAuthenticated {
-                        loadLeaderboard()
-                    }
-                }
             }
             .font(.system(size: 16, weight: .semibold, design: .rounded))
             .foregroundStyle(.black)

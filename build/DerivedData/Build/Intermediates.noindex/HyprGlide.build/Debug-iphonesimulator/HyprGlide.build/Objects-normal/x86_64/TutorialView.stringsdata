@@ -1,0 +1,56 @@
+{
+  "source": "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/TutorialView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "You can reopen this guide anytime from Settings.",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 89
+        }
+      },
+      {
+        "comment": "",
+        "key": "Objective",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 35
+        }
+      },
+      {
+        "comment": "",
+        "key": "Stay alive by dodging falling objects. Score ticks up over time and near-misses earn bonus points.",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 38
+        }
+      },
+      {
+        "comment": "",
+        "key": "Controls",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 47
+        }
+      },
+      {
+        "comment": "",
+        "key": "Power-Ups",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 61
+        }
+      },
+      {
+        "comment": "",
+        "key": "How to Play",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 120
+        }
+      }
+    ]
+  },
+  "version": 1
+}

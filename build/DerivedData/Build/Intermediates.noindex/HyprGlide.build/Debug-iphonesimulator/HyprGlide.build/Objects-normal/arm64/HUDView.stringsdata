@@ -1,0 +1,328 @@
+{
+  "source": "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/HUDView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Score %lld, Level %lld",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 154
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 142
+        }
+      },
+      {
+        "comment": "",
+        "key": "Level %lld",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 149
+        }
+      },
+      {
+        "comment": "",
+        "key": "Hypr\nGlide",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 164
+        }
+      },
+      {
+        "comment": "",
+        "key": "Dodge the falling objects",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 173
+        }
+      },
+      {
+        "comment": "",
+        "key": "Start single-player game",
+        "location": {
+          "startingColumn": 33,
+          "startingLine": 194
+        }
+      },
+      {
+        "comment": "",
+        "key": "Start multiplayer game",
+        "location": {
+          "startingColumn": 33,
+          "startingLine": 211
+        }
+      },
+      {
+        "comment": "",
+        "key": "View high scores",
+        "location": {
+          "startingColumn": 33,
+          "startingLine": 239
+        }
+      },
+      {
+        "comment": "",
+        "key": "START",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 183
+        }
+      },
+      {
+        "comment": "",
+        "key": "MULTIPLAYER",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 200
+        }
+      },
+      {
+        "comment": "",
+        "key": "HIGH SCORES",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 223
+        }
+      },
+      {
+        "comment": "",
+        "key": "Game will start shortly. Highest score wins, game ends when one player is left standing!",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 273
+        }
+      },
+      {
+        "comment": "",
+        "key": "%@ Lobby",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 254
+        }
+      },
+      {
+        "comment": "",
+        "key": "Starts in %llds",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 260
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld / %lld players",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 268
+        }
+      },
+      {
+        "comment": "",
+        "key": "GAME OVER",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 292
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 298
+        }
+      },
+      {
+        "comment": "",
+        "key": "Best (%@): %lld",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 303
+        }
+      },
+      {
+        "comment": "",
+        "key": "Restart game",
+        "location": {
+          "startingColumn": 33,
+          "startingLine": 323
+        }
+      },
+      {
+        "comment": "",
+        "key": "Return to main menu",
+        "location": {
+          "startingColumn": 33,
+          "startingLine": 340
+        }
+      },
+      {
+        "comment": "",
+        "key": "RESTART",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 311
+        }
+      },
+      {
+        "comment": "",
+        "key": "MAIN MENU",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 329
+        }
+      },
+      {
+        "comment": "",
+        "key": "PAUSED",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 417
+        }
+      },
+      {
+        "comment": "",
+        "key": "Resume game",
+        "location": {
+          "startingColumn": 33,
+          "startingLine": 436
+        }
+      },
+      {
+        "comment": "",
+        "key": "Exit multiplayer match",
+        "location": {
+          "startingColumn": 64,
+          "startingLine": 453
+        }
+      },
+      {
+        "comment": "",
+        "key": "Return to main menu",
+        "location": {
+          "startingColumn": 91,
+          "startingLine": 453
+        }
+      },
+      {
+        "comment": "",
+        "key": "RESUME",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 425
+        }
+      },
+      {
+        "comment": "",
+        "key": "EXIT MATCH",
+        "location": {
+          "startingColumn": 53,
+          "startingLine": 442
+        }
+      },
+      {
+        "comment": "",
+        "key": "MAIN MENU",
+        "location": {
+          "startingColumn": 68,
+          "startingLine": 442
+        }
+      },
+      {
+        "comment": "",
+        "key": "Resume game",
+        "location": {
+          "startingColumn": 58,
+          "startingLine": 518
+        }
+      },
+      {
+        "comment": "",
+        "key": "Pause game",
+        "location": {
+          "startingColumn": 74,
+          "startingLine": 518
+        }
+      },
+      {
+        "comment": "",
+        "key": "Join invite from %@",
+        "location": {
+          "startingColumn": 25,
+          "startingLine": 625
+        }
+      },
+      {
+        "comment": "",
+        "key": "View or send friend invites",
+        "location": {
+          "startingColumn": 68,
+          "startingLine": 625
+        }
+      },
+      {
+        "comment": "",
+        "key": "Opens Game Center to join the pending match.",
+        "location": {
+          "startingColumn": 25,
+          "startingLine": 628
+        }
+      },
+      {
+        "comment": "",
+        "key": "Opens Game Center friend invites",
+        "location": {
+          "startingColumn": 74,
+          "startingLine": 628
+        }
+      },
+      {
+        "comment": "",
+        "key": "Open settings",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 565
+        }
+      },
+      {
+        "comment": "",
+        "key": "JOIN INVITE",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 608
+        }
+      },
+      {
+        "comment": "",
+        "key": "INVITES",
+        "location": {
+          "startingColumn": 54,
+          "startingLine": 608
+        }
+      },
+      {
+        "comment": "",
+        "key": "Hint: Drag or tilt to move",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 672
+        }
+      },
+      {
+        "comment": "",
+        "key": "Drag or tilt to move",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 657
+        }
+      }
+    ]
+  },
+  "version": 1
+}

@@ -1,0 +1,23 @@
+{
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/Obstacle.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/x86_64/Obstacle.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/x86_64/Obstacle.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/x86_64/Obstacle.dia",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/x86_64/Obstacle.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/x86_64/Obstacle.swiftdeps"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/PowerUpNode.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/x86_64/PowerUpNode.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/x86_64/PowerUpNode.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/x86_64/PowerUpNode.dia",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/x86_64/PowerUpNode.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/x86_64/PowerUpNode.swiftdeps"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/SlowMotionEffect.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/x86_64/SlowMotionEffect.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/x86_64/SlowMotionEffect.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/x86_64/SlowMotionEffect.dia",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/x86_64/SlowMotionEffect.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/x86_64/SlowMotionEffect.swiftdeps"
+  }
+}

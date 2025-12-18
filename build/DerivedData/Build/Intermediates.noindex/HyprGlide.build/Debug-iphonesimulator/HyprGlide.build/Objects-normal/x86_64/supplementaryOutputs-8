@@ -1,0 +1,23 @@
+{
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/GameSceneMultiplayer.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/x86_64/GameSceneMultiplayer.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/x86_64/GameSceneMultiplayer.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/x86_64/GameSceneMultiplayer.dia",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/x86_64/GameSceneMultiplayer.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/x86_64/GameSceneMultiplayer.swiftdeps"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/MultiplayerManager.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/x86_64/MultiplayerManager.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/x86_64/MultiplayerManager.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/x86_64/MultiplayerManager.dia",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/x86_64/MultiplayerManager.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/x86_64/MultiplayerManager.swiftdeps"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/MultiplayerStatusView.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/x86_64/MultiplayerStatusView.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/x86_64/MultiplayerStatusView.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/x86_64/MultiplayerStatusView.dia",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/x86_64/MultiplayerStatusView.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/x86_64/MultiplayerStatusView.swiftdeps"
+  }
+}

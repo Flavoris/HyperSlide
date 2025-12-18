@@ -6,5 +6,7 @@
 	<array>
 		<string>Ethnocentric-Regular.otf</string>
 	</array>
+	<key>HyprGlideLeaderboardID</key>
+	<string>HyprGlide.highscore</string>
 </dict>
 </plist>

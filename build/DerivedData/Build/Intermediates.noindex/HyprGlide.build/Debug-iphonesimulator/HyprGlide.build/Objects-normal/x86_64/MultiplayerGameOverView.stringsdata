@@ -1,0 +1,136 @@
+{
+  "source": "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/MultiplayerGameOverView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "MATCH COMPLETE",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 38
+        }
+      },
+      {
+        "comment": "",
+        "key": "Play another match",
+        "location": {
+          "startingColumn": 37,
+          "startingLine": 92
+        }
+      },
+      {
+        "comment": "",
+        "key": "Return to main menu",
+        "location": {
+          "startingColumn": 37,
+          "startingLine": 102
+        }
+      },
+      {
+        "comment": "",
+        "key": "WAITING...",
+        "location": {
+          "startingColumn": 52,
+          "startingLine": 80
+        }
+      },
+      {
+        "comment": "",
+        "key": "REMATCH",
+        "location": {
+          "startingColumn": 67,
+          "startingLine": 80
+        }
+      },
+      {
+        "comment": "",
+        "key": "MAIN MENU",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 97
+        }
+      },
+      {
+        "comment": "",
+        "key": "Waiting for other players to confirm rematch...",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 110
+        }
+      },
+      {
+        "comment": "",
+        "key": "YOU WIN!",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 175
+        }
+      },
+      {
+        "comment": "",
+        "key": "WINNER",
+        "location": {
+          "startingColumn": 47,
+          "startingLine": 175
+        }
+      },
+      {
+        "comment": "",
+        "key": "(You)",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 280
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 288
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 266
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 259
+        }
+      },
+      {
+        "comment": "",
+        "key": "YOUR SCORE",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 321
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 326
+        }
+      },
+      {
+        "comment": "",
+        "key": "Rank #%lld",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 330
+        }
+      }
+    ]
+  },
+  "version": 1
+}

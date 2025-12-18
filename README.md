@@ -117,7 +117,7 @@ View Game Center high scores:
 For multiplayer and leaderboards to function:
 
 - **Device**: Game Center must be enabled and the user signed in.
-- **Leaderboard ID**: The app uses the identifier `hyprglide.friends.highscore`. This must match your App Store Connect / Game Center configuration.
+- **Leaderboard ID**: Set `HyprGlideLeaderboardID` in `HyprGlide/Info.plist` to your App Store Connect leaderboard ID (defaults to `hyprglide.friends.highscore`).
 - **Entitlements**: The app must have the Game Center capability enabled in Xcode.
 
 If Game Center is unavailable or authentication fails, the app gracefully falls back to single-player mode without crashes.

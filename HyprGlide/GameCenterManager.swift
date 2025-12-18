@@ -10,6 +10,7 @@
 import Foundation
 import GameKit
 import Combine
+import UIKit
 
 // MARK: - GameCenterManager
 
@@ -41,14 +42,21 @@ final class GameCenterManager: ObservableObject {
     
     // MARK: - Constants
     
-    /// Leaderboard identifier registered in App Store Connect.
-    /// TODO: Align this string with your actual leaderboard ID in App Store Connect / Game Center config.
-    private let leaderboardID = "hyprglide.friends.highscore"
+    /// Info.plist key used to optionally override the Game Center leaderboard ID.
+    ///
+    /// If missing/empty, `fallbackLeaderboardID` is used.
+    private static let leaderboardIDInfoPlistKey = "HyprGlideLeaderboardID"
+    
+    /// Fallback leaderboard identifier (used when no override is provided).
+    private let fallbackLeaderboardID = "hyprglide.friends.highscore"
     
     // MARK: - Private State
     
     /// Tracks whether authentication is currently in progress to avoid duplicate calls.
     private var isAuthenticating = false
+    
+    /// Cache the resolved leaderboard ID once we successfully load one.
+    private var resolvedLeaderboardID: String?
     
     // MARK: - Initialization
     
@@ -125,18 +133,32 @@ final class GameCenterManager: ObservableObject {
         
         let intScore = Int(score.rounded())
         
-        // iOS 14+ API for score submission.
-        GKLeaderboard.submitScore(
-            intScore,
-            context: 0,
-            player: GKLocalPlayer.local,
-            leaderboardIDs: [leaderboardID]
-        ) { error in
-            if let error = error {
-                // Log but don't surface to user—scores are best-effort.
-                print("[GameCenterManager] Score submission failed: \(error.localizedDescription)")
-            } else {
-                print("[GameCenterManager] Score \(intScore) submitted successfully.")
+        let configuredID = configuredLeaderboardID
+        
+        loadLeaderboard { result in
+            let leaderboardIDs: [String]
+            switch result {
+            case .success(let leaderboard):
+                leaderboardIDs = [leaderboard.baseLeaderboardID]
+            case .failure(let error):
+                // Best-effort: if we can't resolve a leaderboard, try the configured ID anyway.
+                print("[GameCenterManager] Leaderboard resolution failed: \(error.localizedDescription)")
+                leaderboardIDs = [configuredID]
+            }
+            
+            // iOS 14+ API for score submission.
+            GKLeaderboard.submitScore(
+                intScore,
+                context: 0,
+                player: GKLocalPlayer.local,
+                leaderboardIDs: leaderboardIDs
+            ) { error in
+                if let error = error {
+                    // Log but don't surface to user—scores are best-effort.
+                    print("[GameCenterManager] Score submission failed: \(error.localizedDescription)")
+                } else {
+                    print("[GameCenterManager] Score \(intScore) submitted successfully.")
+                }
             }
         }
     }
@@ -191,33 +213,69 @@ final class GameCenterManager: ObservableObject {
             return
         }
         
-        // Load the leaderboard object first.
-        GKLeaderboard.loadLeaderboards(IDs: [leaderboardID]) { [weak self] leaderboards, error in
-            if let error = error {
-                DispatchQueue.main.async {
-                    completion(.failure(error))
-                }
-                return
+        loadLeaderboard { [weak self] result in
+            switch result {
+            case .success(let leaderboard):
+                self?.fetchEntries(
+                    from: leaderboard,
+                    playerScope: playerScope,
+                    timeScope: timeScope,
+                    limit: limit,
+                    completion: completion
+                )
+                
+            case .failure(let error):
+                completion(.failure(error))
             }
-            
-            guard let leaderboard = leaderboards?.first else {
-                DispatchQueue.main.async {
-                    completion(.failure(GameCenterError.leaderboardNotFound))
-                }
-                return
-            }
-            
-            self?.fetchEntries(
-                from: leaderboard,
-                playerScope: playerScope,
-                timeScope: timeScope,
-                limit: limit,
-                completion: completion
-            )
         }
     }
     
     // MARK: - Private Helpers
+    
+    /// Returns the leaderboard ID configured for this build.
+    /// If `HyprGlideLeaderboardID` is not present in Info.plist, falls back to `fallbackLeaderboardID`.
+    private var configuredLeaderboardID: String {
+        let raw = Bundle.main.object(forInfoDictionaryKey: Self.leaderboardIDInfoPlistKey) as? String
+        let trimmed = raw?.trimmingCharacters(in: .whitespacesAndNewlines)
+        return (trimmed?.isEmpty == false) ? trimmed! : fallbackLeaderboardID
+    }
+    
+    /// Loads a `GKLeaderboard` for use by score submission and leaderboard UI.
+    ///
+    /// We first try the configured/resolved leaderboard ID. If it's missing/mismatched,
+    /// we fall back to loading all leaderboards for the game and selecting a reasonable default.
+    private func loadLeaderboard(completion: @escaping (Result<GKLeaderboard, Error>) -> Void) {
+        let configuredID = configuredLeaderboardID
+        let preferredID = resolvedLeaderboardID ?? configuredID
+        
+        GKLeaderboard.loadLeaderboards(IDs: [preferredID]) { [weak self] leaderboards, error in
+            if let leaderboard = leaderboards?.first {
+                self?.resolvedLeaderboardID = leaderboard.baseLeaderboardID
+                DispatchQueue.main.async {
+                    completion(.success(leaderboard))
+                }
+                return
+            }
+            
+            // Fallback: load all leaderboards for the game and pick the configured one (or the first).
+            GKLeaderboard.loadLeaderboards(IDs: nil) { [weak self] allLeaderboards, fallbackError in
+                let selected = allLeaderboards?.first(where: { $0.baseLeaderboardID == configuredID }) ?? allLeaderboards?.first
+                
+                if let leaderboard = selected {
+                    self?.resolvedLeaderboardID = leaderboard.baseLeaderboardID
+                    DispatchQueue.main.async {
+                        completion(.success(leaderboard))
+                    }
+                    return
+                }
+                
+                let finalError = error ?? fallbackError ?? GameCenterError.leaderboardNotFound
+                DispatchQueue.main.async {
+                    completion(.failure(finalError))
+                }
+            }
+        }
+    }
     
     /// Presents the Game Center sign-in view controller.
     private func presentSignInViewController(_ vc: UIViewController, from presenter: UIViewController?) {
@@ -245,6 +303,7 @@ final class GameCenterManager: ObservableObject {
         DispatchQueue.main.async { [weak self] in
             self?.isAuthenticated = false
             self?.localPlayerName = nil
+            self?.resolvedLeaderboardID = nil
             print("[GameCenterManager] Authentication failed: \(error.localizedDescription)")
         }
     }

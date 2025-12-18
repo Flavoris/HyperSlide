@@ -1,0 +1,16 @@
+{
+  "source": "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/MultiplayerStatusView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 181
+        }
+      }
+    ]
+  },
+  "version": 1
+}

@@ -1,0 +1,23 @@
+{
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/AttackModeEffect.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/arm64/AttackModeEffect.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/arm64/AttackModeEffect.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/arm64/AttackModeEffect.dia",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/arm64/AttackModeEffect.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/arm64/AttackModeEffect.swiftdeps"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/GlowEffectFactory.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/arm64/GlowEffectFactory.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/arm64/GlowEffectFactory.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/arm64/GlowEffectFactory.dia",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/arm64/GlowEffectFactory.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/arm64/GlowEffectFactory.swiftdeps"
+  },
+  "/Users/flavorisbelue/Desktop/HyprGlide/HyprGlide/InvincibilityEffect.swift" : {
+    "const-values" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/arm64/InvincibilityEffect.swiftconstvalues",
+    "dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/arm64/InvincibilityEffect.d",
+    "diagnostics" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/arm64/InvincibilityEffect.dia",
+    "object" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/arm64/InvincibilityEffect.o",
+    "swift-dependencies" : "/Users/flavorisbelue/Desktop/HyprGlide/build/DerivedData/Build/Intermediates.noindex/HyprGlide.build/Debug-iphonesimulator/HyprGlide.build/Objects-normal/arm64/InvincibilityEffect.swiftdeps"
+  }
+}
